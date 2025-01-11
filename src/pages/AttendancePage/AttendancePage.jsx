@@ -42,7 +42,7 @@ const AttendancePage = () => {
     try {
       console.log(date, time, studentId);
       // Fetch student name and log attendance
-      const response = await axios.post(`http://localhost:3001/attendance`, { studentId, date, time }, { headers: { "Content-Type": "application/json" }});
+      const response = await axios.post(`https://api.tuplrc-cla.com/attendance`, { studentId, date, time }, { headers: { "Content-Type": "application/json" }});
       console.log(response.message)
       if (response.data.success) {
         setStudentName(response.data.studentName);

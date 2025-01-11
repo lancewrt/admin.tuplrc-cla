@@ -15,7 +15,7 @@ const AdminTopNavbar = () => {
         const getUsername = async()=>{
             try {
               // Request server to verify the JWT token
-              const response = await axios.get('http://localhost:3001/check-session', { withCredentials: true });
+              const response = await axios.get('https://api.tuplrc-cla.com/check-session', { withCredentials: true });
               console.log(response.data)
               // If session is valid, set the role
               if (response.data.loggedIn) {
@@ -60,7 +60,7 @@ const AdminTopNavbar = () => {
     const logout = async () => {
         try {
             // Send a logout request to the server
-            await axios.post('http://localhost:3001/logout', {}, { withCredentials: true });
+            await axios.post('https://api.tuplrc-cla.com/logout', {}, { withCredentials: true });
 
             // Clear all relevant data from localStorage
             localStorage.removeItem('role');  // Remove the user's role

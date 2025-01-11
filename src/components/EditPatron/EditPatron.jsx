@@ -28,7 +28,7 @@ const EditPatron = () => {
     const [isLoading, setIsLoading] = useState(true);
   
     useEffect(() => {
-        axios.get(`http://localhost:3001/update-patron/${id}`)
+        axios.get(`https://api.tuplrc-cla.com/update-patron/${id}`)
             .then(res => {
                 setPatronData({
                     patron_fname: res.data.patronData.patron_fname,
@@ -121,7 +121,7 @@ const EditPatron = () => {
                     error = 'TUP ID must follow the format TUPM-**-****.';
                 } else {
                     try {
-                        const response = await axios.post('http://localhost:3001/validate-tup-id', { tup_id: value });
+                        const response = await axios.post('https://api.tuplrc-cla.com/validate-tup-id', { tup_id: value });
                         if (response.data.exists) {
                             error = response.data.message || 'TUP ID already exists.';
                         }
@@ -235,7 +235,7 @@ const EditPatron = () => {
                 category: patronData.category === 'None' ? '' : patronData.category,
             };
     
-            await axios.put(`http://localhost:3001/update-patron/${id}`, updatedData);
+            await axios.put(`https://api.tuplrc-cla.com/update-patron/${id}`, updatedData);
             console.log('Patron updated successfully');
             navigate('/patrons'); // Redirect after saving
         } catch (error) {

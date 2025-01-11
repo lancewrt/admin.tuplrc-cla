@@ -38,7 +38,7 @@ const Cataloging = ({disabled,handleChange,bookData,handleToggle,formValidation,
     //get existing department online
     const getDept = async()=>{
         try{
-            const response = await axios.get('http://localhost:3001/departments').then(res=>res.data)
+            const response = await axios.get('https://api.tuplrc-cla.com/departments').then(res=>res.data)
             setDepartment(response)
         }catch(err){
             console.log("Couldn't retrieve department online. An error occurred: ", err.message)
@@ -48,7 +48,7 @@ const Cataloging = ({disabled,handleChange,bookData,handleToggle,formValidation,
     //get existing topics online
     const getTopics =async ()=>{
         try{
-            const response = await axios.get('http://localhost:3001/topic').then(res=>res.data)
+            const response = await axios.get('https://api.tuplrc-cla.com/topic').then(res=>res.data)
             setTopic(response)
         }catch(err){
             console.log("Couldn't retrieve topics online. An error occurred: ", err.message)

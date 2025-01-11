@@ -31,7 +31,7 @@ const Logbook = () => {
                 
             };
           const query = new URLSearchParams(params).toString();
-          const response = await axios.get(`http://localhost:3001/patronSort?${query}`).then(res=>res.data);
+          const response = await axios.get(`https://api.tuplrc-cla.com/patronSort?${query}`).then(res=>res.data);
           setPatron(response)
           
           console.log(response)

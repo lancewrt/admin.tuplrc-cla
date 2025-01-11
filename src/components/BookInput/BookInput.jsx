@@ -36,7 +36,7 @@ const BookInput = ({disabled,handleChange,bookData,addAuthor,setBookData,formVal
     // for getting info sa google books api
     const getBookData = async()=>{
         try{
-                const response = await fetch(`http://localhost:3001/bookData/${bookData.isbn}`).then(data=>data.json()).then(data=>data.items[0].volumeInfo)
+                const response = await fetch(`https://api.tuplrc-cla.com/bookData/${bookData.isbn}`).then(data=>data.json()).then(data=>data.items[0].volumeInfo)
                 console.log(response);
                 // // store retrieve data sa book object
                 setBookData((prevdata)=>({

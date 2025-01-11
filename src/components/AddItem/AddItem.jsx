@@ -13,7 +13,9 @@ import { viewResourcesOffline } from '../../indexedDb/viewResourcesOffline';
 import { editResourceOffline } from '../../indexedDb/editResourcesOffline';
 import ResourceStatusModal from '../ResourceStatusModal/ResourceStatusModal';
 
-const socket = io('http://localhost:3001'); // Connect to the Socket.IO server
+const socket = io('https://api.tuplrc-cla.com', {path: '/socket.io',
+                                                 transports: ['websocket'],
+                                                 reconnectionAttempts: 5}); // Connect to the Socket.IO server
 
 const AddItem = () => {
     //pag may id, nagiging view ung purpose ng add item component
@@ -56,7 +58,7 @@ const AddItem = () => {
     const getUsername = async()=>{
         try {
           // Request server to verify the JWT token
-          const response = await axios.get('http://localhost:3001/check-session', { withCredentials: true });
+          const response = await axios.get('https://api.tuplrc-cla.com/check-session', { withCredentials: true });
           console.log(response.data)
           // If session is valid, set the role
           if (response.data.loggedIn) {
@@ -162,7 +164,7 @@ const AddItem = () => {
     const viewResourceOnline = async()=>{
         console.log('view resource')
         try{
-            const response = await axios.get(`http://localhost:3001/view/${id}`);
+            const response = await axios.get(`https://api.tuplrc-cla.com/view/${id}`);
            
             const data = response.data[0]
             const mediaType = data.type_id.toString();
@@ -412,7 +414,7 @@ const AddItem = () => {
                 }
             );
                 console.log(formData)
-                const response = await axios.post('http://localhost:3001/save', formData);
+                const response = await axios.post('https://api.tuplrc-cla.com/save', formData);
                
                 console.log(response)
                  // close loading
@@ -507,7 +509,7 @@ const AddItem = () => {
                 Object.entries(bookData).forEach(([key, value]) => {
                     formData.append(key, value);  
                 });
-                const response = await axios.put(`http://localhost:3001/edit/${id}`, formData);
+                const response = await axios.put(`https://api.tuplrc-cla.com/edit/${id}`, formData);
                 setLoading(false)
                 if(response.data.status==201){
                     //if resource is inserted successfully
@@ -557,7 +559,7 @@ const AddItem = () => {
         console.log('publishers online')
         const pubs = [];
         try {
-            const response = await axios.get('http://localhost:3001/publishers');
+            const response = await axios.get('https://api.tuplrc-cla.com/publishers');
             console.log(response.data)
             response.data.forEach(item => {
                 pubs.push({
@@ -574,7 +576,7 @@ const AddItem = () => {
     const getAuthors = async () => {
         const auth = [];
         try {
-            const response = await axios.get('http://localhost:3001/authors');
+            const response = await axios.get('https://api.tuplrc-cla.com/authors');
             response.data.forEach(item => {
                 auth.push({
                     value: `${item.author_fname} ${item.author_lname}`,
@@ -590,7 +592,7 @@ const AddItem = () => {
     const getAdvisers = async () => {
         const adv = [];
         try {
-            const response = await axios.get('http://localhost:3001/advisers');
+            const response = await axios.get('https://api.tuplrc-cla.com/advisers');
             response.data.forEach(item => {
                 adv.push({
                     value: `${item.adviser_fname} ${item.adviser_lname}`,
@@ -605,7 +607,7 @@ const AddItem = () => {
     // fetch resourceType ( book, journal, newsletter, thesis)
     const getType = async()=>{
         try {
-            const response = await axios.get('http://localhost:3001/type').then(res=>res.data);
+            const response = await axios.get('https://api.tuplrc-cla.com/type').then(res=>res.data);
             //console.log(response)
             setResourceType(response)
         } catch (err) {
@@ -615,7 +617,7 @@ const AddItem = () => {
     // fetch status (available,lost,damaged)
     const getStatus = async()=>{
         try {
-            const response = await axios.get('http://localhost:3001/status').then(res=>res.data);
+            const response = await axios.get('https://api.tuplrc-cla.com/status').then(res=>res.data);
             //console.log(response)
             setResourceStatus(response)
         } catch (err) {

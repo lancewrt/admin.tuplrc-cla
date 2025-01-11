@@ -28,7 +28,7 @@ const CirculationSelectItem = () => {
       actionSelected === 'Check In' ? '/api/books/search/checkin2' : '/api/books/search'; // Determine the API endpoint
 
     try {
-      const response = await axios.get(`http://localhost:3001${endpoint}`, {
+      const response = await axios.get(`https://api.tuplrc-cla.com${endpoint}`, {
         params: {
           query,
           ...(actionSelected === 'Check In' && { patron_id: id }), // Include patronId only for Check In
