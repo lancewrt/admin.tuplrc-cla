@@ -1,0 +1,120 @@
+@font-face {
+    font-family: 'Inter';
+    font-weight: 400;
+    src: url('../../assets/Fonts/Inter_24pt-Regular.ttf') format('ttf');
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter';
+    text-decoration: none;
+}
+
+:root{
+    --black:#000;
+    --tup-color: #94152B;
+    --white: #fff;
+    --button:  #97170E;
+    --button-hover:  #75110a;
+    --shadow: #0000003b;
+    --dark:#444444;
+    --yellow: #EDDF13;
+    --yellow-filter: brightness(0) saturate(10%) invert(90%) sepia(41%) saturate(1000%) hue-rotate(332deg) brightness(103%) contrast(103%);
+}
+
+.top-navbar{
+ 
+    width: 100%;
+    padding: 30px 50px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.top-navbar .info{
+    display: flex;
+    gap: 20px;
+}
+
+.top-navbar-datetime{
+    display: flex;
+    justify-content: end;
+    gap: 15px;
+    color: var(--tup-color);
+    align-items: center;
+}
+
+.top-navbar .indicator{
+    color: var(--dark);
+    border: 1px solid var(--shadow);
+    padding: 2px 5px;
+    border-radius: 5px;
+    
+}
+
+
+.user-box{
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.user-box .dropdown .cat-dropdown{
+    display: flex;
+    align-items: center;
+    color: var(--yellow);
+    gap: 8px;
+    border: none;
+}
+
+.user-box .dropdown .cat-dropdown:hover{
+    background-color: transparent !important;
+    color: var(--yellow) !important;
+}
+
+.user-button{
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+}
+
+
+.user-dropdown-list{
+    height: 0;
+    position: absolute;
+    background-color: var(--white);
+    margin-top: 10px;
+    width: 150px;
+    border-radius: 5px;
+    right: 50px;
+    box-shadow: 0px 0px 3px var(--shadow);
+    overflow: hidden;
+}
+
+.show-user-list{
+    height: auto;
+}
+
+.user-dropdown-list p{
+    padding: 15px;   
+    transition: all 0.1s linear;
+}
+
+.user-dropdown-list p:hover{
+    background-color: var(--tup-color);
+    color: var(--white);
+}
+
+
+
+.user-dropdown-list a:hover{
+    background-color: #EDDF13;
+}
+
+.top-navbar .icon{
+    font-size: 2rem;
+}

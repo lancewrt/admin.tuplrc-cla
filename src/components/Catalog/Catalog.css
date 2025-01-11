@@ -1,0 +1,232 @@
+@font-face {
+    font-family: 'Inter';
+    font-weight: 400;
+    src: url('../../assets/Fonts/Inter_24pt-Regular.ttf') format('ttf');
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter';
+    text-decoration: none;
+}
+
+
+:root{
+    --black:#1F1F1F;
+    --tup-color: #94152b;
+    --white: #fff;
+    --button:  #97170E;
+    --button-hover:  #75110a;
+    --shadow: #0000003b;
+    --yellow: #FFE900;
+    --yellow-hover:#FEDD00;
+    --yellow-filter: brightness(0) saturate(10%) invert(90%) sepia(41%) saturate(1000%) hue-rotate(332deg) brightness(103%) contrast(103%);
+    --white-filter:  brightness(100%) saturate(0) invert(100%) sepia(0) saturate(0) hue-rotate(0) brightness(1000%) contrast(100%);
+    --green: #54CB58;
+    --light-gray: #F7F7F7;
+    --blue: #5499CB;
+    --table-header: #6F6A6A;
+    --disabled: #b9b9b9;
+    --table-border-bottom:#D9D9D9;
+    --light-red: rgba(148, 21, 43, 0.1);
+}
+
+.cat-container{
+    padding: 10px 70px 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-x: hidden;   
+}
+
+
+.cat-container h1{
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--black);
+    margin: 0;
+}
+
+.cat-container .cat-buttons{
+    display: flex;
+    justify-content: space-between;
+}
+
+.cat-container .add-scan-item, .add-author-publisher{
+    display: flex;
+    gap: 10px;
+    
+}
+
+.cat-container .cat-add-item, 
+.cat-container .cat-scan-item,
+.cat-container .cat-add-author,
+.cat-container .cat-add-pub,
+.cat-container .cat-search-button,
+.cat-container .cat-view{
+   color: var(--white);
+   font-size: 1rem;
+    background-color: var(--tup-color);
+    border: var(--button);
+}
+
+
+.cat-container .cat-scan-item{
+    width: 130px !important;
+}
+
+.cat-container .cat-add-item:hover,
+.cat-container .cat-add-item:focus, 
+.cat-container .cat-add-author:hover,
+.cat-container .cat-add-author:focus,
+.cat-container .cat-add-pub:hover, 
+.cat-container .cat-add-pub:focus,
+.cat-container .cat-search-button:hover, 
+.cat-container .cat-search-button:focus,
+.cat-container .cat-view:hover, 
+.cat-container .cat-view:focus{
+    background-color: var(--button-hover) !important;
+    border-color: var(--button-hover) !important;
+    color: var(--white) !important;
+}
+
+.cat-container .cat-search-bar:active,
+.cat-container .cat-search-bar:focus{
+    border: 1px solid var(--tup-color);
+    outline: none;
+    
+}
+
+.cat-container .cat-table{
+    text-align: start;
+    border-radius: 8px;
+    overflow: hidden;
+    border-collapse: collapse;
+    width: 100%;
+    outline: 1px solid var(--tup-color);
+    /* table-layout: fixed; */
+    
+}
+
+.cat-container .cat-table thead tr td{
+    background-color: var(--tup-color) !important;
+    color: var(--white);
+    width: 70px;
+    /* font-size: 1rem !important; */
+    padding: 10px;
+}
+
+.cat-container .cat-table tbody tr td{
+    vertical-align: middle;
+    padding: 10px;
+    /* font-size: 1rem !important; */
+    border-bottom: none;
+}
+
+.cat-container .cat-table tbody tr:nth-child(odd){
+    background-color: var(--white) !important;
+}
+
+.cat-container .cat-table tbody tr:nth-child(even){
+    background-color: var(--light-red) !important;
+}
+
+.cat-container .pagination .btn:disabled{
+    border: none !important;
+    background-color: var(--disabled);
+}
+
+.cat-container .pagination .btn:enabled{
+    background-color: var(--tup-color);
+    color: var(--white);
+}
+
+.cat-container .pagination{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cat-container .pagination .buttons{
+    display: flex;
+    gap: 5px;
+}
+
+.cat-container .pagination button{
+    background-color: transparent !important;
+    color: var(--tup-color) !important;
+}
+
+.cat-container .pagination button:hover,
+.cat-container .pagination button:focus,
+.cat-container .pagination button:active{
+    background-color: var(--tup-color) !important;
+    color: var(--white) !important;
+} 
+.cat-container .sync-2-db, .cat-container .sync-from-db{
+    background-color: var(--tup-color);
+    color: var(--white);
+}
+
+.cat-container .filter-btn{
+    background-color: var(--tup-color);
+    color: var(--white);
+}
+
+.cat-container .filter-btn:hover,
+.cat-container .filter-btn:active,
+.cat-container .filter-btn:focus{
+    background-color: var(--button);
+    color: var(--white);
+}
+
+.cat-container .cat-table th{
+    
+}
+
+.cat-container .cat-table .sort{
+    width: 20px;
+    background-color: transparent;
+    border: none;
+    margin-left: 5px;
+    color: var(--white);
+    cursor: pointer;
+}
+
+.cat-container .cat-table .sort option{
+    color: var(--black);
+}
+
+.cat-container .cat-table .sort-title:hover,
+.cat-container .cat-table .sort-title:active,
+.cat-container .cat-table .sort-title:focus
+{
+    border: none;
+}
+
+.cat-container .search-filter {
+    display: flex;
+    gap: 5px;
+}
+
+.cat-container .search-filter input{
+    width: 400px;
+    padding: 0 10px;
+    border-color: var(--shadow);
+    border-radius: 5px;
+    height: 40px;
+}
+
+.cat-container .search-filter button{
+    background-color: var(--tup-color);
+    color: var(--white);
+}
+
+.cat-container .search-filter button:hover,
+.cat-container .search-filter button:active,
+.cat-container .search-filter button:focus{
+    background-color: var(--button);
+    color: var(--white);
+}

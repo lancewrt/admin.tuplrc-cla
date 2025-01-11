@@ -1,0 +1,181 @@
+@font-face {
+    font-family: 'Inter';
+    font-weight: 400;
+    src: url('../../assets/Fonts/Inter_24pt-Regular.ttf') format('ttf');
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter';
+    text-decoration: none;
+}
+
+
+
+:root{
+    --black:#1F1F1F;
+    --tup-color: #94152B;
+    --white: #fff;
+    --button:  #97170E;
+    --button-hover:  #75110a;
+    --shadow: #0000003b;
+    --yellow: #EDDF13;
+    --yellow-hover: rgb(218, 168, 3);
+    --yellow-filter: brightness(0) saturate(10%) invert(90%) sepia(41%) saturate(1000%) hue-rotate(332deg) brightness(103%) contrast(103%);
+    --white-filter:  brightness(100%) saturate(0) invert(100%) sepia(0) saturate(0) hue-rotate(0) brightness(1000%) contrast(100%);
+    --green: #54CB58;
+    --light-gray: #F7F7F7;
+    --blue: #5499CB;
+    --table-header: #6F6A6A;
+    --table-border-bottom:#D9D9D9;
+    --light-red: rgba(148, 21, 43, 0.1);
+}
+
+.patrons-container{
+    padding: 10px 70px 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    overflow-x: hidden;   
+}
+
+.patrons-container h1{
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--black);
+}
+
+.patrons-container .search-bar-box{
+    display: flex;
+    gap: 15px;
+}
+
+.patrons-container .search-field-category-filter{
+    display: flex;
+    gap: 30px;
+}
+
+.patrons-container .patrons-search-field,.patrons-container .patrons-category{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.patrons-container .patrons-filter{
+    padding: 5px;
+    height: 40px;
+    
+    border-color: var(--tup-color);
+    border-radius: 5px;
+}
+
+.patrons-container .patrons-search-bar{
+    height: 40px;
+    padding: 10px;
+    padding-left: 15px;
+    width: 600px;
+    border-radius: 5px;
+    border-color: var(--shadow);
+    font-size: 1rem;
+}
+
+.patrons-container .patrons-search-bar:active,.patrons-container .patrons-search-bar:focus{
+    border: 3px solid var(--button);
+    outline: none;
+}
+
+.patrons-container .patrons-search-button{
+    height: 40px;
+    border: none;
+    background-color: var(--tup-color);
+    color: var(--white);
+    padding: 8px;
+    width: 110px;
+    font-size: 1rem;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.1s linear;
+}
+
+.patrons-container .patrons-search-button:hover{
+    background-color: var(--button);
+}
+
+
+.patrons-table td {
+    text-align: center;      /* Center horizontally */
+    vertical-align: middle;  /* Center vertically */
+    font-size: 14px; /* Adjust to desired size, 14px is a typical average */
+
+    padding: 8px;    /* Optional: Adjust padding for better spacing */
+}
+
+.patrons-table td.tup-id,
+.patrons-table th.tup-id {
+    width: 150px; /* Adjust this value as needed */
+    max-width: 130px; /* Optional: Set a maximum width */
+    text-align: center; /* Optional: Center-align the text */
+}
+
+.patrons-table td.email,
+.patrons-table th.email,
+.patrons-table td.category,
+.patrons-table th.category {
+    font-size: 12px; 
+    color: #555;     
+}
+
+.patrons-container .patrons-table {
+    table-layout: fixed !important;
+    outline: 1px solid var(--tup-color);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.patrons-container .patrons-table thead{
+    background-color: var(--tup-color);
+    color: var(--white);
+    
+}
+
+.patrons-container .patrons-table tr td{
+    padding: 10px;
+}
+
+.patrons-container .patrons-table thead tr td{
+    padding: 10px;
+}
+.patrons-container .patrons-table tbody tr:nth-child(even){
+    background-color: var(--light-red);
+}
+
+
+.patron-edit-button{
+        display: flex;
+        justify-content: center; /* Center horizontally */
+        align-items: center;    /* Center vertically */
+        height: 100%;           /* Ensure it fills the cell height */
+        gap: 3px;               /* Keep this if needed */
+    
+}
+.patrons-container .patron-edit-button, .patron-checkout-button{
+    border-radius: 5px;
+    padding: 8px 10px;
+    background-color: var(--tup-color);
+    border: none;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.patrons-container .patron-edit-button img, .patrons-container.patron-checkout-button img{
+    width: 20px;
+}

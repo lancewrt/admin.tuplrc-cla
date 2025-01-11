@@ -1,0 +1,137 @@
+@font-face {
+    font-family: 'Inter';
+    font-weight: 400;
+    src: url('../../assets/Fonts/Inter_24pt-Regular.ttf') format('ttf');
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter';
+    text-decoration: none;
+}
+
+:root{
+    --black:#1F1F1F;
+    --tup-color: #94152B;
+    --white: #fff;
+    --button:  #97170E;
+    --button-hover:  #75110a;
+    --shadow: #0000003b;
+    --yellow: #EDDF13;
+    --yellow-hover: rgb(218, 168, 3);
+    --yellow-filter: brightness(0) saturate(10%) invert(90%) sepia(41%) saturate(1000%) hue-rotate(332deg) brightness(103%) contrast(103%);
+    --white-filter:  brightness(100%) saturate(0) invert(100%) sepia(0) saturate(0) hue-rotate(0) brightness(1000%) contrast(100%);
+    --green: #54CB58;
+    --light-gray: #F7F7F7;
+    --blue: #5499CB;
+    --table-header: #6F6A6A;
+    --table-border-bottom:#D9D9D9;
+    --light-red: rgba(148, 21, 43, 0.1);
+}
+
+.logbook-container{
+    padding: 10px 70px 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    overflow-x: hidden;   
+}
+
+.logbook-container h1{
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--black);
+}
+
+.logbook-container .log-search-bar{
+    width: 400px;
+}
+
+.logbook-container .logbook-search{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logbook-container .log-search-button{
+    background-color: var(--tup-color);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.logbook-container .log-search-button:hover,.logbook-container .log-search-button:focus{
+    border-color: var(--button) !important;
+    background-color: var(--button) !important;
+    color: var(--white) !important;
+}
+
+.logbook-container .logbook-filters{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.logbook-container .logbook-filters select{
+    width: 100px;
+}
+
+.logbook-container .logbook-table{
+    table-layout: fixed;
+    overflow: hidden;
+    outline: 1px solid var(--tup-color) !important;
+    width: 100%;
+    border-radius: 10px;
+}
+
+.logbook-container .logbook-table-box thead{
+    position: sticky;
+    top: 0;
+}
+
+.logbook-container .logbook-table thead{
+    background-color: var(--tup-color);
+}
+
+.logbook-container .logbook-table tr td{
+    padding: 13px;
+    text-align: start;
+    /* font-size: 0.9rem; */
+}
+
+.logbook-container .logbook-table thead tr td{
+    color: var(--white);
+}
+
+.logbook-container .logbook-table tbody tr:nth-child(even){
+    background-color: var(--light-red);
+}
+
+
+.logbook-container .logbook-table-pagination{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logbook-container .logbook-table-button-pagination{
+    /* cursor: pointer; */
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+
+.logbook-container .logbook-table-button-pagination button{
+    color: var(--tup-color);
+    background-color: transparent   ;
+}
+
+
+.logbook-container .logbook-table-button-pagination button:hover{
+    color: var(--white);
+    background-color: var(--tup-color)   ;
+}

@@ -1,0 +1,127 @@
+@font-face {
+    font-family: 'Inter';
+    font-weight: 400;
+    src: url('../../assets/Fonts/Inter_24pt-Regular.ttf') format('ttf');
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter';
+    text-decoration: none;
+}
+
+:root{
+    --black:#1F1F1F;
+    --tup-color: #94152B;
+    --white: #fff;
+    --button:  #97170E;
+    --button-hover:  #75110a;
+    --shadow: #0000003b;
+    --yellow: #EDDF13;
+    --yellow-hover: rgb(218, 168, 3);
+    --yellow-filter: brightness(0) saturate(10%) invert(90%) sepia(41%) saturate(1000%) hue-rotate(332deg) brightness(103%) contrast(103%);
+    --white-filter:  brightness(100%) saturate(0) invert(100%) sepia(0) saturate(0) hue-rotate(0) brightness(1000%) contrast(100%);
+    --green: #54CB58;
+    --light-gray: #F7F7F7;
+    --blue: #5499CB;
+    --table-header: #6F6A6A;
+    --table-border-bottom:#D9D9D9;
+    --light-red: rgba(148, 21, 43, 0.1);
+}
+
+.add-item-container{
+    padding: 10px 70px 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-x: hidden;   
+}
+
+.add-item-container h1{
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--black);
+}
+
+.add-item-path-button{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.add-item-path-button p{
+    margin: 0;
+}
+
+.add-item-back-button{
+    border-color: var(--tup-color);
+}
+
+.add-item-back-button:hover{
+    background-color: var(--tup-color);
+    color: var(--white);
+
+}
+
+.add-item-path span{
+    color: var(--tup-color);
+    font-weight: 700;
+}
+
+.cancel-save{
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.cancel-save button{
+    font-size: 1rem;
+    width: 100px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.edit-btn-cont{
+    text-align: center;
+}
+
+.edit-item{
+    background-color: var(--tup-color);
+    color: var(--white);
+}
+
+.edit-item:hover, .edit-item:focus{
+    background-color: var(--button) !important;
+    color: var(--white) !important;
+}
+
+.add-item-cancel{
+    background-color: transparent;
+    border: 1px solid var(--tup-color);
+    transition: all 0.2s linear;
+}
+
+.add-item-cancel:hover{
+    background-color: var(--tup-color);
+    border-color: var(--tup-color);
+    color: var(--white);
+}
+
+.add-item-save{
+    background-color: var(--tup-color);
+    border: 1px solid var(--tup-color);
+    color: var(--white);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.add-item-save:hover{
+    background-color: var(--button-hover);
+    border: var(--button-hover);
+    color: var(--white);
+}
+

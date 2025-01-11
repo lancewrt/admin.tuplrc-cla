@@ -1,0 +1,130 @@
+@font-face {
+    font-family: 'Inter';
+    font-weight: 400;
+    src: url('../../assets/Fonts/Inter_24pt-Regular.ttf') format('ttf');
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter';
+    text-decoration: none;
+}
+
+:root{
+    --black:#1F1F1F;
+    --tup-color: #94152B;
+    --white: #fff;
+    --button:  #97170E;
+    --button-hover:  #75110a;
+    --shadow: #0000003b;
+    --yellow: #EDDF13;
+    --yellow-hover: rgb(218, 168, 3);
+    --yellow-filter: brightness(0) saturate(10%) invert(90%) sepia(41%) saturate(1000%) hue-rotate(332deg) brightness(103%) contrast(103%);
+    --white-filter:  brightness(100%) saturate(0) invert(100%) sepia(0) saturate(0) hue-rotate(0) brightness(1000%) contrast(100%);
+    --green: #54CB58;
+    --light-green: #A2EFA5;
+    --light-gray: #F7F7F7;
+    --blue: #5499CB;
+    --table-header: #6F6A6A;
+    --table-border-bottom:#D9D9D9;
+    --light-red: rgba(148, 21, 43, 0.1);
+    --catalog-info-bg: #EEEEEE;
+}
+
+.cataloging-box{
+    background-color: var(--light-gray);
+    border-radius: 15px;
+    overflow: hidden;
+    height: auto;
+}
+
+.cataloging-info-header{
+    background-color: var(--tup-color);
+    padding: 20px;
+    text-align: center;
+    color: var(--white);
+    font-size: 1.2rem;
+}
+
+.cataloging-inputs{
+    padding: 50px 80px;
+}
+
+.cataloging-inputs .info-input-box{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.cataloging-inputs .info-input-box select{
+    cursor:pointer !important;
+}
+
+.cataloging-inputs .info-input-box .form-select:focus{
+    border: 3px solid var(--black);
+    box-shadow: none;
+    outline: none;
+}
+
+.cataloging-inputs .info-input-box input, .cataloging-inputs .info-input-box select{
+    height: 45px;
+    width: 100%;
+    padding: 0 10px;
+    border-radius: 5px;
+    border-color: var(--tup-color);
+    background-color: var(--white);
+}
+
+.form-switch{
+    margin-top: 50px;
+}
+
+.form-check{
+    margin-left: 0px;
+    display: flex;
+    align-items: start;
+    gap: 20px;
+}
+
+.form-check-label{
+    cursor: pointer;
+}
+
+
+.form-check-input{
+    height: 30px;
+    padding: 0 30px;
+    border: none;
+    cursor: pointer;
+}
+
+.form-check-input:focus{
+    box-shadow: none;
+}
+
+.form-check-input:checked{
+    background-color: var(--tup-color);
+    
+}
+
+.switch-label{
+    display: flex;
+    flex-direction: column;
+}
+
+.switch-label label{
+    font-size: 1.2rem;
+}
+
+.dept_name, .form-select{
+    text-transform: capitalize;
+}
+
+.resource-error{
+    margin: 0;
+    color: var(--tup-color);
+    font-style: italic;
+    font-size: 12px;
+}

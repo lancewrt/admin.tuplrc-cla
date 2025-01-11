@@ -1,0 +1,113 @@
+@font-face {
+    font-family: 'Inter';
+    font-weight: 400;
+    src: url('../../assets/Fonts/Inter_24pt-Regular.ttf') format('ttf');
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter';
+    text-decoration: none;
+}
+
+li{
+    list-style-type: none;
+}
+
+a{
+    text-decoration: none;
+}
+
+ul{
+    margin: 0;
+    padding: 0;
+}
+
+li p{
+    margin: 0;
+}
+
+
+:root{
+    --tup-color: #94152B;
+    --white: #fff;
+    --button:  #97170E;
+    --button-hover:  #75110a;
+    --shadow: #0000003b;
+    --yellow: #EDDF13;
+    --yellow-filter: brightness(0) saturate(10%) invert(90%) sepia(41%) saturate(1000%) hue-rotate(332deg) brightness(103%) contrast(103%);
+}
+
+.admin-navbar-container{
+    background-color: var(--tup-color);
+    width: 260px;
+    min-height: 100vh;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+}
+
+.navbar-logo-heading{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 70px;
+    color: var(--white);
+    gap: 10px;
+}
+
+.navbar-logos{
+    display: flex;
+    gap: 5px;
+}
+
+.navbar-logo-heading img{
+    width: 65px;
+}
+
+.navbar-heading{
+    text-align: center;
+    font-weight: 600;
+}
+
+.navbar-heading-text{
+    margin: 0;
+}
+
+.navbar-heading-lrc{
+    font-style: italic;
+    margin: 0;
+}
+
+.navbar-menu .menu{
+    display: flex;
+    align-items: center;
+    padding: 5px 0 15px 30px;
+    gap: 15px;
+    cursor: pointer;
+    color: var(--white);
+    /* font-weight: 700; */
+    font-size: 1.1rem;
+    transition:all 0.2s linear;
+}
+
+.admin-navbar-container .menu-icon{
+    width: 10%;
+}
+
+
+.navbar-menu .menu:hover{
+    color: var(--yellow);
+}
+
+.menu:hover .menu-icon{
+    filter: var(--yellow-filter);
+}
+
+
+.navbar-menu li img{
+    width: 20px;
+}

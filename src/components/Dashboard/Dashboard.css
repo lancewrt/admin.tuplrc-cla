@@ -1,0 +1,206 @@
+@font-face {
+    font-family: 'Inter';
+    font-weight: 400;
+    src: url('../../assets/Fonts/Inter_24pt-Regular.ttf') format('ttf');
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter';
+    text-decoration: none;
+}
+
+:root{
+    --black:#1F1F1F;
+    --tup-color: #94152B;
+    --white: #fff;
+    --button:  #97170E;
+    --button-hover:  #75110a;
+    --shadow: #0000003b;
+    --yellow: #EDDF13;
+    --yellow-filter: brightness(0) saturate(10%) invert(90%) sepia(41%) saturate(1000%) hue-rotate(332deg) brightness(103%) contrast(103%);
+    --white-filter:  brightness(100%) saturate(0) invert(100%) sepia(0) saturate(0) hue-rotate(0) brightness(1000%) contrast(100%);
+    --green: #54CB58;
+    --light-gray: #F7F7F7;
+    --blue: #5499CB;
+    --table-header: #6F6A6A;
+    --table-border-bottom:#D9D9D9;
+}
+
+.dashboard-container{
+    padding: 10px 70px 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    /* width: 75vw; */
+}
+
+.dashboard-container .dashboard-heading{
+    display: flex;
+    justify-content: space-between;
+}
+
+.dashboard-container .dashboard-heading-text{
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--black);
+}
+
+.dashboard-container .dashboard-overview{
+    display: flex;
+    gap: 20px;
+}
+
+
+.dashboard-container .dash-box{
+    width: 400px;
+    background-color: var(--white);
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0px 3px 5px var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--tup-color);
+    /* height: 120px; */
+}
+
+/* .dashboard-container .dash-box:hover{
+    background-color: var(--tup-color);
+    color: var(--white);
+} */
+
+.dashboard-container .icon{
+    font-size: 3rem;
+}
+
+.dashboard-container .total-box{
+    display: flex;
+    flex-direction: column;
+}
+ .dashboard-container .total-box .total{
+    font-size: 2.5rem;
+    font-weight: bold;
+ }
+
+.dashboard-container  .label{
+    font-size: 1rem;
+}
+
+.dashboard-container .graphs{
+    display: grid;
+    grid-template-columns: auto 50%;
+    column-gap: 20px;
+    
+}
+
+.dashboard-container #chart-container {
+    /* margin-top: px; */
+    height: 350px;  /* Adjust the height based on your requirements */
+    box-shadow: 0px 3px 5px var(--shadow);
+    padding: 50px 30px;
+    border-radius: 10px;
+}
+
+.dashboard-container #chart-container h5, .dashboard-container .popular-choices h5, .dashboard-container .borrowed .heading h5{
+    color: var(--black);
+    font-style: 500;
+    font-size: 1.3rem;
+    margin-bottom: 5px;
+}
+  
+
+.dashboard-container .popular-choices{
+    padding: 50px 30px;
+    margin-top: 20px;
+    width: 100%;
+    background-color: var(--white);
+    border-radius: 10px;
+    box-shadow: 0px 3px 5px var(--shadow);
+}
+
+.dashboard-container .popular-books{
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: 20% 20% 20% 20% 20%;
+    text-align: center;
+}
+
+.dashboard-container .popular-books img{
+    width: 95%;
+    height: 350px;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0px 3px 5px var(--shadow);
+}
+
+.dashboard-container .borrowed{
+    display: grid;
+    grid-template-columns: auto 50%;
+    box-sizing: border-box;
+    column-gap: 20px;
+    row-gap: 20px;
+}
+
+.dashboard-container .borrowers-list{
+    padding: 50px 30px;
+    width: 100%;
+    background-color: var(--white);
+    box-shadow: 0px 3px 5px var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.dashboard-container .borrowers-list .heading{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    /* background-color: #94152B; */
+}
+
+.dashboard-container .borrowers-list .heading .list-add-button{
+    background-color: var(--tup-color);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dashboard-container .borrowed .borrower-table{
+    width: 100%;
+}
+
+.dashboard-container .borrower-table thead{
+    /* background-color: var(--tup-color); */
+    color: var(--black);
+}
+
+.dashboard-container .borrower-table tbody tr td,
+.dashboard-container .borrower-table thead tr td{
+    font-size: 1rem;
+    text-align: start;
+}  
+
+.dashboard-container table, .dashboard-container th, .dashboard-container td{
+    /* border: 1px solid var(--shadow);
+    border-collapse: collapse; */
+    padding: 10px;
+    border-bottom: 1px solid var(--shadow);
+}
+
+.dashboard-container .see-all-box{
+    width: 100%;
+    display: flex;
+    justify-content: end;
+}
+
+.dashboard-container .see-all-button{
+    background-color: transparent;
+    border: none;
+    color: var(--tup-color);
+    font-weight: 500;
+    border-bottom: 1px solid var(--tup-color);
+}
