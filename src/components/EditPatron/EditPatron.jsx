@@ -28,13 +28,33 @@ const EditPatron = () => {
 
     useEffect(()=>{
        if(id>0){
-        setEditMode(true)
-        
+        setEditMode(true);
+        getPatronEdit();
        }
-       
-       getPatronEdit()
+
+       getColleges()
+       getCourses()  
     },[])
 
+    const getColleges = async()=>{
+        const response = await axios.get('https://api.tuplrc-cla.com/colleges')
+            .then(response=>{
+                setColleges(response.data)
+            })
+            .catch(error=>{
+                console.log('Error fetching colleges',error.message)
+            })
+    }
+
+    const getCourses = async()=>{
+        const response = await axios.get('https://api.tuplrc-cla.com/course')
+            .then(response=>{
+                setCourses(response.data)
+            })
+            .catch(error=>{
+                console.log('Error fetching courses',error.message)
+            })
+    }
     const getPatronEdit = async ()=>{
         setIsLoading(true)
         axios.get(`https://api.tuplrc-cla.com/update-patron/${id}`)
@@ -52,9 +72,6 @@ const EditPatron = () => {
                     course_name: res.data.patronData.course_name, // Show name in dropdown
                     tup_id: res.data.patronData.tup_id || ''
                 });
-    
-                setColleges(res.data.colleges);
-                setCourses(res.data.courses);
                 setIsLoading(false);
             })
             .catch(err => console.error(err));
