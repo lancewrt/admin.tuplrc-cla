@@ -16,18 +16,23 @@ const EditPatron = () => {
         tup_id: ''
     });
 
-    const [categories, setCategories] = useState([]); // To store category options
+    // const [categories, setCategories] = useState([]); // To store category options
     const [colleges, setColleges] = useState([]); // To store college options
     const [courses, setCourses] = useState([]); // To store course options
-
     const { id } = useParams(); // ID from the route parameter
     const navigate = useNavigate(); // For programmatic navigation
     const [errors, setErrors] = useState({});
+    const [editMode, setEditMode] = useState(false);
+   
 
+    useEffect(()=>{
+       if(id>0){
+        setEditMode(true)
+        getPatronEdit()
+       }
+    },[])
 
-    const [isLoading, setIsLoading] = useState(true);
-  
-    useEffect(() => {
+    const getPatronEdit = async ()=>{
         axios.get(`https://api.tuplrc-cla.com/update-patron/${id}`)
             .then(res => {
                 setPatronData({
@@ -49,7 +54,7 @@ const EditPatron = () => {
                 setIsLoading(false);
             })
             .catch(err => console.error(err));
-    }, [id]);
+    }
     
 
     const handleChange = async (e) => {
@@ -199,11 +204,40 @@ const EditPatron = () => {
             e.target.setSelectionRange(prefixLength, prefixLength);
         }
     };
-    
 
-    
+    const handleSave = () => {
+        // if formvalidation returns false, dont save data
+        if(!formValidation){
+            return;
+        }else{
+            if(editMode){
+                updatePatron()
+            }else{
+                addPatron()
+            }
+        }
+    };
 
-    const handleSave = async () => {
+    const addPatron = async ()=>{
+        alert('add patron')
+    }
+
+    const updatePatron = async ()=>{
+        try {
+            const updatedData = {
+                ...patronData,
+                category: patronData.category === 'None' ? '' : patronData.category,
+            };
+    
+            await axios.put(`https://api.tuplrc-cla.com/update-patron/${id}`, updatedData);
+            console.log('Patron updated successfully');
+            navigate('/patrons'); // Redirect after saving
+        } catch (error) {
+            console.error('Error saving patron:', error);
+        }
+    }
+
+    const formValidation = async ()=>{
         let errors = {};
     
         // Validate TUP ID and check if it exists
@@ -220,28 +254,14 @@ const EditPatron = () => {
         if (!patronData.patron_lname.trim()) {
             errors.patron_lname = 'Last name is required.';
         }
-    
+
         // If there are errors, block the save operation
         if (Object.keys(errors).length > 0) {
             setErrors(errors);
-            console.error('Validation errors:', errors);
-            return; // Stop the function if validation fails
+            console.error('Validation errors:', errors);  
+            return false
         }
-    
-        // Proceed with saving data if no errors
-        try {
-            const updatedData = {
-                ...patronData,
-                category: patronData.category === 'None' ? '' : patronData.category,
-            };
-    
-            await axios.put(`https://api.tuplrc-cla.com/update-patron/${id}`, updatedData);
-            console.log('Patron updated successfully');
-            navigate('/patrons'); // Redirect after saving
-        } catch (error) {
-            console.error('Error saving patron:', error);
-        }
-    };
+    }
     
     
     
@@ -257,7 +277,9 @@ const EditPatron = () => {
                     </button>
                 </Link>
                 <div className='edit-patron-path'>
-                    <p>Patrons / <span>Edit Patron</span></p>
+                    <p>Patrons / 
+                        {editMode?<span>Edit Patron</span>:<span>Add Patron</span>}
+                    </p>
                 </div>
             </div>
 
@@ -265,7 +287,10 @@ const EditPatron = () => {
                 <div className='row'>
                     {/* header */}
                     <div className='col-12 patron-info-header'>
-                        Edit Patron Information
+                        <p className='m-0'>
+                            {editMode?<span>Edit</span>:<span>Add</span>}
+                            Patron Information
+                        </p>
                     </div>
 
                     <div className='row information-inputs'>
@@ -286,11 +311,6 @@ const EditPatron = () => {
                                     />
                                     <p className='patron-error'>{errors.tup_id}</p>
                                 </div>
-
-
-
-
-
                             </div>
 
                             <div className='row'>
