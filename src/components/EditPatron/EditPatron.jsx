@@ -29,8 +29,10 @@ const EditPatron = () => {
     useEffect(()=>{
        if(id>0){
         setEditMode(true)
-        getPatronEdit()
+        
        }
+       
+       getPatronEdit()
     },[])
 
     const getPatronEdit = async ()=>{
@@ -290,7 +292,7 @@ const EditPatron = () => {
                     {/* header */}
                     <div className='col-12 patron-info-header'>
                         <p className='m-0'>
-                            {editMode?<span>Edit</span>:<span>Add</span>}
+                            {editMode?<span>Edit </span>:<span>Add </span>}
                             Patron Information
                         </p>
                     </div>
