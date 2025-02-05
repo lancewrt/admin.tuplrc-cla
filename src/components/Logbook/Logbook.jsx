@@ -147,6 +147,11 @@ const Logbook = () => {
                         aria-label="Search"
                         value={searchInput}
                         onChange={(e) => setSearchInput(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              getPatron();
+                            }
+                          }}
                     />
                     <button className="btn log-search-button" onClick={getPatron}>
                         <FontAwesomeIcon icon={faSearch} className='icon'/> 
