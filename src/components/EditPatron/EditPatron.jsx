@@ -38,7 +38,7 @@ const EditPatron = () => {
 
     const getColleges = async()=>{
         try {
-            const response = await axios.get('https://api.tuplrc-cla.com/colleges').then(res=>res.data);
+            const response = await axios.get('https://api.tuplrc-cla.com/college').then(res=>res.data);
             console.log(response)
             setColleges(response)
         } catch (err) {
@@ -48,7 +48,7 @@ const EditPatron = () => {
 
     const getCourses = async()=>{
         try {
-            const response = await axios.get('https://api.tuplrc-cla.com/courses').then(res=>res.data);
+            const response = await axios.get('https://api.tuplrc-cla.com/course').then(res=>res.data);
             console.log(response)
             setCourses(response)
         } catch (err) {
