@@ -37,24 +37,26 @@ const EditPatron = () => {
     },[])
 
     const getColleges = async()=>{
-        const response = await axios.get('https://api.tuplrc-cla.com/colleges')
-            .then(response=>{
-                setColleges(response.data)
-            })
-            .catch(error=>{
-                console.log('Error fetching colleges',error.message)
-            })
+        try {
+            const response = await axios.get('https://api.tuplrc-cla.com/colleges').then(res=>res.data);
+            console.log(response)
+            setColleges(response)
+        } catch (err) {
+            console.log('Error fetching colleges ',err.message);
+        }
     }
 
     const getCourses = async()=>{
-        const response = await axios.get('https://api.tuplrc-cla.com/course')
-            .then(response=>{
-                setCourses(response.data)
-            })
-            .catch(error=>{
-                console.log('Error fetching courses',error.message)
-            })
+        try {
+            const response = await axios.get('https://api.tuplrc-cla.com/courses').then(res=>res.data);
+            console.log(response)
+            setCourses(response)
+        } catch (err) {
+            console.log('Error fetching colleges ',err.message);
+        }
     }
+
+     
     const getPatronEdit = async ()=>{
         setIsLoading(true)
         axios.get(`https://api.tuplrc-cla.com/update-patron/${id}`)
