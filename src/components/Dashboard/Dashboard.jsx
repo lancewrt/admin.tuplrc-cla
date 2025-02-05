@@ -2,16 +2,9 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import './Dashboard.css'
 import { Link,  useNavigate  } from 'react-router-dom'
-import dropdown_black from '../../assets/Management System/dashboard/dropdown-black.svg'
-import add from '../../assets/Management System/dashboard/add.svg'
-import more from'../../assets/Management System/dashboard/more.svg'
-import left from'../../assets/Management System/dashboard/arrow-left-black.svg'
-import right from'../../assets/Management System/dashboard/arrow-right-black.svg'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUsers ,faBook, faPlus} from '@fortawesome/free-solid-svg-icons';
-import { faker } from '@faker-js/faker';
 import MultiLineGraph from '../MultiLineGraph'
-import { Doughnut } from 'react-chartjs-2'
 import BarChart from '../BarChart'
 import io from 'socket.io-client';
 

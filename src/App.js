@@ -104,6 +104,12 @@ const App = () => {
             </ProtectedRoute>
           }
           />
+          <Route path='/add-patron' element={
+            <ProtectedRoute allowedRoles={['admin']}>
+              <EditPatronPage/>
+            </ProtectedRoute>
+          }
+          />
 
           <Route path='/audit' element={
             <ProtectedRoute allowedRoles={['admin']}>

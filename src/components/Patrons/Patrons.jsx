@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './Patrons.css';
-import search from '../../assets/Management System/logbook/search.svg';
 import edit from '../../assets/Management System/patrons/edit-patron.svg';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMagnifyingGlass,faPlus} from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 
 
@@ -114,9 +115,15 @@ const Patrons = () => {
                     onChange={handleSearchChange}
                 />
                 <button className="patrons-search-button">
-                    <img src={search} alt="" />
+                    <FontAwesomeIcon icon={faMagnifyingGlass} />
                     Search
                 </button>
+                <Link to="/add-patron">
+                    <button className="patrons-search-button">
+                        <FontAwesomeIcon icon={faPlus} />
+                        Add Patron
+                    </button>
+                </Link>    
             </div>
 
             {/* logbook table */}
