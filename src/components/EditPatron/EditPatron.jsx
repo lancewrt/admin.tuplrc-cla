@@ -23,6 +23,7 @@ const EditPatron = () => {
     const navigate = useNavigate(); // For programmatic navigation
     const [errors, setErrors] = useState({});
     const [editMode, setEditMode] = useState(false);
+    const [isloading,setIsLoading]=useState(false)
    
 
     useEffect(()=>{
@@ -33,6 +34,7 @@ const EditPatron = () => {
     },[])
 
     const getPatronEdit = async ()=>{
+        setIsLoading(true)
         axios.get(`https://api.tuplrc-cla.com/update-patron/${id}`)
             .then(res => {
                 setPatronData({
