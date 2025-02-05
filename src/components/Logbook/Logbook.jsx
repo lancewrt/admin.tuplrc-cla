@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+    import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import './Logbook.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,7 +7,9 @@ import exportIcon from '../../assets/Management System/logbook/export.svg'
 import * as XLSX from 'xlsx'; // Import xlsx for Excel export
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:3001'); // Connect to the Socket.IO server
+const socket = io('https://api.tuplrc-cla.com', {path: '/socket.io',
+                                                 transports: ['websocket'],
+                                                 reconnectionAttempts: 5}); // Connect to the Socket.IO server
 
 const Logbook = () => {
     const [patron, setPatron] = useState([]);
@@ -32,6 +34,27 @@ const Logbook = () => {
         };
     }, [currentPage, entriesPerPage]);
 
+    /* const getPatron = async () => {
+        setLoading(true)
+        try {
+            const params = {
+                search: searchInput,
+                startDate,
+                endDate,
+                limit: entriesPerPage,
+                page: currentPage, // Include current page in the request
+            };
+            const query = new URLSearchParams(params).toString();
+            const response = await axios.get(`https://api.tuplrc-cla.com/patronSort?${query}`);
+            setPatron(response.data.results); // Expect results array in response
+            setTotalEntries(response.data.total); // Set total entries for pagination
+        } catch (err) {
+            console.log(err.message);
+        }finally{
+            setLoading(false)
+        }
+    }; */
+
     const getPatron = async () => {
         setLoading(true)
         try {
@@ -43,7 +66,7 @@ const Logbook = () => {
                 page: currentPage, // Include current page in the request
             };
             const query = new URLSearchParams(params).toString();
-            const response = await axios.get(`http://localhost:3001/patronSort?${query}`);
+            const response = await axios.get(`https://api.tuplrc-cla.com/patronSort?${query}`);
             setPatron(response.data.results); // Expect results array in response
             setTotalEntries(response.data.total); // Set total entries for pagination
         } catch (err) {
@@ -124,18 +147,12 @@ const Logbook = () => {
                         aria-label="Search"
                         value={searchInput}
                         onChange={(e) => setSearchInput(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              getPatron();
-                            }
-                          }}
                     />
                     <button className="btn log-search-button" onClick={getPatron}>
                         <FontAwesomeIcon icon={faSearch} className='icon'/> 
                         Search
                     </button>
                 </div>
-                
             </div>
 
             {/* filters */}

@@ -22,10 +22,10 @@ const Circulation = () => {
     setLoading(true)
     try {
       const response = await axios
-        .get(`http://localhost:3001/getCirculation`)
+        .get(`https://api.tuplrc-cla.com/getCirculation`)
         .then((res) => res.data);
       setBorrowers(response);
-      setFilteredBorrowers(response); 
+      setFilteredBorrowers(response); // Initialize filteredBorrowers with all borrowers
       console.log(response);
     } catch (err) {
       console.log(err.message);
@@ -35,6 +35,7 @@ const Circulation = () => {
   };
 
   const handleActionClick = (action) => {
+    // Store the action in localStorage
     localStorage.setItem('clickedAction', action);
   };
 
@@ -56,9 +57,6 @@ const Circulation = () => {
     });
     setFilteredBorrowers(filtered);
   };
-
-
-  
 
   return (
     <div className="circulation-container">
