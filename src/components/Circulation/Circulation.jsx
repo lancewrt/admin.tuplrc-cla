@@ -10,15 +10,19 @@ const Circulation = () => {
   const [filteredBorrowers, setFilteredBorrowers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false)
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 5;
   
   useEffect(() => {
     getBorrowers();
     localStorage.removeItem('clickedAction');
     localStorage.removeItem('selectedItems');
 
-  }, []);
+  }, [currentPage]);
 
-  const getBorrowers = async () => {
+  /* const getBorrowers = async () => {
     setLoading(true)
     try {
       const response = await axios
@@ -31,6 +35,28 @@ const Circulation = () => {
       console.log(err.message);
     }finally{
       setLoading(false)
+    }
+  }; */
+
+  const getBorrowers = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`https://api.tuplrc-cla.com/getCirculation`, {
+        params: { page: currentPage, limit: itemsPerPage }
+      });
+
+      setBorrowers(response.data.data);
+      setFilteredBorrowers(response.data.data); // You can filter the data here if needed
+
+      // Assuming you get the total number of items, set the totalPages
+      // Update this based on your backend's response (you may need to modify the backend)
+      //setTotalPages(10); // Set this dynamically after modifying backend
+      setTotalPages(Math.ceil(response.data.totalCount / itemsPerPage));
+      console.log(response);
+    } catch (err) {
+      console.log(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,6 +83,12 @@ const Circulation = () => {
     });
     setFilteredBorrowers(filtered);
   };
+
+  const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > totalPages) return; // Prevent going out of bounds
+    setCurrentPage(newPage);
+  };
+  
 
   return (
     <div className="circulation-container">
@@ -112,14 +144,13 @@ const Circulation = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredBorrowers.length > 0 ? (
+          {filteredBorrowers.length > 0 ? (
               filteredBorrowers.map((borrower, index) => (
                 <tr key={index} style={{ borderBottom: '1px solid #ddd' }}>
                   <td style={{ padding: '10px' }}>{borrower.tup_id}</td>
                   <td style={{ padding: '10px' }}>
                     {borrower.patron_fname} {borrower.patron_lname}
                   </td>
-                  {/* <td style={{ padding: '10px' }}>{borrower.total_checkouts}</td> */}
                   <td style={{ padding: '10px' }}>{borrower.borrowed_book}</td>
                   <td style={{ padding: '10px' }}>{borrower.course}</td>
                   <td style={{ padding: '10px' }}>
@@ -151,11 +182,31 @@ const Circulation = () => {
 
 
       {/* Pagination */}
-      <div className="pagination">
+      {/* <div className="pagination">
         <span>Page 1 of 1</span>
         <div className="buttons">
           <button className="btn"><FontAwesomeIcon icon={faArrowLeft} className='icon'/></button>
           <button className="btn"><FontAwesomeIcon icon={faArrowRight} className='icon'/></button>
+        </div>
+      </div> */}
+
+      <div className="pagination">
+        <span>Page {currentPage} of {totalPages}</span>
+        <div className="buttons">
+          <button
+            className="btn"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            <FontAwesomeIcon icon={faArrowLeft} className="icon" />
+          </button>
+          <button
+            className="btn"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            <FontAwesomeIcon icon={faArrowRight} className="icon" />
+          </button>
         </div>
       </div>
     </div>
