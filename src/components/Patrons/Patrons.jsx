@@ -136,7 +136,7 @@ const Patrons = () => {
                             <td>Email</td>
                             <td>Category</td>
                             <td>Checkouts</td>
-                            <td>Fines</td>
+                            {/* <td>Fines</td> */}
                             <td></td>
                         </tr>
                     </thead>
@@ -151,7 +151,7 @@ const Patrons = () => {
                                     <td style={{ padding: '10px' }} className='email'>{patron.patron_email}</td>
                                     <td style={{ padding: '10px' }} className='category'>{patron.category}</td>
                                     <td style={{ padding: '10px' }}>{patron.total_checkouts}</td>
-                                    <td>₱<span>0.00</span></td>
+                                    {/* <td>₱<span>0.00</span></td> */}
                                     {userRole=='admin'?<td className="patron-edit-checkout">
                                         <Link to={`/edit-patron/${patron.patron_id}`}>
                                             <button className="patron-edit-button">
