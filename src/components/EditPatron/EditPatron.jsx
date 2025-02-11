@@ -31,7 +31,6 @@ const EditPatron = () => {
         setEditMode(true);
         getPatronEdit();
        }
-
        getColleges()
        getCourses()  
     },[])
