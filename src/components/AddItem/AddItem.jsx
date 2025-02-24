@@ -188,7 +188,7 @@ const AddItem = () => {
                         quantity:data.resource_quantity.toString(),
                         title:data.resource_title.toString(),
                         status:data.avail_id.toString(),
-                        file:data.jn_cover,
+                        file:data.filepath,
                         publishedDate:data.resource_published_date.toString(),
                         department: data.dept_id.toString(),
                         topic:data.topic_id.toString(),
