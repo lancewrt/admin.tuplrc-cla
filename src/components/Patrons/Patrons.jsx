@@ -19,7 +19,7 @@ const Patrons = () => {
       const fetchUserRole = async () => {
         try {
           // Request server to verify the JWT token
-          const response = await axios.get('http://localhost:3001/api/user/check-session', { withCredentials: true });
+          const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
   
           // If session is valid, set the role
           if (response.data.loggedIn) {
@@ -43,7 +43,7 @@ const Patrons = () => {
     const getPatron = async ()=>{
         // Fetch data from backend API
         setLoading(true)
-        axios.get(`http://localhost:3001/api/patron`) // Replace with your backend endpoint
+        axios.get(`https://api.tuplrc-cla.com/api/patron`) // Replace with your backend endpoint
             .then((response) => {
                 setPatrons(response.data);
                 setFilteredPatrons(response.data); // Initialize filtered patrons

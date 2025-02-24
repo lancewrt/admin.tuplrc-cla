@@ -30,7 +30,7 @@ const Logbook = () => {
                 page: currentPage, // Include current page in the request
             };
             const query = new URLSearchParams(params).toString();
-            const response = await axios.get(`http://localhost:3001/api/patron/sort?${query}`);
+            const response = await axios.get(`https://api.tuplrc-cla.com/api/patron/sort?${query}`);
             setPatron(response.data.results); // Expect results array in response
             setTotalEntries(response.data.total); // Set total entries for pagination
         } catch (err) {

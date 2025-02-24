@@ -45,7 +45,7 @@ const Dashboard = () => {
   const getUsername = async()=>{
     try {
       // Request server to verify the JWT token
-      const response = await axios.get('http://localhost:3001/api/user/check-session', { withCredentials: true });
+      const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
       console.log(response.data)
       // If session is valid, set the role
       if (response.data.loggedIn) {
@@ -62,7 +62,7 @@ const Dashboard = () => {
   //total visitors
   const getTotalVisitors = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/dashboard/total-visitors`);
+      const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/total-visitors`);
       setTotalVisitors(response.data.total_attendance); // Adjust based on your backend response
       console.log(response.data);
     } catch (err) {
@@ -73,7 +73,7 @@ const Dashboard = () => {
   //total borrowed
   const getTotalBorrowed = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/dashboard/total-borrowed`);
+      const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/total-borrowed`);
       setTotalBorrowed(response.data.total_borrowed); // Adjust based on your backend response
       console.log(response.data);
     } catch (err) {
@@ -84,7 +84,7 @@ const Dashboard = () => {
   //total returned
   const getTotalReturned = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/dashboard/total-returned`);
+      const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/total-returned`);
       setTotalReturned(response.data.total_returned); // Adjust based on your backend response
       console.log(response.data);
     } catch (err) {
@@ -95,7 +95,7 @@ const Dashboard = () => {
   //total overdue
   const getTotalOverdue = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/dashboard/total-overdue`);
+      const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/total-overdue`);
       setTotalOverdue(response.data.total_overdue); // Adjust based on your backend response
       console.log(response.data);
     } catch (err) {
@@ -106,7 +106,7 @@ const Dashboard = () => {
   //overdue books
   const getOverdueBooks = async () => {
     try {
-        await axios.get(`http://localhost:3001/api/dashboard/overdue-books`)
+        await axios.get(`https://api.tuplrc-cla.com/api/dashboard/overdue-books`)
         .then(response=>{
           console.log(response.data)
           setOverdueBooks(response.data);
@@ -119,7 +119,7 @@ const Dashboard = () => {
   //get book trends
   const getBookTrends = async()=>{
     try{
-      const response = await axios.get(`http://localhost:3001/api/dashboard/book-statistics`)
+      const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/book-statistics`)
       const books = response.data;
       console.log(books)
       const borrowingTrends = books.map(item=>
@@ -133,7 +133,7 @@ const Dashboard = () => {
 
   const getVisitorStats = async()=>{
     try{
-      const response = await axios.get(`http://localhost:3001/api/dashboard/visitor-statistics`)
+      const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/visitor-statistics`)
       const visitors = response.data;
       console.log(visitors)
 
@@ -150,7 +150,7 @@ const Dashboard = () => {
   //books list
   const getBookList = async()=>{
     try {
-      const response = await axios.get(`http://localhost:3001/api/dashboard/book-list`).then(res=>res.data);
+      const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/book-list`).then(res=>res.data);
       setBookList(response)
       console.log(response)
     } catch (err) {
@@ -161,7 +161,7 @@ const Dashboard = () => {
    //book issued
    const getIssued = async()=>{
     try {
-      const response = await axios.get(`http://localhost:3001/api/dashboard/issued-books`).then(res=>res.data);
+      const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/issued-books`).then(res=>res.data);
       setIssuedBooks(response)
       console.log(response)
     } catch (err) {
@@ -172,7 +172,7 @@ const Dashboard = () => {
   //book issued
   const getPopularChoices = async()=>{
     try {
-      const response = await axios.get(`http://localhost:3001/api/dashboard/popular-choices`).then(res=>res.data);
+      const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/popular-choices`).then(res=>res.data);
       setPopularChoices(response)
       console.log(response)
     } catch (err) {
