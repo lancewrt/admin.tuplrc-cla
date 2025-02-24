@@ -44,7 +44,7 @@ const AddItem = () => {
     const getUsername = async()=>{
         try {
           // Request server to verify the JWT token
-          const response = await axios.get('http://localhost:3001/api/user/check-session', { withCredentials: true });
+          const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
           console.log(response.data)
           // If session is valid, set the role
           if (response.data.loggedIn) {
