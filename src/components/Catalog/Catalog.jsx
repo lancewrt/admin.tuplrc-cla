@@ -1,19 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import './Catalog.css'
-
 import axios from 'axios'
-import io from 'socket.io-client';
-import Loading from '../Loading/Loading'
 import { getAllFromStore, getAllUnsyncedFromStore, getBook, getBookPub, getCatalogDetailsOffline, getPub, getResource, getResourceAdviser, getResourceAuthors } from '../../indexedDb/getDataOffline'
 import { clearObjectStore, deleteResourceFromIndexedDB, markAsSynced } from '../../indexedDb/syncData'
 import ResourceStatusModal from '../ResourceStatusModal/ResourceStatusModal'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
-
-const socket = io('https://api.tuplrc-cla.com', {path: '/socket.io',
-                                                 transports: ['websocket'],
-                                                 reconnectionAttempts: 5}); // Connect to the Socket.IO server
+import { Link, useNavigate } from 'react-router-dom';
 
 const Catalog = () => {
   const [catalog, setCatalog] = useState([])
@@ -34,6 +27,7 @@ const Catalog = () => {
   const [department, setDepartment] = useState([])
   const [topic,setTopic] = useState([])
   const [selectedFilters, setSelectedFilters] = useState({ title:0, author:0, type: 0, department: 0, topic: 0 });
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -93,8 +87,7 @@ const getCatalogOnline = async (resetPage = false) => {
       
       const offset = (currentPage - 1) * pagination;
       console.log(offset);
-
-      const response = await axios.get(`https://api.tuplrc-cla.com/catalogdetails`, {
+      const response = await axios.get(`https://api.tuplrc-cla.com/api/catalog`, {
           params: { 
             limit: pagination, 
             offset, 
@@ -159,7 +152,7 @@ const getCatalogOffline = async (resetPage = false) => {
 // fetch resourceType ( book, journal, newsletter, thesis)
 const getType = async()=>{
   try {
-      const response = await axios.get('https://api.tuplrc-cla.com/type').then(res=>res.data);
+      const response = await axios.get('https://api.tuplrc-cla.com/api/data/type').then(res=>res.data);
       //console.log(response)
       setType(response)
   } catch (err) {
@@ -170,7 +163,7 @@ const getType = async()=>{
 //get existing department online
 const getDept = async()=>{
   try{
-      const response = await axios.get('https://api.tuplrc-cla.com/departments').then(res=>res.data)
+      const response = await axios.get('https://api.tuplrc-cla.com/api/data/departments').then(res=>res.data)
       setDepartment(response)
   }catch(err){
       console.log("Couldn't retrieve department online. An error occurred: ", err.message)
@@ -180,13 +173,12 @@ const getDept = async()=>{
 //get existing topics online
 const getTopics =async ()=>{
   try{
-      const response = await axios.get('https://api.tuplrc-cla.com/topic').then(res=>res.data)
+      const response = await axios.get('https://api.tuplrc-cla.com/api/data/topic').then(res=>res.data)
       setTopic(response)
   }catch(err){
       console.log("Couldn't retrieve topics online. An error occurred: ", err.message)
   }
 }
-
 
 /*------------HANDLE CHANGES------------------------------------*/
   const handleChange = (e)=>{
@@ -237,7 +229,7 @@ const syncResourcesOnline = async () => {
     for (const resource of resources) {
       try {
         // Sync the resource
-        const response = await axios.post('https://api.tuplrc-cla.com/sync/resources', resource);
+        const response = await axios.post('https://api.tuplrc-cla.com/api/sync/resources', resource);
         if (response.data.status === 409) {
           alert(response.data.message);
           continue; // Skip the resource if there's a conflict
@@ -321,7 +313,7 @@ const syncResourcesOnline = async () => {
 const syncAdviserOnline = async(adviser,resourceId)=>{
   try {
     console.log('syncing advisers')
-    const response = await axios.post('https://api.tuplrc-cla.com/sync/adviser', { adviser, resourceId });
+    const response = await axios.post('https://api.tuplrc-cla.com/api/sync/adviser', { adviser, resourceId });
     console.log(`Synced adviser: ${adviser.adviser_id}`, response.data);
    
   } catch (error) {
@@ -334,7 +326,7 @@ const syncAuthorsOnline = async (authors, resourceId) => {
   try {
     for (const author of authors) {
       try {
-        const response = await axios.post('https://api.tuplrc-cla.com/sync/authors', { author, resourceId });
+        const response = await axios.post('https://api.tuplrc-cla.com/api/sync/authors', { author, resourceId });
         console.log(`Synced author: ${author.author_id}`, response.data);
       } catch (error) {
         console.error(`Failed to sync author: ${author.author_id}`, error.message);
@@ -349,7 +341,7 @@ const syncAuthorsOnline = async (authors, resourceId) => {
 // Sync publisher
 const syncPublisherOnline = async (publisher) => {
   try {
-    const response = await axios.post('https://api.tuplrc-cla.com/sync/publisher', publisher);
+    const response = await axios.post('https://api.tuplrc-cla.com/api/sync/publisher', publisher);
     const { pub_id } = response.data;
     console.log('Publisher synced successfully with ID:', pub_id);
     return pub_id
@@ -373,7 +365,7 @@ const syncBookOnline = async (book, resourceId, pubId) => {
     formData.append('pubId', pubId);
 
     // Send the FormData to the backend
-    const response = await axios.post('https://api.tuplrc-cla.com/sync/book', formData, {
+    const response = await axios.post('https://api.tuplrc-cla.com/api/sync/book', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 
@@ -396,7 +388,7 @@ const syncJournalNewsletterOnline = async (jn, resourceId) => {
     formData.append('resourceId', resourceId);
 
     // Send the FormData to the backend
-    const response = await axios.post('https://api.tuplrc-cla.com/sync/journalnewsletter', formData, {
+    const response = await axios.post('https://api.tuplrc-cla.com/api/sync/journalnewsletter', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 
@@ -435,19 +427,7 @@ console.log(selectedFilters)
                 </button>
               </Link>
           </div>
-          {/* sync*/}
-          {isOnline?
-          <div className="add-author-publisher">
-              {/* sync to database */}
-              <button
-              className='btn sync-2-db'
-              onClick={syncData2DB}
-              disabled={!navigator.onLine}
-              title='You need internet connection to sync to database.'
-            >
-              Sync offline data to database
-            </button>
-           </div>:''}
+         
         </div>
         
         {/* search-filter */}
@@ -515,27 +495,18 @@ console.log(selectedFilters)
                     </select>:''}
                   </td>
                   <td >Copies</td>
-                  <td ></td>
                 </tr>
               </thead>
               <tbody>
               {catalog.length > 0 ? (
                   catalog.map((item, key) => (
-                    <tr key={key}>
+                    <tr key={key} onClick={()=>navigate(`/view-item/${item.resource_id}`)}>
                       <td>{item.resource_title}</td>
                       <td>{item.type_name}</td>
                       <td>{item.author_names}</td>
                       <td>{item.dept_name}</td>
                       <td>{item.topic_name}</td>
                       <td>{item.resource_quantity}</td>
-                      <td>
-                        <Link to={`/view-item/${item.resource_id}`}>
-                          <button className="btn cat-view">
-                            <i className="fa-solid fa-bars"></i>
-                            View
-                          </button>
-                        </Link>
-                      </td>
                     </tr>
                   ))
                 ) : !loading && catalog.length === 0 ? (

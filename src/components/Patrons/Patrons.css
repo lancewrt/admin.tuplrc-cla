@@ -13,7 +13,6 @@
 }
 
 
-
 :root{
     --black:#1F1F1F;
     --tup-color: #94152B;
@@ -63,13 +62,6 @@
     gap: 10px;
 }
 
-.patrons-container .patrons-filter{
-    padding: 5px;
-    height: 40px;
-    
-    border-color: var(--tup-color);
-    border-radius: 5px;
-}
 
 .patrons-container .patrons-search-bar{
     height: 40px;
@@ -91,9 +83,9 @@
     border: none;
     background-color: var(--tup-color);
     color: var(--white);
-    padding: 8px;
+    padding: 8px 10px;
     /* width: 110px; */
-    font-size: 1rem;
+    font-size: 1rem !important;
     display: flex;
     gap: 10px;
     align-items: center;
@@ -107,27 +99,15 @@
     background-color: var(--button);
 }
 
-
-.patrons-table td {
-    text-align: center;      /* Center horizontally */
-    vertical-align: middle;  /* Center vertically */
-    font-size: 14px; /* Adjust to desired size, 14px is a typical average */
-
-    padding: 8px;    /* Optional: Adjust padding for better spacing */
+.patrons-container .patrons-table td {
+    text-align: start;      /* Center horizontally */
+    font-size: 0.9rem;
 }
 
-.patrons-table td.tup-id,
-.patrons-table th.tup-id {
-    width: 150px; /* Adjust this value as needed */
-    max-width: 130px; /* Optional: Set a maximum width */
-    text-align: center; /* Optional: Center-align the text */
-}
-
-.patrons-table td.email,
-.patrons-table th.email,
-.patrons-table td.category,
-.patrons-table th.category {
-    font-size: 12px; 
+.patrons-container .patrons-table td.email,
+.patrons-container  .patrons-table th.email,
+.patrons-container  .patrons-table td.category,
+.patrons-container .patrons-table th.category {
     color: #555;     
 }
 
@@ -136,6 +116,7 @@
     outline: 1px solid var(--tup-color);
     border-radius: 10px;
     overflow: hidden;
+    text-align: start;
 }
 
 .patrons-container .patrons-table thead{
@@ -146,6 +127,7 @@
 
 .patrons-container .patrons-table tr td{
     padding: 10px;
+    border-bottom: none !important;
 }
 
 .patrons-container .patrons-table thead tr td{
@@ -156,26 +138,23 @@
 }
 
 
-.patron-edit-button{
+.patrons-container .patron-edit-button,.patrons-container  .patron-view-button{
         display: flex;
         justify-content: center; /* Center horizontally */
         align-items: center;    /* Center vertically */
-        height: 100%;           /* Ensure it fills the cell height */
-        gap: 3px;               /* Keep this if needed */
-    
-}
-.patrons-container .patron-edit-button, .patron-checkout-button{
-    border-radius: 5px;
-    padding: 8px 10px;
-    background-color: var(--tup-color);
-    border: none;
-    color: var(--white);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
+        height: 40px;           /* Ensure it fills the cell height */
+        gap: 5px;               /* Keep this if needed */
+        /* width: 80px; */
+        /* background-color: var(--tup-color); */
+        color: var(--tup-color) !important;
 }
 
-.patrons-container .patron-edit-button img, .patrons-container.patron-checkout-button img{
-    width: 20px;
+.patrons-container .patron-edit-button:hover,
+.patrons-container .patron-edit-button:active,
+.patrons-container .patron-edit-button:focus,
+.patrons-container .patron-view-button:hover,
+.patrons-container .patron-view-button:active,
+.patrons-container .patron-view-button:focus{
+    background-color: var(--tup-color);
+    color: var(--white) !important;
 }

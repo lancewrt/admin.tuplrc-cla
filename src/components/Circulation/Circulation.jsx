@@ -22,26 +22,10 @@ const Circulation = () => {
 
   }, [currentPage]);
 
-  /* const getBorrowers = async () => {
-    setLoading(true)
-    try {
-      const response = await axios
-        .get(`https://api.tuplrc-cla.com/getCirculation`)
-        .then((res) => res.data);
-      setBorrowers(response);
-      setFilteredBorrowers(response); // Initialize filteredBorrowers with all borrowers
-      console.log(response);
-    } catch (err) {
-      console.log(err.message);
-    }finally{
-      setLoading(false)
-    }
-  }; */
-
   const getBorrowers = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`https://api.tuplrc-cla.com/getCirculation`, {
+      const response = await axios.get(`https://api.tuplrc-cla.com/api/patron/borrowers`, {
         params: { page: currentPage, limit: itemsPerPage }
       });
 
@@ -60,8 +44,8 @@ const Circulation = () => {
     }
   };
 
+
   const handleActionClick = (action) => {
-    // Store the action in localStorage
     localStorage.setItem('clickedAction', action);
   };
 

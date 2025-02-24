@@ -124,13 +124,13 @@
 }
 
 .circulation-container .circ-table{
-    text-align: center;
+    text-align: start;
     border-radius: 8px;
     overflow: hidden;
     border-collapse: collapse;
     width: 100%;
     outline: 1px solid var(--tup-color);
-    
+    font-size: 0.8rem !important;
 }
 
 .circulation-container .circ-table thead tr td{
@@ -138,16 +138,16 @@
     color: var(--white);
     width: 70px;
     padding: 10px;
-    font-size: 1rem;
+    font-size: 0.9rem;
     /* font-size: 1rem !important; */
 }
 
 .circulation-container .circ-table tbody tr td{
     vertical-align: middle;
     /* font-size: 1rem !important; */
-    border-bottom: none;
+    border-bottom: none !important;
     padding: 10px;
-    font-size: 1rem;
+    font-size: 0.9rem;
 }
 
 .circulation-container .circ-table tbody tr:nth-child(odd){

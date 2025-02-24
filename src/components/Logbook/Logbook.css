@@ -80,11 +80,12 @@
 }
 
 .logbook-container .logbook-table{
-    table-layout: fixed;
+    /* table-layout: fixed; */
     overflow: hidden;
     outline: 1px solid var(--tup-color) !important;
     width: 100%;
     border-radius: 10px;
+    font-size: 0.8rem;
 }
 
 .logbook-container .logbook-table-box thead{
@@ -99,7 +100,7 @@
 .logbook-container .logbook-table tr td{
     padding: 13px;
     text-align: start;
-    /* font-size: 0.9rem; */
+    font-size: 0.9rem;
 }
 
 .logbook-container .logbook-table thead tr td{

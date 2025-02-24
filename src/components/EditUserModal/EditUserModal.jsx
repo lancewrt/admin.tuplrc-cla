@@ -15,7 +15,7 @@ const EditUserModal = ({open, close, account, handleEditChange,error, editUserAc
 
     const getRole = async()=>{
         try{
-            const response = await axios.get('https://api.tuplrc-cla.com/roles')
+            const response = await axios.get('https://api.tuplrc-cla.com/api/data/roles')
             console.log(response)
             setRoles(response.data)
         }catch(err){

@@ -3,10 +3,8 @@ import axios from 'axios';
 import './Patrons.css';
 import edit from '../../assets/Management System/patrons/edit-patron.svg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass,faPlus} from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlass,faPlus,faPen, faFile} from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
-
-
 
 const Patrons = () => {
     const [patrons, setPatrons] = useState([]);
@@ -21,7 +19,7 @@ const Patrons = () => {
       const fetchUserRole = async () => {
         try {
           // Request server to verify the JWT token
-          const response = await axios.get('https://api.tuplrc-cla.com/check-session', { withCredentials: true });
+          const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
   
           // If session is valid, set the role
           if (response.data.loggedIn) {
@@ -39,10 +37,13 @@ const Patrons = () => {
     }, []);
 
     useEffect(() => {
+        getPatron();
+    }, []);
+
+    const getPatron = async ()=>{
         // Fetch data from backend API
         setLoading(true)
-        axios
-            .get(`https://api.tuplrc-cla.com/patron`) // Replace with your backend endpoint
+        axios.get(`https://api.tuplrc-cla.com/api/patron`) // Replace with your backend endpoint
             .then((response) => {
                 setPatrons(response.data);
                 setFilteredPatrons(response.data); // Initialize filtered patrons
@@ -53,7 +54,7 @@ const Patrons = () => {
             .finally(()=>{
                 setLoading(false)
             });
-    }, []);
+    }
 
     // Handle search input change
     const handleSearchChange = (event) => {
@@ -94,7 +95,7 @@ const Patrons = () => {
                     <select
                         name=""
                         id=""
-                        className="patrons-filter"
+                        className="form-select"
                         value={categoryFilter}
                         onChange={handleCategoryChange}
                     >
@@ -144,19 +145,24 @@ const Patrons = () => {
                         {filteredPatrons.length > 0 ? (
                             filteredPatrons.map((patron, index) => (
                                 <tr key={index} style={{ borderBottom: '1px solid #ddd' }}>
-                                    <td style={{ padding: '10px' }} className='tup-id'>{patron.tup_id}</td>
-                                    <td style={{ padding: '10px' }}>
+                                    <td className='tup-id'>{patron.tup_id}</td>
+                                    <td>
                                         {patron.patron_fname} {patron.patron_lname}
                                     </td>
                                     <td style={{ padding: '10px' }} className='email'>{patron.patron_email}</td>
                                     <td style={{ padding: '10px' }} className='category'>{patron.category}</td>
                                     <td style={{ padding: '10px' }}>{patron.total_checkouts}</td>
                                     {/* <td>₱<span>0.00</span></td> */}
-                                    {userRole=='admin'?<td className="patron-edit-checkout">
+                                    {userRole=='admin'?<td className="patron-edit-checkout d-flex align-items-center gap-1">
                                         <Link to={`/edit-patron/${patron.patron_id}`}>
-                                            <button className="patron-edit-button">
-                                                <img src={edit} alt="" />
-                                                Edit
+                                            <button className="btn
+                                            patron-edit-button">
+                                                <FontAwesomeIcon icon={faPen} />
+                                            </button>
+                                        </Link>
+                                        <Link to={`/view-patron/${patron.patron_id}`}>
+                                            <button className="btn patron-view-button">
+                                                <FontAwesomeIcon icon={faFile} />
                                             </button>
                                         </Link>
                                         
@@ -181,6 +187,8 @@ const Patrons = () => {
                           </tr>)}
                     </tbody>
                 </table>
+
+                
         </div>
     );
 };

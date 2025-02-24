@@ -9,26 +9,24 @@ const CirculationSelectItem = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const patronId = id;
-  
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [selectedItems, setSelectedItems] = useState(JSON.parse(localStorage.getItem('selectedItems')) || []);
-
   const actionSelected = localStorage.getItem('clickedAction') || 'Check Out'; // Default to 'Check Out'
   const actionLabel = actionSelected === 'Check In' ? 'Check In' : 'Check Out'; // Dynamic label based on action
   const isDisabled = selectedItems.length === 0 || selectedItems.length > 1;
+
   // Fetch suggestions from the database
   const fetchSuggestions = async (query) => {
     if (!query) {
       setSuggestions([]); // Clear suggestions if the query is empty
       return;
     }
-
-    const endpoint =
-      actionSelected === 'Check In' ? '/api/books/search/checkin2' : '/api/books/search'; // Determine the API endpoint
+  const endpoint =
+      actionSelected === 'Check In' ? '/checkin/search' : '/checkout/search'; // Determine the API endpoint
 
     try {
-      const response = await axios.get(`https://api.tuplrc-cla.com${endpoint}`, {
+      const response = await axios.get(`https://api.tuplrc-cla.com/api/circulation${endpoint}`, {
         params: {
           query,
           ...(actionSelected === 'Check In' && { patron_id: id }), // Include patronId only for Check In

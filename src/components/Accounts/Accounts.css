@@ -85,13 +85,13 @@
 
 
 .accounts-container table{
-    text-align: center;
+    text-align: start;
     border-radius: 8px;
     overflow: hidden;
     border-collapse: collapse;
     width: 100%;
     outline: 1px solid var(--tup-color);
-    
+    font-size: 0.9rem;
 }
 
 .accounts-container table thead tr td{
@@ -119,9 +119,7 @@
 
 .accounts-container table .action{
     display: flex;
-    position: relative;
-    gap: 20px;
-    left: 100px;
+    gap: 5px;
 }
 
 .accounts-container .action .edit-btn{
