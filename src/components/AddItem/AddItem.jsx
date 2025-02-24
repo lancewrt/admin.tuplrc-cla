@@ -5,24 +5,16 @@ import CatalogInfo from '../CatalogInfo/CatalogInfo';
 import Cataloging from '../Cataloging/Cataloging';
 import axios from 'axios';
 import Loading from '../Loading/Loading';
-import io from 'socket.io-client';
 import { initDB } from '../../indexedDb/initializeIndexedDb';
 import { getAllFromStore } from '../../indexedDb/getDataOffline';
 import { saveResourceOffline } from '../../indexedDb/saveResourcesOffline';
 import { viewResourcesOffline } from '../../indexedDb/viewResourcesOffline';
 import { editResourceOffline } from '../../indexedDb/editResourcesOffline';
-import ResourceStatusModal from '../ResourceStatusModal/ResourceStatusModal';
-
-const socket = io('https://api.tuplrc-cla.com', {path: '/socket.io',
-                                                 transports: ['websocket'],
-                                                 reconnectionAttempts: 5}); // Connect to the Socket.IO server
 
 const AddItem = () => {
     //pag may id, nagiging view ung purpose ng add item component
     const {id} = useParams()
     const [uname, setUname] = useState(null);
-    
-
     const navigate = useNavigate()
     // initialize offline database
     const [disabled,setDisabled] = useState(false)
@@ -48,17 +40,11 @@ const AddItem = () => {
     const [resourceStatus,setResourceStatus] = useState([])
     const [editMode, setEditMode] = useState(false)
     const [isOnline, setIsOnline] = useState(true)
-    const [statusModal, setStatusModal] = useState(false)
-    const [statusModalContent, setStatusModalContent] =useState({
-        status:'',
-        message:''
-    })
-
 
     const getUsername = async()=>{
         try {
           // Request server to verify the JWT token
-          const response = await axios.get('https://api.tuplrc-cla.com/check-session', { withCredentials: true });
+          const response = await axios.get('http://localhost:3001/api/user/check-session', { withCredentials: true });
           console.log(response.data)
           // If session is valid, set the role
           if (response.data.loggedIn) {
@@ -164,7 +150,7 @@ const AddItem = () => {
     const viewResourceOnline = async()=>{
         console.log('view resource')
         try{
-            const response = await axios.get(`https://api.tuplrc-cla.com/view/${id}`);
+            const response = await axios.get(`http://localhost:3001/api/resources/${id}`);
            
             const data = response.data[0]
             const mediaType = data.type_id.toString();
@@ -184,7 +170,7 @@ const AddItem = () => {
                         status:data.avail_id.toString(),
                         publisher_id:data.pub_id,
                         publisher: data.pub_name?data.pub_name.toString():'',
-                        file:data.book_cover,
+                        file:data.filepath,
                         publishedDate:data.resource_published_date.toString(),
                         department: data.dept_id.toString(),
                         topic:data.topic_id.toString(),
@@ -305,16 +291,12 @@ const AddItem = () => {
     // Handle file input
     const handleFileChange = (e) => {
         const file = e.target.files[0];  // Get the first file from the input
-        console.log(file)
-        if (file) {  // Check if a file was selected
-            const blob = new Blob([file], { type: file.type });  // Create a Blob from the file
-
-            setBookData((prevData) => ({
-                ...prevData,
-                file: blob  // Store the Blob in the bookData state
-            }));
-        }
+        setBookData((prevData) => ({
+            ...prevData,
+            file: file  
+        }));
     };
+    
     // Handle toggle buttons
     const handleToggle = (e) => {
         const { name, checked } = e.target;
@@ -414,25 +396,17 @@ const AddItem = () => {
                 }
             );
                 console.log(formData)
-                const response = await axios.post('https://api.tuplrc-cla.com/save', formData);
-               
+                const response = await axios.post('http://localhost:3001/api/resources', formData);
                 console.log(response)
                  // close loading
                  setLoading(false)
 
                  //handle status
                 if(response.data.status==409){
-                    setStatusModal(true)
-                    setStatusModalContent({
-                        status:'duplicated',
-                        message: response.data.message
-                    })
+                    window.toast.fire({icon:"warning", title:"Resource already exist"})
                 }else if(response.data.status==201){
-                    setStatusModal(true)
-                    setStatusModalContent({
-                        status:'success',
-                        message: response.data.message
-                    })
+                    navigate('/catalog')
+                    window.toast.fire({icon:"success", title:"Resource added successfully"})
                 }
                
                  // Reset bookData if saved successfully
@@ -445,22 +419,10 @@ const AddItem = () => {
                 });
 
             }catch(err){
-                setLoading(false)
-                setStatusModal(true)
-                setStatusModalContent({
-                    status:'error',
-                    message: 'Cannot save resource online. Please try again.'
-                })
-                console.log('Cannot save resource online. An error occurred: ',err.message);
+                window.toast.fire({icon:"error", title:"Cannot save resource"})
             }
         } else {
-            setLoading(false)
-            setStatusModal(true)
-            setStatusModalContent({
-                status:'error',
-                message: 'Please enter complete information'
-            })
-            console.log("Please enter complete information.");
+            window.toast.fire({icon:"warning", title:"Please enter complete information"})
         }
     };
 
@@ -470,31 +432,13 @@ const AddItem = () => {
             setLoading(true)
             try{
                 const response = await saveResourceOffline(bookData);
-                console.log(response)
-                // close loading
-                setLoading(false)
-                setStatusModal(true)
-                setStatusModalContent(response)  
-                
-                
+                navigate('/catalog')
+                window.toast.fire({icon:"success", title:"Resource added successfully"})
             }catch(err){
-                setLoading(false)
-                setStatusModal(true)
-                setStatusModalContent({
-                    status:'error',
-                    message: 'Cannot save resource offline. Please try again.'
-                })
-                console.log('Cannot save resource offline. An error occurred: ',err.message);
+                window.toast.fire({icon:"error", title:"Cannot save resource offline"})
             }
         } else {
-            setLoading(false)
-            setStatusModal(true)
-            setStatusModalContent({
-                status:'error',
-                message: 'Please enter complete information'
-            })
-            console.log("Please enter complete information.");
-            console.log("Please enter complete information");
+            window.toast.fire({icon:"warning", title:"Please enter complete information"})
         }
     }
 
@@ -509,24 +453,14 @@ const AddItem = () => {
                 Object.entries(bookData).forEach(([key, value]) => {
                     formData.append(key, value);  
                 });
-                const response = await axios.put(`https://api.tuplrc-cla.com/edit/${id}`, formData);
+                const response = await axios.put(`http://localhost:3001/api/resources/${id}`, formData);
                 setLoading(false)
                 if(response.data.status==201){
-                    //if resource is inserted successfully
-                    setStatusModal(true)
-                    setStatusModalContent({
-                        status:'success',
-                        message: response.data.message
-                    })
+                    navigate('/catalog')
+                    window.toast.fire({icon:"success", title:"Resource edited successfully"})
                 }            
             }catch(err){
-                setLoading(false)
-                setStatusModal(true)
-                setStatusModalContent({
-                    status:'error',
-                    message: 'Cannot save resource online. Please try again.'
-                })
-                console.log('Cannot edit resource online. An error occurred: ',err.message);
+                window.toast.fire({icon:"error", title:"Cannot edit resource"})
             }
     };
 
@@ -536,20 +470,10 @@ const AddItem = () => {
             try{
                 setLoading(true)
                 const response = await editResourceOffline(bookData,parseInt(id))
-                setLoading(false)
-                setStatusModal(true)
-                setStatusModalContent({
-                    status:'success',
-                     message: 'Resource edited offline.'
-                })
+                navigate('/catalog')
+                window.toast.fire({icon:"success", title:"Resource edited successfully"})
             }catch(err){
-                setLoading(false)
-                setStatusModal(true)
-                setStatusModalContent({
-                    status:'error',
-                     message: 'Cannot edit resource online. Please try again.'
-                })
-                console.log('Cannot edit resource online. An error occurred: ',err.message);
+                window.toast.fire({icon:"error", title:"Cannot edit resource offline"})
             }
     };
 
@@ -559,7 +483,7 @@ const AddItem = () => {
         console.log('publishers online')
         const pubs = [];
         try {
-            const response = await axios.get('https://api.tuplrc-cla.com/publishers');
+            const response = await axios.get('http://localhost:3001/api/data/publishers');
             console.log(response.data)
             response.data.forEach(item => {
                 pubs.push({
@@ -576,7 +500,7 @@ const AddItem = () => {
     const getAuthors = async () => {
         const auth = [];
         try {
-            const response = await axios.get('https://api.tuplrc-cla.com/authors');
+            const response = await axios.get('http://localhost:3001/api/data/authors');
             response.data.forEach(item => {
                 auth.push({
                     value: `${item.author_fname} ${item.author_lname}`,
@@ -592,7 +516,7 @@ const AddItem = () => {
     const getAdvisers = async () => {
         const adv = [];
         try {
-            const response = await axios.get('https://api.tuplrc-cla.com/advisers');
+            const response = await axios.get('http://localhost:3001/api/data/advisers');
             response.data.forEach(item => {
                 adv.push({
                     value: `${item.adviser_fname} ${item.adviser_lname}`,
@@ -607,7 +531,7 @@ const AddItem = () => {
     // fetch resourceType ( book, journal, newsletter, thesis)
     const getType = async()=>{
         try {
-            const response = await axios.get('https://api.tuplrc-cla.com/type').then(res=>res.data);
+            const response = await axios.get('http://localhost:3001/api/data/type').then(res=>res.data);
             //console.log(response)
             setResourceType(response)
         } catch (err) {
@@ -617,7 +541,7 @@ const AddItem = () => {
     // fetch status (available,lost,damaged)
     const getStatus = async()=>{
         try {
-            const response = await axios.get('https://api.tuplrc-cla.com/status').then(res=>res.data);
+            const response = await axios.get('http://localhost:3001/api/data/status').then(res=>res.data);
             //console.log(response)
             setResourceStatus(response)
         } catch (err) {
@@ -764,7 +688,6 @@ const AddItem = () => {
             </div>}
             
             <Loading loading={loading}/>
-            <ResourceStatusModal open={statusModal} close={()=>setStatusModal(false)} content={statusModalContent} isOnline={isOnline}/>
         </div>
     );
 };

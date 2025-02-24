@@ -9,12 +9,12 @@ const LoginPage = () => {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-
+    
     // Check if the user is already logged in when the component mounts
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
-                const response = await axios.get('https://api.tuplrc-cla.com/check-session', { withCredentials: true });
+                const response = await axios.get('http://localhost:3001/api/user/check-session', { withCredentials: true });
                 
                 if (response.data.loggedIn) {
                     // If the user is logged in, redirect to the dashboard
@@ -39,7 +39,7 @@ const LoginPage = () => {
             setLoading(true);
 
             const response = await axios.post(
-                'https://api.tuplrc-cla.com/login',
+                'http://localhost:3001/api/user/login',
                 { username, password },
                 { withCredentials: true } // Include credentials for secure cookie handling
             );

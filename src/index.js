@@ -3,15 +3,31 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import Swal from 'sweetalert2';
+import {Provider} from 'react-redux'
+import store from './store/store.js';
+
+// Define global SweetAlert2
+window.Swal = Swal;
+
+// Define global Toast notification
+window.toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true
+});
 
 //import { register } from './serviceWorkerRegistration'; // Import the register function
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // <React.StrictMode>
   //   <App />
   // </React.StrictMode>
-  <App/> //removed strict mode to avoid double mounting
+  <Provider store={store}>
+    <App/> 
+  </Provider>
 );
 
 // If you want to start measuring performance in your app, pass a function

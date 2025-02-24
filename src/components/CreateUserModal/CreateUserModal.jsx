@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faX} from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios'
 
-
 const CreateUserModal = ({open, close,handleChange, createUserAccount, error, formValidation}) => {
     const [roles, setRoles] = useState([])
 
@@ -16,7 +15,7 @@ const CreateUserModal = ({open, close,handleChange, createUserAccount, error, fo
 
     const getRole = async()=>{
         try{
-            const response = await axios.get('https://api.tuplrc-cla.com/roles')
+            const response = await axios.get('http://localhost:3001/api/data/roles')
             console.log(response)
             setRoles(response.data)
         }catch(err){
@@ -29,7 +28,6 @@ const CreateUserModal = ({open, close,handleChange, createUserAccount, error, fo
     if(!open){
         return null
     }
-
 
   return ReactDom.createPortal(
     <div className='create-u-modal-container'>

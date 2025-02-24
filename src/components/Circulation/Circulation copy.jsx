@@ -10,20 +10,23 @@ const Circulation = () => {
   const [filteredBorrowers, setFilteredBorrowers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false)
+
   
   useEffect(() => {
     getBorrowers();
     localStorage.removeItem('clickedAction');
+    localStorage.removeItem('selectedItems');
+
   }, []);
 
   const getBorrowers = async () => {
     setLoading(true)
     try {
       const response = await axios
-        .get(`https://api.tuplrc-cla.com/getCirculation`)
+        .get(`http://localhost:3001/getCirculation`)
         .then((res) => res.data);
       setBorrowers(response);
-      setFilteredBorrowers(response); // Initialize filteredBorrowers with all borrowers
+      setFilteredBorrowers(response); 
       console.log(response);
     } catch (err) {
       console.log(err.message);
@@ -33,23 +36,30 @@ const Circulation = () => {
   };
 
   const handleActionClick = (action) => {
-    // Store the action in localStorage
     localStorage.setItem('clickedAction', action);
   };
 
   const handleSearch = (e) => {
     const value = e.target.value.toLowerCase();
-    setSearchTerm(value);
+    setSearchTerm(value); 
 
-    // Filter borrowers based on the search term
-    const filtered = borrowers.filter((borrower) =>
-      `${borrower.patron_fname} ${borrower.patron_lname}`.toLowerCase().includes(value) ||
-      borrower.tup_id.toLowerCase().includes(value) ||
-      borrower.course.toLowerCase().includes(value) ||
-      borrower.borrowed_books.toLowerCase().includes(value)
-    );
+    if (!borrowers || !Array.isArray(borrowers)) return;
+
+    const filtered = borrowers.filter((borrower) => {
+        const fullName = `${borrower.patron_fname ?? ''} ${borrower.patron_lname ?? ''}`.toLowerCase();
+        
+        return (
+            fullName.includes(value) ||
+            (borrower.tup_id?.toLowerCase() ?? '').includes(value) ||
+            (borrower.course?.toLowerCase() ?? '').includes(value) ||
+            (borrower.borrowed_books?.toLowerCase() ?? '').includes(value)
+        );
+    });
     setFilteredBorrowers(filtered);
   };
+
+
+  
 
   return (
     <div className="circulation-container">
@@ -97,7 +107,7 @@ const Circulation = () => {
             <tr>
               <td>TUP ID</td>
               <td>Name</td>
-              <td>No. of book/s issued</td>
+              {/* <td>No. of book/s issued</td> */}
               <td>Book/s issued</td>
               <td>Course</td>
               <td>Borrow Date</td>
@@ -112,8 +122,8 @@ const Circulation = () => {
                   <td style={{ padding: '10px' }}>
                     {borrower.patron_fname} {borrower.patron_lname}
                   </td>
-                  <td style={{ padding: '10px' }}>{borrower.total_checkouts}</td>
-                  <td style={{ padding: '10px' }}>{borrower.borrowed_books}</td>
+                  {/* <td style={{ padding: '10px' }}>{borrower.total_checkouts}</td> */}
+                  <td style={{ padding: '10px' }}>{borrower.borrowed_book}</td>
                   <td style={{ padding: '10px' }}>{borrower.course}</td>
                   <td style={{ padding: '10px' }}>
                     {new Date(borrower.checkout_date).toLocaleDateString('en-CA')}

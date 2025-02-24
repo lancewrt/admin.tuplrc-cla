@@ -112,7 +112,7 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
-    margin-bottom: 16px;
+    /* margin-bottom: 16px; */
 
 }
 
@@ -148,12 +148,11 @@
     background-color: var(--button); /* Green background */
     color: white; /* White text */
     border: none;
-    padding: 10px 20px;
+    padding: 10px 30px;
     font-size: 16px;
     cursor: pointer;
-    border-radius: 4px; /* Optional rounded corners */
-    width: 20%; /* Set the width of the button */
-    margin-top: 60px; /* Add space above the button */
+    border-radius: 5px; /* Optional rounded corners */
+    margin-top: 30px; /* Add space above the button */
     display: block; /* Make the button a block element */
     margin-left: auto; /* Align to the right */
     margin-right: auto; /* Align to the left */

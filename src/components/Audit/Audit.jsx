@@ -27,7 +27,7 @@ const Audit = () => {
 
       const getAudit = async () => {
         try {
-          const response = await axios.get(`https://api.tuplrc-cla.com/getAudit`);
+          const response = await axios.get(`http://localhost:3001/api/audit`);
           const updatedAudit = response.data.map((item) => ({
             ...item,
             formatted_timestamp: formatTimestamp(item.action_timestamp),
@@ -53,12 +53,8 @@ const Audit = () => {
 
         {/* filter dropdown */}
         <div className="filter-dropdown">
-            {/* filter by user */}
-            {/*  <select name="" id="">
-                <option value="" selected disabled>Filter by user</option>
-            </select> */}
             {/* filter by activity */}
-            <select name="" id="">
+            <select name="" id="" className='form-select'>
                 <option value="" selected disabled>Filter by activity</option>
                 <option value="">Catalog item</option>
                 <option value="">Edit item</option>
@@ -93,30 +89,32 @@ const Audit = () => {
         {/* table */}
 
     
-
+        <div className='t-overflow'>
         <table>
+            
             <thead>
                 <tr>
-                    <td>User</td>
-                    <td>Action</td>
-                    <td>Affected Table</td>
-                    <td>Old Value</td>
-                    <td>New Value</td>
-                    <td>Timestamp</td>
+                    <td class="col-1">User</td>
+                    <td class="col-1">Action</td>
+                    {/* <td class="col-1"> Affected Table</td> */}
+                    {/* <td>Old Value</td> */}
+                    <td class="col-4">New Value</td>
+                    <td class="col-1">Timestamp</td>
 
                     
                 </tr>
             </thead>
+            
             <tbody>
                 {audit.length > 0 ? (
                     audit.map((item, index) => (
                         <tr key={index}>
-                            <td>{item.user_id}</td>
-                            <td>{item.action_type}</td>
-                            <td>{item.table_name}</td>
-                            <td>{item.old_value}</td>
-                            <td>{item.new_value.replace(/[{}"]/g, '').replace(/,/g, '\n')}</td>
-                            <td>{item.formatted_timestamp}</td>
+                            <td class="col-1">{item.user_id}</td>
+                            <td class="col-1">{item.action_type}</td>
+                            {/* <td class="col-1">{item.table_name}</td> */}
+                            {/* <td>{item.old_value}</td> */}
+                            <td class="col-4 text-start">{item.new_value.replace(/[{}"]/g, '').replace(/,/g, '\n')}</td>
+                            <td class="col-1">{item.formatted_timestamp}</td>
                         </tr>
                     ))
                 ) : !loading ? (
@@ -137,6 +135,7 @@ const Audit = () => {
             </tbody>
 
         </table>
+        </div>
     </div>
   )
 }

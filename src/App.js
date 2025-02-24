@@ -26,6 +26,7 @@ import EditPatronPage from './pages/EditPatronPage/EditPatronPage';
 
 import Cookies from 'js-cookie';
 import ProtectedRoute from './components/ProtectedRoute'
+import ViewPatronPage from './pages/ViewPatron/ViewPatronPage';
 const App = () => {
   return (
     <div>
@@ -95,6 +96,13 @@ const App = () => {
               <CirculationCheckoutPage />
               </ProtectedRoute>
           }/>
+
+          <Route path='/view-patron/:id' element={
+            <ProtectedRoute allowedRoles={['staff', 'admin']}>
+              <ViewPatronPage/>
+            </ProtectedRoute>
+          }
+          />
           
           {/* Restricted routes for staff */}
 
@@ -104,6 +112,7 @@ const App = () => {
             </ProtectedRoute>
           }
           />
+
           <Route path='/add-patron' element={
             <ProtectedRoute allowedRoles={['admin']}>
               <EditPatronPage/>

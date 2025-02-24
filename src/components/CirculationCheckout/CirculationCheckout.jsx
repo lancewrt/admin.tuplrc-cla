@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import './CirculationCheckout.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faX, faPen } from '@fortawesome/free-solid-svg-icons';
+import { faPen } from '@fortawesome/free-solid-svg-icons';
 import CirculationSuccessful from '../CirculationSuccessful/CirculationSuccessful';
 import Loading from '../Loading/Loading';
-
+import Swal from 'sweetalert2'
 
 const CirculationCheckout = () => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
   const [selectedItems, setSelectedItems] = useState(JSON.parse(localStorage.getItem('selectedItems')) || []);
   const id = localStorage.getItem('id');
   const clickedAction = localStorage.getItem('clickedAction'); // Get clicked action
@@ -27,7 +26,7 @@ const CirculationCheckout = () => {
 
   const getPatron = async () => {
     try {
-      const response = await axios.get(`https://api.tuplrc-cla.com/checkoutPatron`, {
+      const response = await axios.get(`http://localhost:3001/api/patron/checkout`, {
         params: { id },
       });
       setPatron(response.data); // Update patron state with response data
@@ -41,7 +40,7 @@ const CirculationCheckout = () => {
   const getUsername = async()=>{
     try {
       // Request server to verify the JWT token
-      const response = await axios.get(`https://api.tuplrc-cla.com/check-session`, { withCredentials: true });
+      const response = await axios.get(`http://localhost:3001/api/user/check-session`, { withCredentials: true });
       console.log(response.data)
       // If session is valid, set the role
       if (response.data.loggedIn) {
@@ -55,7 +54,6 @@ const CirculationCheckout = () => {
     }
   }
 
-
   useEffect(() => {
     getPatron();
     getUsername();
@@ -65,27 +63,45 @@ const CirculationCheckout = () => {
   }, []);
 
   const handleCheckin = async () => {
-    setLoading(true)
+    if (selectedItems.length === 0) {
+      window.toast.fire({ icon: "warning", title: "No items selected for check-in" });
+      return;
+    }
+  
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#54CB58",
+      cancelButtonColor: "#94152b",
+      confirmButtonText: "Yes, check in!"
+    });
+  
+    if (!result.isConfirmed) return; // Exit if user cancels
+  
+    setLoading(true);
+  
     try {
       const checkinPromises = selectedItems.map(async (item) => {
         try {
           // Get checkout record
-          const checkoutResponse = await axios.get(`https://api.tuplrc-cla.com/getCheckoutRecord`, {
+          const checkoutResponse = await axios.get(`http://localhost:3001/api/circulation/checkout-record`, {
             params: { resource_id: item.resource_id, patron_id: id },
-          }); 
+          });
+  
           if (!checkoutResponse.data.checkout_id) {
             throw new Error(`No checkout record found for resource_id: ${item.resource_id}`);
           }
   
           const checkoutId = checkoutResponse.data.checkout_id;
-          const resourceid = item.resource_id;
-          console.log(resourceid)
+  
           // Post to checkin endpoint
-          const response = await axios.post(`https://api.tuplrc-cla.com/checkin`, {
+          const response = await axios.post(`http://localhost:3001/api/circulation/checkin`, {
             checkout_id: checkoutId,
             returned_date: date,
             patron_id: id,
-            resource_id: resourceid,
+            resource_id: item.resource_id,
             username: uname,
           });
   
@@ -93,32 +109,67 @@ const CirculationCheckout = () => {
             throw new Error(`Failed to check in item with checkout_id: ${checkoutId}`);
           }
   
-          return response.data;
+          return { success: true, resource_id: item.resource_id };
         } catch (error) {
           console.error(`Error during check-in for item: ${item.resource_id}`, error.message);
-          throw error;
+          return { success: false, resource_id: item.resource_id, error: error.message };
         }
       });
   
-      await Promise.all(checkinPromises);
-      console.log('All items checked in successfully!');
-      setOpen(true);
-      setSelectedItems([]);
+      // Execute all check-in requests safely
+      const results = await Promise.allSettled(checkinPromises);
+  
+      // Separate successes and failures
+      const successfulCheckins = results.filter(r => r.status === "fulfilled" && r.value.success);
+      const failedCheckins = results.filter(r => r.status === "fulfilled" && !r.value.success);
+  
+      setSelectedItems([]); // Clear selection
+  
+      if (successfulCheckins.length > 0) {
+        Swal.fire({
+          title: "Checked in!",
+          text: `Resource checked in successfully.`,
+          icon: "success"
+        });
+        navigate('/circulation')
+      }
+  
+      if (failedCheckins.length > 0) {
+        console.error("Failed check-ins:", failedCheckins);
+        window.toast.fire({ icon: "error", title: `${failedCheckins.length} item(s) failed to check in.` });
+      }
+  
     } catch (error) {
-      console.error('Error during check-in:', error.message);
-      alert('Failed to check in some items. Please try again.');
-    }finally{
-      setLoading(false)
+      console.error("Error during check-in:", error.message);
+      window.toast.fire({ icon: "error", title: "Failed to check in items" });
+    } finally {
+      setLoading(false);
     }
   };
-
-
+  
   const handleCheckout = async () => {
+    if (selectedItems.length === 0) {
+      window.toast.fire({ icon: "warning", title: "No items selected for check-out" });
+      return;
+    }
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#54CB58",
+      cancelButtonColor: "#94152b",
+      confirmButtonText: "Yes, check out!"
+    });
+
+    if (!result.isConfirmed) return; // Exit if user cancels
+    
     setLoading(true)
     try {
       // Create an array of promises to insert all items
       const checkoutPromises = selectedItems.map((item) => {
-        return axios.post(`https://api.tuplrc-cla.com/checkout`, {
+        return axios.post(`http://localhost:3001/api/circulation/checkout`, {
           checkout_date: date,
           checkout_due: dueDate,
           resource_id: item.resource_id,
@@ -128,13 +179,16 @@ const CirculationCheckout = () => {
       });
       // Await all promises to complete
       await Promise.all(checkoutPromises);
-
-      console.log('All items checked out successfully!');
-      setOpen(true); // Open success modal
-      
       setSelectedItems([]); // Update state
+      Swal.fire({
+        title: "Checked out!",
+        text: `Resource checked out successfully.`,
+        icon: "success"
+      });
+      navigate('/circulation')
     } catch (error) {
       console.error('Error during checkout:', error.message);
+      window.toast.fire({icon:"error", title:"Failed to check our items"})
     }finally{
       setLoading(false)
     }

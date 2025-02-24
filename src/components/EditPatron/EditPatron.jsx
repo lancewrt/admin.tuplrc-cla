@@ -7,13 +7,13 @@ const EditPatron = () => {
     const [patronData, setPatronData] = useState({
         patron_fname: '',
         patron_lname: '',
-        patron_sex: '',
+        patron_sex: 'Male',
         patron_mobile: '',
         patron_email: '',
-        category: '',
+        category: 'Student',
         college: '',
         program: '',
-        tup_id: ''
+        tup_id: 'TUPM-'
     });
 
     // const [categories, setCategories] = useState([]); // To store category options
@@ -38,7 +38,7 @@ const EditPatron = () => {
 
     const getColleges = async()=>{
         try {
-            const response = await axios.get('https://api.tuplrc-cla.com/college').then(res=>res.data);
+            const response = await axios.get('http://localhost:3001/api/data/college').then(res=>res.data);
             console.log(response)
             setColleges(response)
         } catch (err) {
@@ -48,7 +48,7 @@ const EditPatron = () => {
 
     const getCourses = async()=>{
         try {
-            const response = await axios.get('https://api.tuplrc-cla.com/course').then(res=>res.data);
+            const response = await axios.get('http://localhost:3001/api/data/course').then(res=>res.data);
             console.log(response)
             setCourses(response)
         } catch (err) {
@@ -56,10 +56,9 @@ const EditPatron = () => {
         }
     }
 
-     
     const getPatronEdit = async ()=>{
         setIsLoading(true)
-        axios.get(`https://api.tuplrc-cla.com/update-patron/${id}`)
+        axios.get(`http://localhost:3001/api/patron/update/${id}`)
             .then(res => {
                 setPatronData({
                     patron_fname: res.data.patronData.patron_fname,
@@ -79,7 +78,6 @@ const EditPatron = () => {
             .catch(err => console.error(err));
     }
     
-
     const handleChange = async (e) => {
         const { name, value } = e.target;
     
@@ -149,7 +147,7 @@ const EditPatron = () => {
                     error = 'TUP ID must follow the format TUPM-**-****.';
                 } else {
                     try {
-                        const response = await axios.post('https://api.tuplrc-cla.com/validate-tup-id', { tup_id: value });
+                        const response = await axios.post('http://localhost:3001/validate-tup-id', { tup_id: value });
                         if (response.data.exists) {
                             error = response.data.message || 'TUP ID already exists.';
                         }
@@ -242,19 +240,34 @@ const EditPatron = () => {
     };
 
     const addPatron = async ()=>{
-        alert('add patron')
+        if(!formValidation){
+            return
+        }
+        
+        try {
+            await axios.post(`http://localhost:3001/api/patron`, patronData);
+            navigate('/patrons'); // Redirect after saving
+            window.toast.fire({icon:"success", title:"Patron Added"})
+        } catch (error) {
+            console.error('Error saving patron:', error);
+        }
     }
 
     const updatePatron = async ()=>{
+        if(!formValidation){
+            return
+        }
+
         try {
             const updatedData = {
                 ...patronData,
                 category: patronData.category === 'None' ? '' : patronData.category,
             };
     
-            await axios.put(`https://api.tuplrc-cla.com/update-patron/${id}`, updatedData);
+            await axios.put(`http://localhost:3001/api/patron/update/${id}`, updatedData);
             console.log('Patron updated successfully');
             navigate('/patrons'); // Redirect after saving
+            window.toast.fire({icon:"success", title:"Patron Updated"})
         } catch (error) {
             console.error('Error saving patron:', error);
         }
@@ -285,13 +298,12 @@ const EditPatron = () => {
             return false
         }
     }
-    
-    
+
+    console.log(patronData)
     
     return (
         <div className='edit-patron-container'>
             <h1 className='m-0'>Patrons</h1>
-
             <div className='edit-patron-path-button'>
                 <Link to={'/patrons'}>
                     <button className='edit-patron-back-button'>

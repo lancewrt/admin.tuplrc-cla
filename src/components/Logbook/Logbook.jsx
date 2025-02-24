@@ -1,15 +1,9 @@
-    import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import './Logbook.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faArrowLeft, faArrowRight} from '@fortawesome/free-solid-svg-icons';
-import exportIcon from '../../assets/Management System/logbook/export.svg'
 import * as XLSX from 'xlsx'; // Import xlsx for Excel export
-import io from 'socket.io-client';
-
-const socket = io('https://api.tuplrc-cla.com', {path: '/socket.io',
-                                                 transports: ['websocket'],
-                                                 reconnectionAttempts: 5}); // Connect to the Socket.IO server
 
 const Logbook = () => {
     const [patron, setPatron] = useState([]);
@@ -23,15 +17,6 @@ const Logbook = () => {
 
     useEffect(() => {
         getPatron();
-        // Listen for updates from the server (via socket)
-        socket.on('attendanceUpdated', () => {
-            console.log('attendance updated, refreshing attendance...');
-            getPatron();
-        });
-  
-        return () => {
-            socket.off('attendanceUpdated'); // Cleanup on component unmount
-        };
     }, [currentPage, entriesPerPage]);
 
     const getPatron = async () => {
@@ -45,7 +30,7 @@ const Logbook = () => {
                 page: currentPage, // Include current page in the request
             };
             const query = new URLSearchParams(params).toString();
-            const response = await axios.get(`https://api.tuplrc-cla.com/patronSort?${query}`);
+            const response = await axios.get(`http://localhost:3001/api/patron/sort?${query}`);
             setPatron(response.data.results); // Expect results array in response
             setTotalEntries(response.data.total); // Set total entries for pagination
         } catch (err) {
@@ -111,7 +96,7 @@ const Logbook = () => {
         }
     };
 
-
+    console.log(patron)
     return (
         <div className='logbook-container'>
             <h1>Logbook</h1>
@@ -126,12 +111,18 @@ const Logbook = () => {
                         aria-label="Search"
                         value={searchInput}
                         onChange={(e) => setSearchInput(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              getPatron();
+                            }
+                          }}
                     />
                     <button className="btn log-search-button" onClick={getPatron}>
                         <FontAwesomeIcon icon={faSearch} className='icon'/> 
                         Search
                     </button>
                 </div>
+                
             </div>
 
             {/* filters */}
@@ -168,7 +159,7 @@ const Logbook = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {patron.length > 0 ? (
+                        {Array.isArray(patron)?patron.length > 0 ? (
                             patron.map((item, index) => (
                                 <tr key={index}>
                                     <td>{entriesPerPage === "All"
@@ -199,7 +190,7 @@ const Logbook = () => {
                               </div>
                             </td>
                           </tr>
-                        )}
+                        ):''}
                     </tbody>
                     
                 </table>
@@ -208,7 +199,7 @@ const Logbook = () => {
             {/* pagination */}
             <div className="logbook-table-pagination">
                 <p className="logbook-table-entries m-0">
-                    Showing {patron.length} of {totalEntries}   Entries
+                    Showing {patron?patron.length:0} of {totalEntries}   Entries
                 </p>
                 {entriesPerPage !== "All" && (
                     <div className="logbook-table-button-pagination">

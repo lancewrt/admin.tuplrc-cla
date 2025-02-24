@@ -10,48 +10,69 @@ const Circulation = () => {
   const [filteredBorrowers, setFilteredBorrowers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false)
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const itemsPerPage = 5;
   
   useEffect(() => {
     getBorrowers();
     localStorage.removeItem('clickedAction');
     localStorage.removeItem('selectedItems');
 
-  }, []);
+  }, [currentPage]);
 
   const getBorrowers = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await axios
-        .get(`https://api.tuplrc-cla.com/getCirculation`)
-        .then((res) => res.data);
-      setBorrowers(response);
-      setFilteredBorrowers(response); // Initialize filteredBorrowers with all borrowers
+      const response = await axios.get(`http://localhost:3001/api/patron/borrowers`, {
+        params: { page: currentPage, limit: itemsPerPage }
+      });
+
+      setBorrowers(response.data.data);
+      setFilteredBorrowers(response.data.data); // You can filter the data here if needed
+
+      // Assuming you get the total number of items, set the totalPages
+      // Update this based on your backend's response (you may need to modify the backend)
+      //setTotalPages(10); // Set this dynamically after modifying backend
+      setTotalPages(Math.ceil(response.data.totalCount / itemsPerPage));
       console.log(response);
     } catch (err) {
       console.log(err.message);
-    }finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
+
   const handleActionClick = (action) => {
-    // Store the action in localStorage
     localStorage.setItem('clickedAction', action);
   };
 
   const handleSearch = (e) => {
     const value = e.target.value.toLowerCase();
-    setSearchTerm(value);
+    setSearchTerm(value); 
 
-    // Filter borrowers based on the search term
-    const filtered = borrowers.filter((borrower) =>
-      `${borrower.patron_fname} ${borrower.patron_lname}`.toLowerCase().includes(value) ||
-      borrower.tup_id.toLowerCase().includes(value) ||
-      borrower.course.toLowerCase().includes(value) ||
-      borrower.borrowed_books.toLowerCase().includes(value)
-    );
+    if (!borrowers || !Array.isArray(borrowers)) return;
+
+    const filtered = borrowers.filter((borrower) => {
+        const fullName = `${borrower.patron_fname ?? ''} ${borrower.patron_lname ?? ''}`.toLowerCase();
+        
+        return (
+            fullName.includes(value) ||
+            (borrower.tup_id?.toLowerCase() ?? '').includes(value) ||
+            (borrower.course?.toLowerCase() ?? '').includes(value) ||
+            (borrower.borrowed_books?.toLowerCase() ?? '').includes(value)
+        );
+    });
     setFilteredBorrowers(filtered);
   };
+
+  const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > totalPages) return; // Prevent going out of bounds
+    setCurrentPage(newPage);
+  };
+  
 
   return (
     <div className="circulation-container">
@@ -107,14 +128,13 @@ const Circulation = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredBorrowers.length > 0 ? (
+          {filteredBorrowers.length > 0 ? (
               filteredBorrowers.map((borrower, index) => (
                 <tr key={index} style={{ borderBottom: '1px solid #ddd' }}>
                   <td style={{ padding: '10px' }}>{borrower.tup_id}</td>
                   <td style={{ padding: '10px' }}>
                     {borrower.patron_fname} {borrower.patron_lname}
                   </td>
-                  {/* <td style={{ padding: '10px' }}>{borrower.total_checkouts}</td> */}
                   <td style={{ padding: '10px' }}>{borrower.borrowed_book}</td>
                   <td style={{ padding: '10px' }}>{borrower.course}</td>
                   <td style={{ padding: '10px' }}>
@@ -146,11 +166,31 @@ const Circulation = () => {
 
 
       {/* Pagination */}
-      <div className="pagination">
+      {/* <div className="pagination">
         <span>Page 1 of 1</span>
         <div className="buttons">
           <button className="btn"><FontAwesomeIcon icon={faArrowLeft} className='icon'/></button>
           <button className="btn"><FontAwesomeIcon icon={faArrowRight} className='icon'/></button>
+        </div>
+      </div> */}
+
+      <div className="pagination">
+        <span>Page {currentPage} of {totalPages}</span>
+        <div className="buttons">
+          <button
+            className="btn"
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            <FontAwesomeIcon icon={faArrowLeft} className="icon" />
+          </button>
+          <button
+            className="btn"
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            <FontAwesomeIcon icon={faArrowRight} className="icon" />
+          </button>
         </div>
       </div>
     </div>

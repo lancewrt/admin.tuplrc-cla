@@ -106,7 +106,8 @@
     border-collapse: collapse;
     width: 100%;
     outline: 1px solid var(--tup-color);
-    /* table-layout: fixed; */
+    font-size: 0.8rem;
+    text-transform: capitalize;
     
 }
 
@@ -125,12 +126,17 @@
     border-bottom: none;
 }
 
+.cat-container .cat-table tbody tr:hover{
+    cursor: pointer;
+    background-color: var(--table-border-bottom) !important;
+}
+
 .cat-container .cat-table tbody tr:nth-child(odd){
-    background-color: var(--white) !important;
+    background-color: var(--white);
 }
 
 .cat-container .cat-table tbody tr:nth-child(even){
-    background-color: var(--light-red) !important;
+    background-color: var(--light-red);
 }
 
 .cat-container .pagination .btn:disabled{
@@ -162,8 +168,7 @@
 .cat-container .pagination button:hover,
 .cat-container .pagination button:focus,
 .cat-container .pagination button:active{
-    background-color: var(--tup-color) !important;
-    color: var(--white) !important;
+    border: none;
 } 
 .cat-container .sync-2-db, .cat-container .sync-from-db{
     background-color: var(--tup-color);

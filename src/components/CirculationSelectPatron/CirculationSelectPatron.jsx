@@ -18,8 +18,8 @@ const CirculationSelectPatron = () => {
       // Determine the URL based on clickedAction
       const url =
         localStorage.getItem('clickedAction') === 'Check Out'
-          ? `https://api.tuplrc-cla.com/patron`
-          : `https://api.tuplrc-cla.com/patronCheckin`;
+          ? `http://localhost:3001/api/patron`
+          : `http://localhost:3001/api/patron/checkin`;
 
       const response = await axios.get(url);
       const sortedPatrons = response.data.sort(
@@ -107,26 +107,6 @@ const CirculationSelectPatron = () => {
           <div className="col-2">Checkouts</div>
         </div>
 
-        {/* If no patrons found */}
-        {/* {filteredPatrons.length === 0 ? (
-          <div className="no-patrons">No patrons found</div>
-        ) : (
-          // patron items
-          currentItems.map((patron, index) => (
-            <Link to={`/circulation/patron/item/${patron.patron_id}`} key={index}>
-              <div className="row patron">
-                <div className="col"><input type="radio" /> {patron.tup_id}</div>
-                <div className="col-3 text-start d-flex align-items-center">
-                  {patron.patron_fname} {patron.patron_lname}
-                </div>
-                <div className="col d-flex align-items-center justify-content-center">{patron.category}</div>
-                <div className="col-3 d-flex align-items-center">{patron.course_name}</div>
-                <div className="col-2 d-flex align-items-center justify-content-center">{patron.total_checkouts}</div>
-              </div>
-            </Link>
-          ))
-        )} */}
-
 
         {filteredPatrons.length === 0 ? (
           <div className="no-patrons">No patrons found</div>
@@ -164,7 +144,7 @@ const CirculationSelectPatron = () => {
           <div className="pagination">
             <div className="buttons">
               <button className="btn" onClick={goToPreviousPage} disabled={currentPage === 1}><FontAwesomeIcon icon={faArrowLeft} className='icon'/></button>
-              <span>Page {currentPage} of {totalPages}</span>
+              <span>Page {currentPage} of {totalPages}</span>   
               <button className="btn" onClick={goToNextPage} disabled={currentPage === totalPages}><FontAwesomeIcon icon={faArrowRight} className='icon'/></button>
             </div>
           </div>
