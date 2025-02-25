@@ -19,7 +19,6 @@ const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,setType,addGenre,
         } catch (error) {
             setPreview(bookData.file);
         }
-        
       },[bookData.file])
 
       useEffect(()=>{
@@ -32,6 +31,7 @@ const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,setType,addGenre,
           };
       },[bookData.url])
 
+      console.log(preview)
    
   return (
     <div className='cat-info'>
