@@ -19,6 +19,8 @@ const DashboardTopChoices = ({data, number}) => {
     const handleClick = ()=>{
         navigate(`/view-item/${data.resource_id}`)
     }
+
+    console.log(preview)
         
   return (
     <div className='top-choices-container d-flex align-items-center gap-3' onClick={handleClick}>
