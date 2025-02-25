@@ -13,9 +13,7 @@ const BookInput = ({disabled,handleChange,bookData,addAuthor,setBookData,formVal
     
     useEffect(()=>{
         if(bookData.isbn&&!disabled){
-            
                getBookData(); 
-            
         }
         
     },[bookData.isbn])
