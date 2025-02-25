@@ -14,11 +14,13 @@ const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,setType,addGenre,
     //for displaying preview photo
     useEffect(()=>{
         if(!bookData.file) return;
-        try {
-            setPreview(`https://api.tuplrc-cla.com/${bookData.file}`);
-        } catch (error) {
+
+        if(bookData.file.includes('http://books.google.com')){
             setPreview(bookData.file);
         }
+        else {
+            setPreview(`https://api.tuplrc-cla.com/${bookData.file}`);
+        } 
       },[bookData.file])
 
       useEffect(()=>{
