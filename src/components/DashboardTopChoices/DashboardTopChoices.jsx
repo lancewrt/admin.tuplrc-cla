@@ -10,9 +10,9 @@ const DashboardTopChoices = ({data, number}) => {
         if(!data.filepath) return;
   
         try {
-            setPreview(URL.createObjectURL(bookData.file))
+            setPreview(URL.createObjectURL(data.filepath))
         } catch (error) {
-            setPreview(`https://api.tuplrc-cla.com/${bookData.filepath}`);
+            setPreview(`https://api.tuplrc-cla.com/${data.filepath}`);
         }
   },[data.filepath])
 
