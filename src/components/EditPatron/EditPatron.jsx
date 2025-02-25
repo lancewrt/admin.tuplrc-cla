@@ -147,7 +147,7 @@ const EditPatron = () => {
                     error = 'TUP ID must follow the format TUPM-**-****.';
                 } else {
                     try {
-                        const response = await axios.post('https://api.tuplrc-cla.com/validate-tup-id', { tup_id: value });
+                        const response = await axios.post('http://localhost:3001/validate-tup-id', { tup_id: value });
                         if (response.data.exists) {
                             error = response.data.message || 'TUP ID already exists.';
                         }

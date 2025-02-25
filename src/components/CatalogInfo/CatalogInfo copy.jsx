@@ -14,12 +14,30 @@ const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,setType,addGenre,
     //for displaying preview photo
     useEffect(()=>{
         if(!bookData.file) return;
-        try {
-            setPreview(URL.createObjectURL(bookData.file))
-        } catch (error) {
-            setPreview(`https://api.tuplrc-cla.com/${bookData.file}`);
+
+        let objectUrl;
+        try{
+            objectUrl = URL.createObjectURL(bookData.file);
+            setPreview(objectUrl);
+        }catch{
+            const blob = new Blob([new Uint8Array(bookData.file.data)], { type: 'image/jpeg' });
+            objectUrl = URL.createObjectURL(blob);
+            setPreview(objectUrl)
         }
-        
+            
+        //reset URl
+        //pag may naupload na file, wala dapat url
+        setBookData((prevdata)=>({
+            ...prevdata,
+            url:''
+        }))
+
+         // Cleanup function to revoke the Object URL
+         return () => {
+            if (objectUrl) {
+                URL.revokeObjectURL(objectUrl);
+            }
+          };
       },[bookData.file])
 
       useEffect(()=>{

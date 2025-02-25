@@ -3,6 +3,7 @@ import './ViewPatron.css'
 import { Link, useParams } from 'react-router-dom'
 import ViewPatronTable from '../ViewPatronTable/ViewPatronTable';
 import axios from 'axios'
+import * as XLSX from 'xlsx'; // Import xlsx for Excel export
 
 const ViewPatron = () => {
   const logHistoryHeader = ['Date', 'Time in'];
@@ -49,6 +50,60 @@ const ViewPatron = () => {
       })
   }
 
+  const exportLogHistory = () => {
+    if (logHistory.length === 0) {
+      console.error('No data to export');
+      return;
+    }
+  
+    const data = logHistory.map((item) => ({
+      'Attendance Date': item.att_date,
+      'Attendance Time': item.att_log_in_time
+    }));
+  
+    // Create worksheet with correctly formatted data
+    const worksheet = XLSX.utils.json_to_sheet(data);
+  
+    // Create a workbook and append the worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Log History');
+  
+    // Generate filename based on patron's last name
+    const fileName = `${patron?.patron_lname || 'Unknown'}-log_history.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+  };
+
+  const exportCirculationHistory = () => {
+    if (circulationHistory.length === 0) {
+      console.error('No data to export');
+      return;
+    }
+  
+    const data = circulationHistory.map((item) => ({
+      'Book/s Issued': item.resource_title,
+      'Borrowed Date': new Date(item.checkout_date).toLocaleDateString('en-CA'),
+      'Due Date': new Date(item.checkout_due).toLocaleDateString('en-CA'),
+      'Return Date': item.checkin_date==null
+      ?'Not returned yet'
+      :new Date(item.checkin_date).toLocaleDateString('en-CA'),
+      'Overdue Days': item.overdue_days
+    }));
+  
+    // Create worksheet with correctly formatted data
+    const worksheet = XLSX.utils.json_to_sheet(data);
+  
+    // Create a workbook and append the worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Circulation History');
+  
+    // Generate filename based on patron's last name
+    const fileName = `${patron?.patron_lname || 'Unknown'}-circulation_history.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+  };
+  
+
+    console.log(logHistory)
+
   return (
     <div className='viewpatron-container'>
       <div className=''>
@@ -89,12 +144,12 @@ const ViewPatron = () => {
       <hr />
 
       {/* log history */}
-      <ViewPatronTable header={logHistoryHeader} title={'Log History'} data={logHistory}></ViewPatronTable>
+      <ViewPatronTable header={logHistoryHeader} title={'Log History'} data={logHistory} exportXLSX={exportLogHistory}/>
 
       <hr />
 
       {/* Circulation history */}
-      <ViewPatronTable header={circulationHistoryHeader} title={'Circulation History'} data={circulationHistory}></ViewPatronTable>
+      <ViewPatronTable header={circulationHistoryHeader} title={'Circulation History'} data={circulationHistory} exportXLSX={exportCirculationHistory}/>
     </div>
   )
 }

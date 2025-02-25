@@ -11,12 +11,13 @@ const Reports = () => {
   const reportType = ['Attendance Report', 'Circulation Report', 'Inventory Report'];
   const subOptions = {
     'Attendance Report': ['Daily Report', 'Monthly Report', 'Custom Date'],
-    'Circulation Report': ['Daily Report', 'Monthly Report', 'Custom Date', 'Borrowed Resources'],
+    'Circulation Report': ['Daily Report', 'Monthly Report', 'Custom Date'],
     'Inventory Report': ['All Resources', 'Book', 'Journals', 'Thesis & Dissertations', 'Newsletters', 'Available Resources', 'Lost Resources', 'Damaged Resources'],
   };
 
   const [selectedType, setSelectedType] = useState({ type: '', kind: '' });
   const [customDate, setCustomDate] = useState({ startDate: '', endDate: '' });
+  const [isNoData, setIsNoData] = useState(false)
   const [generatedReport, setGeneratedReport] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -53,7 +54,14 @@ const Reports = () => {
         ...(selectedType.kind === 'Custom Date' && { startDate: customDate.startDate, endDate: customDate.endDate }),
       };
       const response = await axios.get('https://api.tuplrc-cla.com/api/reports', { params });
-      setGeneratedReport(response.data);
+      if(response.data.length!=0){
+        setIsNoData(false)
+        setGeneratedReport(response.data);
+      }else{
+        setIsNoData(true);
+        setGeneratedReport([])
+      }
+      
     } catch (error) {
       console.error('Error generating report:', error);
     } finally {
@@ -136,7 +144,7 @@ const Reports = () => {
         
         {generatedReport.length > 0 && <input type="text" placeholder="Search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className='search mt-4'/>}
 
-        {generatedReport.length > 0 && (
+        {generatedReport.length > 0 ? (
           <div >
             <table className="report">
               <thead>
@@ -167,7 +175,7 @@ const Reports = () => {
               </div>
             </div>
           </div>
-        )}
+        ):isNoData?"No data available":''}
 
         {generatedReport.length > 0 && <button className='btn export-report' onClick={exportToExcel}>Export</button>}
       </div>

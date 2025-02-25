@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import ViewPatronFilter from '../ViewPatronFilter/ViewPatronFilter';
 
-const ViewPatronTable = ({header, title, data}) => {
+const ViewPatronTable = ({header, title, data, exportXLSX}) => {
   const [filteredData, setFilteredData] = useState([])
   const [totalPages, setTotalPages] = useState(0);
   const [paginatedData, setPaginatedData] = useState([])
@@ -152,7 +152,7 @@ const ViewPatronTable = ({header, title, data}) => {
             <button className='btn search' onClick={search}>Search</button> */}
             <button className='btn search' onClick={reset}>Reset filter </button>
           </div>
-          <button className="btn export">Export</button>
+          <button className="btn export" onClick={exportXLSX}>Export</button>
         </div>
         {/* table */}
         <table>

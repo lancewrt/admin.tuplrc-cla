@@ -23,7 +23,7 @@ const Circulation = () => {
     setLoading(true)
     try {
       const response = await axios
-        .get(`https://api.tuplrc-cla.com/getCirculation`)
+        .get(`http://localhost:3001/getCirculation`)
         .then((res) => res.data);
       setBorrowers(response);
       setFilteredBorrowers(response); 
