@@ -15,9 +15,9 @@ const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,setType,addGenre,
     useEffect(()=>{
         if(!bookData.file) return;
         try {
-            setPreview(URL.createObjectURL(bookData.file))
-        } catch (error) {
             setPreview(`https://api.tuplrc-cla.com/${bookData.file}`);
+        } catch (error) {
+            setPreview(bookData.file);
         }
         
       },[bookData.file])
