@@ -14,7 +14,7 @@ const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,addAdviser,setBoo
     //for displaying preview photo/hindi pa nasasave
     useEffect(() => {
         if(!bookData.file) return;
-        
+
         let objectUrl;
 
         if(!id){
@@ -35,11 +35,17 @@ const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,addAdviser,setBoo
                 url:''
             })) 
         }else{
-            if (bookData.file.includes("http://books.google.com")) {
-                setPreview(bookData.file);
-            } else {
-                setPreview(`https://api.tuplrc-cla.com/${bookData.file}`);
+            try{
+                objectUrl = URL.createObjectURL(bookData.file);
+                setPreview(objectUrl);
+            }catch{
+                if (bookData.file.includes("http://books.google.com")) {
+                    setPreview(bookData.file);
+                } else {
+                    setPreview(`https://api.tuplrc-cla.com/${bookData.file}`);
+                }
             }
+            
         }
 
          // Cleanup function to revoke the Object URL
