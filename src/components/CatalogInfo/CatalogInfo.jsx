@@ -12,16 +12,16 @@ const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,setType,addGenre,
     const [preview,setPreview] =useState() //for preview kapag pumili ng photo or may naretrieve na photo
 
     //for displaying preview photo
-    useEffect(()=>{
-        if(!bookData.file) return;
-
-        if(bookData.file.includes('http://books.google.com')){
+    useEffect(() => {
+        if (!bookData.file || typeof bookData.file !== "string") return;
+    
+        if (bookData.file.includes("http://books.google.com")) {
             setPreview(bookData.file);
-        }
-        else {
+        } else {
             setPreview(`https://api.tuplrc-cla.com/${bookData.file}`);
-        } 
-      },[bookData.file])
+        }
+    }, [bookData.file]);
+    
 
       useEffect(()=>{
         if(bookData.url){
