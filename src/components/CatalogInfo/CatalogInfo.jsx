@@ -1,36 +1,46 @@
 import React, { useEffect, useState } from 'react'
 import './CatalogInfo.css'
-import BookInput from '../BookInput/BookInput'
-// for the multi select input
-import Select from 'react-select'
+import BookInput from '../BookInput/BookInput'  
 import JournalInput from '../JournalInput/JournalInput'
 import ThesisInput from '../ThesisInput/ThesisInput'
-import axios from 'axios'
+import {useParams} from 'react-router-dom';
 
-const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,setType,addGenre,addAdviser,setBookData,handleFileChange,error,formValidation,publishers,authorOptions,handleAddAuthor,selectedOptions,deleteAuthor,authorList,resourceType,adviserList,deleteAdviser,resourceStatus,genreList,editMode,isOnline}) => {
+
+const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,addAdviser,setBookData,handleFileChange,error,formValidation,publishers,authorOptions,handleAddAuthor,selectedOptions,deleteAuthor,authorList,resourceType,adviserList,deleteAdviser,resourceStatus,editMode}) => {
     // disabled is passed by the viewItem component. This disables the input fields so users can only access the page in view mode 
     const [preview,setPreview] =useState() //for preview kapag pumili ng photo or may naretrieve na photo
+    const {id} = useParams();
 
-    //for displaying preview photo
+    //for displaying preview photo/hindi pa nasasave
     useEffect(() => {
         if(!bookData.file) return;
-
+        
         let objectUrl;
-        try{
-            objectUrl = URL.createObjectURL(bookData.file);
-            setPreview(objectUrl);
-        }catch{
-            const blob = new Blob([new Uint8Array(bookData.file.data)], { type: 'image/jpeg' });
-            objectUrl = URL.createObjectURL(blob);
-            setPreview(objectUrl)
+
+        if(!id){
+           
+            try{
+                objectUrl = URL.createObjectURL(bookData.file);
+                setPreview(objectUrl);
+            }catch{
+                const blob = new Blob([new Uint8Array(bookData.file.data)], { type: 'image/jpeg' });
+                objectUrl = URL.createObjectURL(blob);
+                setPreview(objectUrl)
+            }
+                
+            //reset URl
+            //pag may naupload na file, wala dapat url
+            setBookData((prevdata)=>({
+                ...prevdata,
+                url:''
+            })) 
+        }else{
+            if (bookData.file.includes("http://books.google.com")) {
+                setPreview(bookData.file);
+            } else {
+                setPreview(`https://api.tuplrc-cla.com/${bookData.file}`);
+            }
         }
-            
-        //reset URl
-        //pag may naupload na file, wala dapat url
-        setBookData((prevdata)=>({
-            ...prevdata,
-            url:''
-        }))
 
          // Cleanup function to revoke the Object URL
          return () => {
