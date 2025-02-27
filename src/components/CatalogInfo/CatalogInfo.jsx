@@ -17,8 +17,7 @@ const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,addAdviser,setBoo
 
         let objectUrl;
 
-        if(!id){
-           
+        if(!id || editMode){
             try{
                 objectUrl = URL.createObjectURL(bookData.file);
                 setPreview(objectUrl);
