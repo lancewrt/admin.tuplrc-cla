@@ -162,6 +162,7 @@ const Accounts = () => {
         role: response.data[0].role_id,
         password: '',
         confirmPassword: '',
+        username: staffUname,
       });
     } catch (err) {
       console.log('Cannot get account to be edited. An error occurred: ', err.message);

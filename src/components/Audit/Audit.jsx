@@ -46,7 +46,6 @@ const Audit = () => {
         console.log('Audit data updated:', audit);
     }, [audit]);
 
-
   return (
     <div className='audit-container'>
         <h1>User activity log</h1>

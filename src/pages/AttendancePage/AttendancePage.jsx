@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import "./AttendancePage.css"; // External CSS file for styles
+import Webcam from "react-webcam";
 
 const AttendancePage = () => {
   const [studentId, setStudentId] = useState("");
@@ -73,7 +74,12 @@ const AttendancePage = () => {
             <h6>Learning Resource Center</h6>
           </div>
         </header>
+        
       <div className="content">
+
+      <div className="d-flex justify-content-center">
+          <Webcam height={300} width={300} mirrored='true'/>
+      </div>
 
         
       <div>
@@ -85,6 +91,7 @@ const AttendancePage = () => {
             </div>
           )}
           </div>
+
         <div className="search-bar">
           <div className="form-inline">
             <input

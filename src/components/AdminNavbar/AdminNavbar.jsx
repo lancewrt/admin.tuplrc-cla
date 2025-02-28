@@ -62,32 +62,32 @@ const AdminNavbar = () => {
                     {/* Dashboard */}
                     <li className={currentPathname=='/dashboard'?'selected':''}>
                         <Link to='/dashboard' className='menu'>
-                            <FontAwesomeIcon icon={faChartSimple} className='menu-icon'/>
-                            <p>Dashboard</p>
+                            <div><FontAwesomeIcon icon={faChartSimple} className='menu-icon'/></div>
+                            <div><p>Dashboard</p></div>
                         </Link>
                     </li>
 
                     {/* Logbook */}
                     <li className={currentPathname=='/logbook'?'selected':''}>
                         <Link to='/logbook' className="menu">
-                            <FontAwesomeIcon icon={faFileLines} className='menu-icon'/>
-                            <p>Logbook</p>
+                            <div><FontAwesomeIcon icon={faFileLines} className='menu-icon'/></div>
+                            <div><p>Logbook</p></div>
                         </Link>
                     </li>
 
                     {/* Circulation */}
                     <li className={currentPathname=='/circulation'?'selected':''}>
                         <Link to='/circulation' className="menu">
-                            <FontAwesomeIcon icon={faCartShopping} className='menu-icon'/>
-                            <p>Circulation</p>
+                            <div><FontAwesomeIcon icon={faCartShopping} className='menu-icon'/></div>
+                            <div><p>Circulation</p></div>
                         </Link>
                     </li>
 
                     {/* Patrons */}
                     <li className={currentPathname=='/patron'?'selected':''}>
                         <Link to='/patron' className="menu">
-                            <FontAwesomeIcon icon={faUser} className='menu-icon' />
-                            <p>Patrons</p>
+                            <div><FontAwesomeIcon icon={faUser} className='menu-icon' /></div>
+                            <div><p>Patrons</p></div>
                         </Link>
                     </li>
 
@@ -95,8 +95,8 @@ const AdminNavbar = () => {
                     <li className={currentPathname=='/catalog'?'selected':''}>
                         <Link to='/catalog'className='d-flex align-items-center gap-3'>
                             <div className='menu'>
-                               <FontAwesomeIcon icon={faList} className='menu-icon'/>
-                                <p>Cataloging</p> 
+                               <div><FontAwesomeIcon icon={faList} className='menu-icon'/></div>
+                                <div><p>Cataloging</p></div>
                             </div>
                         </Link>
                     </li>
@@ -106,22 +106,22 @@ const AdminNavbar = () => {
                         <>
                             <li className={currentPathname=='/reports'?'selected':''}>
                                 <Link to='/reports' className="menu">
-                                    <FontAwesomeIcon icon={faFileExcel} className='menu-icon'/>
-                                    <p>Reports</p>
+                                    <div><FontAwesomeIcon icon={faFileExcel} className='menu-icon'/></div>
+                                    <div><p>Reports</p></div>
                                 </Link>
                             </li>
 
                             <li className={currentPathname=='/audit'?'selected':''}>
                                 <Link to='/audit' className="menu">
-                                    <FontAwesomeIcon icon={faFile} className='menu-icon'/>
-                                    <p>Audit Logs</p>
+                                    <div><FontAwesomeIcon icon={faFile} className='menu-icon'/></div>
+                                    <div><p>Audit Logs</p></div>
                                 </Link>
                             </li>
 
                             <li className={currentPathname=='/accounts'?'selected':''}>
                                 <Link to='/accounts' className="menu">
-                                    <FontAwesomeIcon icon={faUsersGear} className='menu-icon'/>
-                                    <p>Accounts</p>
+                                    <div><FontAwesomeIcon icon={faUsersGear} className='menu-icon'/></div>
+                                    <div><p>Accounts</p></div>
                                 </Link>
                             </li>
                         </>

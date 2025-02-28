@@ -8,19 +8,17 @@ const DashboardTopChoices = ({data, number}) => {
 
   useEffect(()=>{
         if(!data.filepath) return;
-  
+    
         try {
             setPreview(URL.createObjectURL(data.filepath))
         } catch (error) {
             setPreview(`https://api.tuplrc-cla.com/${data.filepath}`);
         }
-  },[data.filepath])
+    },[data.book_cover])
 
-    const handleClick = ()=>{
-        navigate(`/view-item/${data.resource_id}`)
-    }
-
-    console.log(preview)
+        const handleClick = ()=>{
+            navigate(`/catalog/view/${data.resource_id}`)
+        }
         
   return (
     <div className='top-choices-container d-flex align-items-center gap-3' onClick={handleClick}>
