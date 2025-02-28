@@ -89,7 +89,7 @@
     margin: 0;
     height: 40px;
     border: 1px solid  var(--shadow);
-    width: 400px;
+    width: 50%;
     border-radius: 5px;
     padding-left: 10px;
 }
@@ -148,6 +148,7 @@
     border-bottom: none !important;
     padding: 10px;
     font-size: 0.9rem;
+    text-transform: capitalize;
 }
 
 .circulation-container .circ-table tbody tr:nth-child(odd){
@@ -200,4 +201,30 @@
 .circulation-container .spinner-box{
     width: 100%;
     /* background-color: red !important; */
+}
+
+.circulation-container .resource:hover{
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.circulation-container .borrowed{
+    background-color: var(--blue);
+    padding: 5px 10px;
+    border-radius: 20px;
+    color: var(--white);
+}
+
+.circulation-container .returned{
+    background-color: var(--green);
+    padding: 5px 10px;
+    border-radius: 20px;
+    color: var(--white);
+}
+
+.circulation-container .overdue{
+    background-color: var(--button);
+    padding: 5px 10px;
+    border-radius: 20px;
+    color: var(--white);
 }

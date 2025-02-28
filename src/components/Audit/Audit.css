@@ -114,6 +114,7 @@
     outline: 1px solid var(--tup-color);
     width: 100%;
     table-layout: fixed; /* Fix column width */
+    
 }
 
 
@@ -124,11 +125,13 @@
     word-wrap: break-word; /* Enable word wrapping */
     white-space: normal; /* Allow text to wrap */
     overflow-wrap: break-word; /* Break long words if necessary */
-    max-width: 150px; /* Adjust this value as needed for consistent cell size */
+     /* Adjust this value as needed for consistent cell size */
 }
 
 .audit-container table thead {
     background-color: var(--tup-color);
+   
+    table-layout: fixed;
     
 }
 

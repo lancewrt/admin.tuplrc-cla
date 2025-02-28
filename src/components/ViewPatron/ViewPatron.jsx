@@ -107,7 +107,7 @@ const ViewPatron = () => {
   return (
     <div className='viewpatron-container'>
       <div className=''>
-          <Link to={'/patrons'}>
+          <Link to={'/patron'}>
               <button className='view-patron-back-button'>
                 <i className='fa-solid fa-arrow-left'></i>
                 <p className='m-0'>Back</p>

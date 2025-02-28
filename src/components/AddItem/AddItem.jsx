@@ -419,11 +419,9 @@ const AddItem = () => {
                 });
 
             }catch(err){
-                setLoading(false)
                 window.toast.fire({icon:"error", title:"Cannot save resource"})
             }
         } else {
-            setLoading(false)
             window.toast.fire({icon:"warning", title:"Please enter complete information"})
         }
     };
@@ -462,7 +460,6 @@ const AddItem = () => {
                     window.toast.fire({icon:"success", title:"Resource edited successfully"})
                 }            
             }catch(err){
-                setLoading(false)
                 window.toast.fire({icon:"error", title:"Cannot edit resource"})
             }
     };

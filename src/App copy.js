@@ -4,12 +4,16 @@ import {
   Routes,
   Route
 } from "react-router-dom";
+import AdminLogInPage from './pages/AdminLogInPage/AdminLogInPage';
 import DashboardPage from './pages/DashboardPage/DashboardPage';
+import Admin from './pages/Admin/Admin';
 import LogbookPage from './pages/LogbookPage/LogbookPage';
 import PatronsPage from './pages/PatronsPage/PatronsPage';
 import ReportsPage from './pages/ReportsPage/ReportsPage';
 import CatalogPage from './pages/CatalogPage/CatalogPage';
 import AddItemPage from './pages/AddItemPage/AddItemPage';
+import ViewItem from './components/ViewItem/ViewItem';
+import ViewItemPage from './pages/ViewItemPage/ViewItemPage';
 import AttendancePage from './pages/AttendancePage/AttendancePage';
 import CirculationPage from './pages/CirculationPage/CirculationPage';
 import CirculationSelectPatronPage from './pages/CirculationSelectPatronPage/CirculationSelectPatronPage';
@@ -19,10 +23,10 @@ import AuditPage from './pages/AuditPage/AuditPage';
 import AccountsPage from './pages/AccountsPage/AccountsPage';
 import LoginPage from './pages/LoginPage/LoginPage';
 import EditPatronPage from './pages/EditPatronPage/EditPatronPage';
+
+import Cookies from 'js-cookie';
 import ProtectedRoute from './components/ProtectedRoute'
 import ViewPatronPage from './pages/ViewPatron/ViewPatronPage';
-import AuthorsPage from './pages/AuthorsPage/AuthorsPage';
-
 const App = () => {
   return (
     <div>
@@ -64,7 +68,7 @@ const App = () => {
               <CirculationCheckoutPage/>
             </ProtectedRoute>
           } />
-          <Route path='/patron' element={
+          <Route path='/patrons' element={
             <ProtectedRoute allowedRoles={['admin','staff']}>
               <PatronsPage/>
             </ProtectedRoute>
@@ -74,12 +78,12 @@ const App = () => {
               <CatalogPage/>
             </ProtectedRoute>
           } />
-          <Route path='/catalog/add' element={
+          <Route path='/add-item' element={
             <ProtectedRoute allowedRoles={['admin','staff']}>
               <AddItemPage/>
             </ProtectedRoute>
           }/>
-          <Route path='/catalog/view/:id' element={
+          <Route path='/view-item/:id' element={
             <ProtectedRoute allowedRoles={['admin','staff']}>
               <AddItemPage/>
             </ProtectedRoute>
@@ -93,30 +97,23 @@ const App = () => {
               </ProtectedRoute>
           }/>
 
-          <Route path='/patron/view/:id' element={
+          <Route path='/view-patron/:id' element={
             <ProtectedRoute allowedRoles={['staff', 'admin']}>
               <ViewPatronPage/>
-            </ProtectedRoute>
-          }
-          />
-
-          <Route path='/authors' element={
-            <ProtectedRoute allowedRoles={['staff', 'admin']}>
-              <AuthorsPage/>
             </ProtectedRoute>
           }
           />
           
           {/* Restricted routes for staff */}
 
-          <Route path='/patron/edit/:id' element={
+          <Route path='/edit-patron/:id' element={
             <ProtectedRoute allowedRoles={['admin']}>
               <EditPatronPage/>
             </ProtectedRoute>
           }
           />
 
-          <Route path='/patron/add' element={
+          <Route path='/add-patron' element={
             <ProtectedRoute allowedRoles={['admin']}>
               <EditPatronPage/>
             </ProtectedRoute>

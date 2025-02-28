@@ -5,15 +5,20 @@ import './DashBox.css'
 const DashBox = ({icon, title,total}) => {
   const navigate = useNavigate();
 
+
   const handleClick = ()=>{
     switch(title){
       case 'Total Visits': 
-        navigate('/logbook');
+        navigate('/logbook?filter=today');
         break;
       case 'Returned Resources':
+        navigate('/circulation?filter=returned');
+        break;
       case 'Overdue Resources':
+        navigate('/circulation?filter=overdue');
+        break;
       case 'Borrowed Resources':
-        navigate('/circulation');
+        navigate('/circulation?filter=borrowed');
         break;
       default: 
         console.log('Invalid. Please try again later')

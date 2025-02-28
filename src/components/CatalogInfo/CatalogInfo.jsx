@@ -44,7 +44,6 @@ const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,addAdviser,setBoo
                     setPreview(`https://api.tuplrc-cla.com/${bookData.file}`);
                 }
             }
-            
         }
 
          // Cleanup function to revoke the Object URL
@@ -107,7 +106,7 @@ const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,addAdviser,setBoo
                         </div>
                         {/* title */}
                         <div className="col-12 info-input-box my-3">
-                            <label htmlFor="">Title</label>
+                            <label htmlFor="">Title *</label>
                             <input type="text" placeholder='Enter Title' disabled={disabled} name='title' onChange={handleChange} value={bookData.title?bookData.title:''} onBlur={formValidation}/>
                             <p className='resource-error'>{error.title}</p>
                         </div>

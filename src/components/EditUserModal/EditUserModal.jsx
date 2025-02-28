@@ -80,7 +80,7 @@ const EditUserModal = ({open, close, account, handleEditChange,error, editUserAc
                 </div>
             </div>
             <div className="buttons">
-                <button className="btn cancel-btn">
+                <button className="btn cancel-btn" onClick={close}>
                     Cancel
                 </button>
                 <button className="btn create-btn" onClick={()=>editUserAccount(id)}>

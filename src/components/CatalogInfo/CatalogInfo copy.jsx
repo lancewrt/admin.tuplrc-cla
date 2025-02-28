@@ -7,7 +7,7 @@ import JournalInput from '../JournalInput/JournalInput'
 import ThesisInput from '../ThesisInput/ThesisInput'
 import axios from 'axios'
 
-const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,addAdviser,setBookData,handleFileChange,error,formValidation,publishers,authorOptions,handleAddAuthor,selectedOptions,deleteAuthor,authorList,resourceType,adviserList,deleteAdviser,resourceStatus,editMode}) => {
+const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,setType,addGenre,addAdviser,setBookData,handleFileChange,error,formValidation,publishers,authorOptions,handleAddAuthor,selectedOptions,deleteAuthor,authorList,resourceType,adviserList,deleteAdviser,resourceStatus,genreList,editMode,isOnline}) => {
     // disabled is passed by the viewItem component. This disables the input fields so users can only access the page in view mode 
     const [preview,setPreview] =useState() //for preview kapag pumili ng photo or may naretrieve na photo
 

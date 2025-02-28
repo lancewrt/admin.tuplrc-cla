@@ -9,6 +9,7 @@ import ActivateModal from '../ActivateModal/ActivateModal';
 import axios from 'axios';
 import Loading from '../Loading/Loading';
 import ResourceStatusModal from '../ResourceStatusModal/ResourceStatusModal';
+import Swal from 'sweetalert2'
 
 const Accounts = () => {
   const [openCreateUser, setOpenCreateUser] = useState(false);
@@ -220,6 +221,7 @@ const Accounts = () => {
         setStatusModal(true);
         setStatusModalContent({ status: 'success', message: response.data.message });
       }
+      window.location.reload();
     } catch (err) {
       console.log('Cannot activate user. An error occurred: ', err.message);
     } finally {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import "./AttendancePage.css"; // External CSS file for styles
 
@@ -10,6 +10,11 @@ const AttendancePage = () => {
   const time = new Date().toLocaleTimeString("en-GB", { timeZone: "Asia/Manila" });  // e.g., "14:30:00"
   const [lastScannedId, setLastScannedId] = useState(null);
   const [lastScanTime, setLastScanTime] = useState(null);
+  const searchInputRef = useRef(null); // Create a ref for the input
+      
+        useEffect(() => {
+          searchInputRef.current?.focus(); // Automatically focus on mount
+        }, []);
 
   // Handle input change
   const handleInputChange = (e) => {
@@ -17,14 +22,12 @@ const AttendancePage = () => {
   };
 
   // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     if (!studentId) {
       setMessage("Please enter a student ID.");
       return;
     }
-
+    
     const currentTime = Date.now(); // Get the current timestamp
 
     // Check if the student ID was scanned recently
@@ -83,19 +86,21 @@ const AttendancePage = () => {
           )}
           </div>
         <div className="search-bar">
-          <form onSubmit={handleSubmit} className="form-inline">
+          <div className="form-inline">
             <input
               type="text"
               className="form-input"
               id="studentId"
               value={studentId}
               onChange={handleInputChange}
-              placeholder="Enter Student ID or Name"
+              ref={searchInputRef}
+              placeholder="Please scan your Student ID or enter your name here"
+              onKeyDown={(e)=>e.key=='Enter'&&handleSubmit()}
             />
-            <button type="submit" className="search-button">
+            <button onClick={handleSubmit} className="search-button">
               Search
             </button>
-          </form>
+          </div>
         </div>
       </div>  
         <div className="results">

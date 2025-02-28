@@ -48,6 +48,7 @@ const LoginPage = () => {
                 console.log("Login successful:", response.data);
                 // Redirect to dashboard
                 navigate('/dashboard');
+                
             }
         } catch (err) {
             setError(err.response?.data?.message || "An error occurred during login.");

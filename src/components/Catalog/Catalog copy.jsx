@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 
-const socket = io('https://api.tuplrc-cla.com'); // Connect to the Socket.IO server
+const socket = io('http://localhost:3001'); // Connect to the Socket.IO server
 
 const Catalog = () => {
   const [catalog, setCatalog] = useState([])
@@ -426,7 +426,7 @@ console.log(selectedFilters)
           {/* add and scan item buttons */}
           <div className="add-scan-item">
               {/* add item */}
-              <Link to='/add-item'>
+              <Link to='/catalog/add'>
                 <button type="button" class="btn cat-add-item">
                   <i class="fa-solid fa-pen"></i>
                   Add item

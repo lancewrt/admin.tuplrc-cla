@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './CirculationSelectItem.css';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBarcode, faTrashCan, faX, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+
 
 const CirculationSelectItem = () => {
   const navigate = useNavigate();
@@ -15,6 +16,11 @@ const CirculationSelectItem = () => {
   const actionSelected = localStorage.getItem('clickedAction') || 'Check Out'; // Default to 'Check Out'
   const actionLabel = actionSelected === 'Check In' ? 'Check In' : 'Check Out'; // Dynamic label based on action
   const isDisabled = selectedItems.length === 0 || selectedItems.length > 1;
+  const searchInputRef = useRef(null); // Create a ref for the input
+
+  useEffect(() => {
+    searchInputRef.current?.focus(); // Automatically focus on mount
+  }, []);
 
   // Fetch suggestions from the database
   const fetchSuggestions = async (query) => {
@@ -87,6 +93,7 @@ const CirculationSelectItem = () => {
           <div className='circ-info'>
             <label htmlFor="">ISBN / Title</label>
             <input
+              ref={searchInputRef}  // Attach ref to input
               type="text"
               placeholder={`Enter ISBN or Title for ${actionLabel}`}
               value={searchQuery}

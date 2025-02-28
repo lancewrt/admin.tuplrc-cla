@@ -48,7 +48,7 @@
 
 .patrons-container .search-bar-box{
     display: flex;
-    gap: 15px;
+    justify-content: space-between;
 }
 
 .patrons-container .search-field-category-filter{
@@ -157,4 +157,63 @@
 .patrons-container .patron-view-button:focus{
     background-color: var(--tup-color);
     color: var(--white) !important;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    margin-top: 2px; 
+    padding: 0 10px;
+    font-size: 16px;
+}
+
+.pagination .buttons {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+}
+
+.pagination .buttons button {
+    background: none; 
+    border: none; 
+    cursor: pointer;
+    font-size: 18px;
+    padding: 5px;
+    color: var(--tup-color);
+}
+
+.pagination .buttons button:disabled {
+    opacity: 0.5; 
+    cursor: default;
+}
+
+.patron-edit-checkout {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Adjust spacing between buttons */
+}
+
+.patron-edit-button,
+.patron-view-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px; /* Adjust button width */
+    height: 36px; /* Adjust button height */
+    border-radius: 5px; /* Optional: rounded corners */
+}
+
+.patron-edit-button {
+    background-color: transparent; 
+    color: white;
+}
+
+.patron-view-button {
+    background-color: transparent; 
+    color: white;
+}
+
+.patron-edit-button:hover,
+.patron-view-button:hover {
+    opacity: 0.8;
 }

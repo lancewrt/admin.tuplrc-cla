@@ -12,8 +12,6 @@
     text-decoration: none;
 }
 
-
-
 :root{
     --black:#1F1F1F;
     --tup-color: #94152B;
@@ -33,7 +31,6 @@
     --light-red: rgba(148, 21, 43, 0.1);
     --catalog-info-bg: #EEEEEE;
 }
-
 
 .resource-error{
     margin: 0;

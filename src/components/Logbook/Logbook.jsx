@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import './Logbook.css'
+import { useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faArrowLeft, faArrowRight} from '@fortawesome/free-solid-svg-icons';
 import * as XLSX from 'xlsx'; // Import xlsx for Excel export
@@ -14,10 +15,22 @@ const Logbook = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalEntries, setTotalEntries] = useState(0); // Total number of entries
     const [loading, setLoading] = useState(false)
+    const location = useLocation();
+
+    /* useEffect(() => {
+        getPatron();
+    }, [currentPage, entriesPerPage]); */
 
     useEffect(() => {
-        getPatron();
-    }, [currentPage, entriesPerPage]);
+        const params = new URLSearchParams(location.search);
+        const filterToday = params.get('filter') === 'today';
+
+        if (filterToday) {
+            fetchTodayEntries();
+        } else {
+            getPatron();
+        }
+    }, [location.search, currentPage, entriesPerPage]);
 
     const getPatron = async () => {
         setLoading(true)
@@ -37,6 +50,20 @@ const Logbook = () => {
             console.log(err.message);
         }finally{
             setLoading(false)
+        }
+    };
+
+    const fetchTodayEntries = async () => {
+        setLoading(true);
+        try {
+            const today = new Date().toISOString().split('T')[0]; // Get today's date
+            const response = await axios.get(`https://api.tuplrc-cla.com/api/patron/sort?startDate=${today}&endDate=${today}&limit=${entriesPerPage}&page=${currentPage}`);
+            setPatron(response.data.results);
+            setTotalEntries(response.data.total);
+        } catch (err) {
+            console.log(err.message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -119,7 +146,6 @@ const Logbook = () => {
                     />
                     <button className="btn log-search-button" onClick={getPatron}>
                         <FontAwesomeIcon icon={faSearch} className='icon'/> 
-                        Search
                     </button>
                 </div>
                 

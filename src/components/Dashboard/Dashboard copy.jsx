@@ -15,7 +15,7 @@ import { Doughnut } from 'react-chartjs-2'
 import BarChart from '../BarChart'
 import io from 'socket.io-client';
 
-const socket = io('https://api.tuplrc-cla.com'); // Connect to the Socket.IO server
+const socket = io('http://localhost:3001'); // Connect to the Socket.IO server
 
 
 

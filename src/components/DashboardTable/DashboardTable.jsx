@@ -7,9 +7,9 @@ const DashboardTable = ({ header, data, type }) => {
   
   const handleClick = (id)=>{
     if(type=='overdue'){
-      navigate(`/view-patron/${id}`)
+      navigate(`/patron/view/${id}`)
     }else if(type=='books'){
-      navigate(`/view-item/${id}`)
+      navigate(`/catalog/view/${id}`)
     }
   }
 

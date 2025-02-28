@@ -67,7 +67,7 @@ const Cataloging = ({disabled,handleChange,bookData,handleToggle,formValidation,
                     <div className="row">
                         {/* department */}
                         <div className="col-6 info-input-box">
-                            <label htmlFor="">Department</label>
+                            <label htmlFor="">Department *</label>
                             <select className="form-select"
                             name='department'
                             disabled={disabled} onChange={handleChange} onBlur={formValidation}>
@@ -81,7 +81,7 @@ const Cataloging = ({disabled,handleChange,bookData,handleToggle,formValidation,
                         </div>
                         {/* topic */}
                         {bookData.mediaType=='4'?'':<div className="col-6 info-input-box">
-                            <label htmlFor="">Topics</label>
+                            <label htmlFor="">Topics *</label>
                             <select className="form-select" name='topic' disabled={disabled} onChange={handleChange} onBlur={formValidation}>
                                 <option selected disabled>Select Topic</option>
                                 {topic.length>0?topic.map((item,key)=>(

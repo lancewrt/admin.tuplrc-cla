@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './EditPatron.css';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -24,6 +24,7 @@ const EditPatron = () => {
     const [errors, setErrors] = useState({});
     const [editMode, setEditMode] = useState(false);
     const [isloading,setIsLoading]=useState(false)
+    const inputRef = useRef(null);
    
 
     useEffect(()=>{
@@ -111,6 +112,8 @@ const EditPatron = () => {
         await validateField(name, value);
     };
     
+    
+
  
     const validateField = async (name, value) => {
         const phoneRegex = /^[0-9]{10,15}$/;
@@ -147,7 +150,7 @@ const EditPatron = () => {
                     error = 'TUP ID must follow the format TUPM-**-****.';
                 } else {
                     try {
-                        const response = await axios.post('http://localhost:3001/validate-tup-id', { tup_id: value });
+                        const response = await axios.post('https://api.tuplrc-cla.com/api/validate-tup-id', { tup_id: value });
                         if (response.data.exists) {
                             error = response.data.message || 'TUP ID already exists.';
                         }
@@ -171,7 +174,7 @@ const EditPatron = () => {
     };
     
     
-    const handleTupIdChange = async (e) => {
+    /* const handleTupIdChange = async (e) => {
         const { value, selectionStart } = e.target;
         const prefix = "TUPM-";
         const prefixLength = prefix.length;
@@ -204,7 +207,52 @@ const EditPatron = () => {
     
         // Validate the TUP ID
         await validateField("tup_id", formattedValue);
+    }; */
+
+    const handleTupIdChange = async (e) => {
+        const { value, selectionStart } = e.target;
+        const prefix = "TUPM-";
+        const prefixLength = prefix.length;
+    
+        // Ensure the input starts with "TUPM-"
+        if (!value.startsWith(prefix)) return;
+    
+        // Extract and clean the editable portion
+        let editablePart = value.slice(prefixLength).replace(/[^0-9]/g, ""); // Allow digits only
+    
+        let formattedPart = editablePart;
+        let addedDash = false;
+    
+        // Auto-format as "XX-XXXX"
+        if (editablePart.length > 2) {
+            formattedPart = `${editablePart.slice(0, 2)}-${editablePart.slice(2)}`;
+            if (!value.includes("-") && selectionStart > prefixLength + 2) {
+                addedDash = true;
+            }
+        }
+    
+        const formattedValue = `${prefix}${formattedPart}`;
+    
+        // Update state with the formatted value
+        setPatronData((prev) => ({
+            ...prev,
+            tup_id: formattedValue,
+        }));
+    
+        // Adjust cursor position after formatting
+        let newCursorPos = selectionStart + (formattedValue.length - value.length);
+    
+        // If a dash was added, move cursor forward by 1
+        if (addedDash && selectionStart === prefixLength + 2) {
+            newCursorPos++;
+        }
+    
+        setTimeout(() => e.target.setSelectionRange(newCursorPos, newCursorPos), 0);
+    
+        // Validate the TUP ID
+        await validateField("tup_id", formattedValue);
     };
+    
     
 
     const handleTupIdKeyDown = (e) => {
@@ -246,7 +294,7 @@ const EditPatron = () => {
         
         try {
             await axios.post(`https://api.tuplrc-cla.com/api/patron`, patronData);
-            navigate('/patrons'); // Redirect after saving
+            navigate('/patron'); // Redirect after saving
             window.toast.fire({icon:"success", title:"Patron Added"})
         } catch (error) {
             console.error('Error saving patron:', error);
@@ -266,7 +314,7 @@ const EditPatron = () => {
     
             await axios.put(`https://api.tuplrc-cla.com/api/patron/update/${id}`, updatedData);
             console.log('Patron updated successfully');
-            navigate('/patrons'); // Redirect after saving
+            navigate(''); // Redirect after saving
             window.toast.fire({icon:"success", title:"Patron Updated"})
         } catch (error) {
             console.error('Error saving patron:', error);
@@ -305,7 +353,7 @@ const EditPatron = () => {
         <div className='edit-patron-container'>
             <h1 className='m-0'>Patrons</h1>
             <div className='edit-patron-path-button'>
-                <Link to={'/patrons'}>
+                <Link to={'/patron'}>
                     <button className='edit-patron-back-button'>
                         <i className='fa-solid fa-arrow-left'></i>
                         <p>Back</p>

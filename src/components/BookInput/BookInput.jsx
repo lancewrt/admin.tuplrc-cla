@@ -1,15 +1,18 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './BookInput.css'
 import AuthorInput from '../AuthorInput/AuthorInput'
 import PublisherModal from '../PublisherModal/PublisherModal'
-import axios from 'axios'
 import Select from 'react-select'
 
 const BookInput = ({disabled,handleChange,bookData,addAuthor,setBookData,formValidation,error,publishers,authorOptions,handleAddAuthor,selectedOptions,deleteAuthor,authorList}) => {
-    const [isbn, setIsbn] = useState("");
     const [open, setOpen] = useState(false)
     // dito ko muna isstore ung publisher details then kapag clinick ung save, tsaka lang sya masstore sa bookdata
     const [publisherDetails, setPublisherDetails] = useState({})
+    const searchInputRef = useRef(null); // Create a ref for the input
+    
+      useEffect(() => {
+        searchInputRef.current?.focus(); // Automatically focus on mount
+      }, []);
     
     useEffect(()=>{
         if(bookData.isbn&&!disabled){
@@ -94,7 +97,7 @@ const BookInput = ({disabled,handleChange,bookData,addAuthor,setBookData,formVal
                 {/* isbn */}
                 <div className="col-12 info-input-box mb-3">
                     <label htmlFor="">ISBN</label>
-                    <input type="number" placeholder='Enter ISBN' disabled={disabled} onChange={handleChange} name='isbn' value={bookData.isbn?bookData.isbn:''} onBlur={formValidation}/>
+                    <input type="number" placeholder='Enter ISBN' disabled={disabled} onChange={handleChange} name='isbn' value={bookData.isbn?bookData.isbn:''} onBlur={formValidation} ref={searchInputRef}/>
                     <p className="resource-error">{error.isbn?error.isbn:''}</p>
                 </div>
                 {/* publisher */}

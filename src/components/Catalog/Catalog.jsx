@@ -5,8 +5,9 @@ import { getAllFromStore, getAllUnsyncedFromStore, getBook, getBookPub, getCatal
 import { clearObjectStore, deleteResourceFromIndexedDB, markAsSynced } from '../../indexedDb/syncData'
 import ResourceStatusModal from '../ResourceStatusModal/ResourceStatusModal'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faArrowRight, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
+
 
 const Catalog = () => {
   const [catalog, setCatalog] = useState([])
@@ -415,12 +416,12 @@ console.log(selectedFilters)
   return (
     <div className='cat-container'>
       <h1>Catalog</h1>
-
+      {/* <img src="https://barcodeapi.org/api/128/9789719654025" /> */}
         <div className='cat-buttons'>
           {/* add and scan item buttons */}
           <div className="add-scan-item">
               {/* add item */}
-              <Link to='/add-item'>
+              <Link to='/catalog/add'>
                 <button type="button" class="btn cat-add-item">
                   <i class="fa-solid fa-pen"></i>
                   Add item
@@ -434,9 +435,9 @@ console.log(selectedFilters)
           <div className="search-filter">
             <input type="search" placeholder="Search by title or author" onChange={handleChange} onKeyDown={handleEnter}/>
             <button 
-              className="btn" 
+              className="btn cat-search-button" 
               onClick={() => {isOnline?getCatalogOnline(true):getCatalogOffline(true)}}>
-              Search
+              <FontAwesomeIcon icon={faSearch} className='icon'/>
             </button>
             {isOnline?
             <button 
@@ -500,7 +501,7 @@ console.log(selectedFilters)
               <tbody>
               {catalog.length > 0 ? (
                   catalog.map((item, key) => (
-                    <tr key={key} onClick={()=>navigate(`/view-item/${item.resource_id}`)}>
+                    <tr key={key} onClick={()=>navigate(`/catalog/view/${item.resource_id}`)}>
                       <td>{item.resource_title}</td>
                       <td>{item.type_name}</td>
                       <td>{item.author_names}</td>

@@ -98,8 +98,39 @@ const AdminNavbar = () => {
                                <FontAwesomeIcon icon={faList} className='menu-icon'/>
                                 <p>Cataloging</p> 
                             </div>
+                            <FontAwesomeIcon icon={faChevronDown} className='dropdown' onClick={() => setIsCatalogingOpen(!isCatalogingOpen)} style={{ cursor: 'pointer' }}/>
                         </Link>
                     </li>
+
+                    {/* Display Authors, Publishers, Departments, and Topics when Cataloging is clicked */}
+                    {isCatalogingOpen && (
+                        <>
+                            <li className=''>
+                                <Link to='/authors' className='menu-dropdown'>
+                                    <FontAwesomeIcon icon={faUserPlus} className='menu-icon'/> 
+                                    <p>Authors</p>
+                                </Link>
+                            </li>
+                            <li className=''>
+                                <Link to='/publishers' className='menu-dropdown'>
+                                    <FontAwesomeIcon icon={faBookOpenReader} className='menu-icon'/> 
+                                    <p>Publishers</p>
+                                </Link>
+                            </li>
+                            <li className=''>
+                                <Link to='/departments' className='menu-dropdown'>
+                                    <FontAwesomeIcon icon={faLayerGroup} className='menu-icon'/> 
+                                    <p>Departments</p>
+                                </Link>
+                            </li>
+                            <li className=''>
+                                <Link to='/topics' className='menu-dropdown'>
+                                    <FontAwesomeIcon icon={faBook} className='menu-icon'/> 
+                                    <p>Topics</p>
+                                </Link>
+                            </li>
+                        </>
+                    )}
 
                     {/* Conditionally Render Menu Items Based on Role */}
                     {role !== 'staff' && (

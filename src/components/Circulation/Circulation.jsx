@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './Circulation.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCartPlus, faCartShopping, faL,faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+import { faCartPlus, faCartShopping, faSearch,faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const Circulation = () => {
+  const location = useLocation();
   const [borrowers, setBorrowers] = useState([]);
   const [filteredBorrowers, setFilteredBorrowers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -14,19 +15,30 @@ const Circulation = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const itemsPerPage = 5;
+  const navigate = useNavigate()
+  let query;
   
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    query = params.get('filter');
+        
     getBorrowers();
     localStorage.removeItem('clickedAction');
     localStorage.removeItem('selectedItems');
 
   }, [currentPage]);
 
+  useEffect(()=>{
+    if(searchTerm==''){
+      getBorrowers();
+    }
+  },[searchTerm])
+
   const getBorrowers = async () => {
     setLoading(true);
     try {
       const response = await axios.get(`https://api.tuplrc-cla.com/api/patron/borrowers`, {
-        params: { page: currentPage, limit: itemsPerPage }
+        params: { page: currentPage, limit: itemsPerPage, query:  query}
       });
 
       setBorrowers(response.data.data);
@@ -52,21 +64,23 @@ const Circulation = () => {
   const handleSearch = (e) => {
     const value = e.target.value.toLowerCase();
     setSearchTerm(value); 
+  };
 
+  const search = ()=>{
     if (!borrowers || !Array.isArray(borrowers)) return;
 
     const filtered = borrowers.filter((borrower) => {
         const fullName = `${borrower.patron_fname ?? ''} ${borrower.patron_lname ?? ''}`.toLowerCase();
         
         return (
-            fullName.includes(value) ||
-            (borrower.tup_id?.toLowerCase() ?? '').includes(value) ||
-            (borrower.course?.toLowerCase() ?? '').includes(value) ||
-            (borrower.borrowed_books?.toLowerCase() ?? '').includes(value)
+            fullName.includes(searchTerm) ||
+            (borrower.tup_id?.toLowerCase() ?? '').includes(searchTerm) ||
+            (borrower.course?.toLowerCase() ?? '').includes(searchTerm) ||
+            (borrower.borrowed_books?.toLowerCase() ?? '').includes(searchTerm)
         );
     });
     setFilteredBorrowers(filtered);
-  };
+  }
 
   const handlePageChange = (newPage) => {
     if (newPage < 1 || newPage > totalPages) return; // Prevent going out of bounds
@@ -108,8 +122,11 @@ const Circulation = () => {
           placeholder="Search"
           value={searchTerm}
           onChange={handleSearch}
+          onKeyDown={(e)=>e.key=='Enter'&&search()}
         />
-        <button className="btn search-btn">Search</button>
+        <button className="btn search-btn" onClick={search}>
+          <FontAwesomeIcon icon={faSearch} className='icon'/> 
+        </button>
       </div>
 
       <div>
@@ -124,6 +141,8 @@ const Circulation = () => {
               <td>Book/s issued</td>
               <td>Course</td>
               <td>Borrow Date</td>
+              <td>Due Date</td>
+              <td>Return Date</td>
               <td>Status</td>
             </tr>
           </thead>
@@ -135,12 +154,23 @@ const Circulation = () => {
                   <td style={{ padding: '10px' }}>
                     {borrower.patron_fname} {borrower.patron_lname}
                   </td>
-                  <td style={{ padding: '10px' }}>{borrower.borrowed_book}</td>
+                  <td style={{ padding: '10px' }} onClick={()=>navigate(`/catalog/view/${borrower.resource_id}`)} className='resource'> {borrower.borrowed_book} </td>
                   <td style={{ padding: '10px' }}>{borrower.course}</td>
                   <td style={{ padding: '10px' }}>
                     {new Date(borrower.checkout_date).toLocaleDateString('en-CA')}
                   </td>
-                  <td style={{ padding: '10px' }}>{borrower.status}</td>
+                  <td style={{ padding: '10px' }}>
+                    {new Date(borrower.checkout_due).toLocaleDateString('en-CA')}
+                  </td>
+                  <td style={{ padding: '10px' }}>
+                    {borrower.checkin_date
+                      ? new Date(borrower.checkin_date).toLocaleDateString('en-CA')
+                      : "Not Yet Returned"}
+                  </td>
+                  <td style={{ padding: '10px' }}>
+                    <span className={borrower.status=='overdue'?'overdue':borrower.status=='returned'?'returned':'borrowed'}>{borrower.status}</span>
+                    
+                  </td>
                 </tr>
               ))
             ) : filteredBorrowers.length === 0 && !loading ? (

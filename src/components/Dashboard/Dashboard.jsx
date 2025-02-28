@@ -7,7 +7,7 @@ import { VerticalBarChart } from '../VerticalBarChart';
 import DashboardTable from '../DashboardTable/DashboardTable';
 import DashboardTopChoices from '../DashboardTopChoices/DashboardTopChoices';
 import DashBox from '../DashBox/DashBox';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {useDispatch} from 'react-redux';
 import { setBorrowedStats, setVisitorStats } from '../../features/chartSlice.js';
 
@@ -180,6 +180,12 @@ const Dashboard = () => {
     }
   }
 
+  const navigate = useNavigate();
+
+  const handleTodayEntriesClick = () => {
+      navigate('/logbook?filter=today'); // Navigate to logbook with filter
+  };
+
   return (
     <div className='dashboard-container'>
        {/* dashboard heading */}
@@ -187,6 +193,7 @@ const Dashboard = () => {
           {/* Goodmorning,admin */}
           <p className='dashboard-heading-text'>{dateTime.getHours()>=1 && dateTime.getHours()<12?'Good morning, ':dateTime.getHours()>=12&&dateTime.getHours()<17?'Good afternoon, ':'Good evening,'} <span>{uname}</span></p>
       </div>
+      
 
       {/* columns */}
       <div className="dashboard">
@@ -229,7 +236,7 @@ const Dashboard = () => {
                 </Link>
                 
               </div>
-              <Link to="/add-item">
+              <Link to="/catalog/add">
                 <button className="btn add-btn d-flex align-items-center justify-content-center gap-3">
                   <FontAwesomeIcon icon={faPlus} className='icon'/>
                   Add new

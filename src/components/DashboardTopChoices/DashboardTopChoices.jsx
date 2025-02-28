@@ -7,20 +7,29 @@ const DashboardTopChoices = ({data, number}) => {
   const navigate = useNavigate()
 
   useEffect(()=>{
-        if(!data.filepath) return;
+          if(!data.book_cover) return;
   
-        try {
-            setPreview(URL.createObjectURL(data.filepath))
-        } catch (error) {
-            setPreview(`https://api.tuplrc-cla.com/${data.filepath}`);
+          let objectUrl;
+          try{
+              objectUrl = URL.createObjectURL(data.book_cover);
+              setPreview(objectUrl);
+          }catch{
+              const blob = new Blob([new Uint8Array(data.book_cover.data)], { type: 'image/jpeg' });
+              objectUrl = URL.createObjectURL(blob);
+              setPreview(objectUrl)
+          }
+            
+           // Cleanup function to revoke the Object URL
+           return () => {
+              if (objectUrl) {
+                  URL.revokeObjectURL(objectUrl);
+              }
+            };
+        },[data.book_cover])
+
+        const handleClick = ()=>{
+            navigate(`/catalog/view/${data.resource_id}`)
         }
-  },[data.filepath])
-
-    const handleClick = ()=>{
-        navigate(`/view-item/${data.resource_id}`)
-    }
-
-    console.log(preview)
         
   return (
     <div className='top-choices-container d-flex align-items-center gap-3' onClick={handleClick}>

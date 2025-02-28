@@ -93,7 +93,8 @@
 .circ-select-patron-container .search-container input{
     height: 39px;
     width: 70%;
-    border-color: var(--tup-color);
+    border:1px solid var(--table-border-bottom);
+    outline: none !important;
     border-radius: 5px;
     padding-left: 10px;
 }
