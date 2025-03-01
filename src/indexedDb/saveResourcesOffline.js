@@ -63,7 +63,7 @@ export const saveResourceOffline = async(data) => {
         if (mediaType === '1') {
             // Handle publisher and book details
             if (existingPublisher === 0 && !pub_name && !pub_add && !pub_email && !pub_phone && !pub_website) {
-                await saveBookOffline(data.file, data.isbn, resourceId, null, data.topic);
+                await saveBookOffline(data.file, data.isbn, resourceId, '', data.topic);
             } else {
                 // Publisher handling
                 try {
@@ -141,8 +141,8 @@ const saveJournalNewsletterOffline = async(jnVol, jnIssue, jnCover, resourceId, 
     const tx = db.transaction('journalnewsletter','readwrite');
     const store = tx.objectStore('journalnewsletter')
     await store.put({
-        jn_volume:jnVol,
-        jn_issue:jnIssue,
+        jn_volume:jnVol||'',
+        jn_issue:jnIssue||'',
         file: jnCover,
         resource_id:resourceId,
         topic_id: topic
@@ -200,7 +200,7 @@ const saveBookOffline = async (file,isbn,resourceId,pubId,topic)=>{
     const store = tx.objectStore('book')
     await store.put({
         file:file,
-        book_isbn:!isbn?null:isbn,
+        book_isbn:!isbn?'':isbn,
         resource_id:resourceId, 
         pub_id:pubId,
         topic_id: topic

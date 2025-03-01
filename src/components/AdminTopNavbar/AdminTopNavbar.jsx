@@ -4,32 +4,33 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleUser } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate hook for navigation
+import { useSelector, useDispatch } from 'react-redux';
+import { checkIfOnline } from '../../features/isOnlineSlice';
+
 
 const AdminTopNavbar = () => {
     const [dateTime, setDateTime] = useState(new Date());
-    const [isOnline, setIsOnline] = useState(navigator.onLine);
+    const dispatch = useDispatch();
+    const isOnline = useSelector((state) => state.isOnline.isOnline);
     const [uname, setUname] = useState(null);
     const navigate = useNavigate(); // Hook to navigate programmatically
 
     useEffect(() => {
-        const getUsername = async()=>{
+        const getUsername = async () => {
             try {
-              // Request server to verify the JWT token
-              const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
-              console.log(response.data)
-              // If session is valid, set the role
-              if (response.data.loggedIn) {
-                setUname(response.data.username);
-              } else {
-                setUname(null); // If not logged in, clear the role
-              }
+                const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
+                console.log(response.data);
+                if (response.data.loggedIn) {
+                    setUname(response.data.username);
+                } else {
+                    setUname(null);
+                }
             } catch (error) {
-              console.error('Error verifying session:', error);
-              setUname(null); // Set null if there's an error
+                console.error('Error verifying session:', error);
+                setUname(null);
             }
-          }
-
-          getUsername()
+        };
+        getUsername();
     }, []);
 
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -37,36 +38,42 @@ const AdminTopNavbar = () => {
     const currentDay = days[today.getDay()];
 
     useEffect(() => {
-        const updateOnlineStatus = () => {
-            setIsOnline(navigator.onLine);
+        const checkOnlineStatus = async () => {
+            try {
+                await fetch("https://jsonplaceholder.typicode.com/todos/1", { cache: "no-store" });
+                dispatch(checkIfOnline(true));
+            } catch (error) {
+                dispatch(checkIfOnline(false));
+            }
         };
+
+        // Initially set "Loading..." until first check
+        dispatch(checkIfOnline(null));
+        checkOnlineStatus();
 
         // Add event listeners for online/offline events
-        window.addEventListener('online', updateOnlineStatus);
-        window.addEventListener('offline', updateOnlineStatus);
+        const handleOnline = () => dispatch(checkIfOnline(true));
+        const handleOffline = () => dispatch(checkIfOnline(false));
 
-        // Update date and time every second
-        const intervalId = setInterval(() => setDateTime(new Date()), 1000);
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
 
-        // Cleanup on component unmount
+        // Check internet status every 5 seconds
+        const intervalId = setInterval(checkOnlineStatus, 5000);
+
         return () => {
-            window.removeEventListener('online', updateOnlineStatus);
-            window.removeEventListener('offline', updateOnlineStatus);
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
             clearInterval(intervalId);
         };
-    }, []);
+    }, [dispatch]);
 
     // Logout function
     const logout = async () => {
         try {
-            // Send a logout request to the server
-            await axios.post('https://api.tuplrc-cla.com/api/user/logout', { username: uname }, { withCredentials: true});
-
-            // Clear all relevant data from localStorage
-            localStorage.removeItem('role');  // Remove the user's role
-            localStorage.removeItem('username');  // Remove username or any other session-related data
-
-            // Redirect the user to the login page
+            await axios.post('https://api.tuplrc-cla.com/api/user/logout', { username: uname }, { withCredentials: true });
+            localStorage.removeItem('role');
+            localStorage.removeItem('username');
             navigate('/');
         } catch (err) {
             console.error('Logout error:', err);
@@ -77,7 +84,7 @@ const AdminTopNavbar = () => {
         <div className="top-navbar">
             {/* Online/Offline Indicator */}
             <div className="indicator">
-                {isOnline ? 'Online' : 'Offline'}
+                {isOnline === null ? 'Loading...' : isOnline ? 'Online' : 'Offline'}
             </div>
             <div className="info">
                 {/* Date and Time */}
