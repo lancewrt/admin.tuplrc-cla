@@ -41,7 +41,7 @@ const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,addAdviser,setBoo
                 if (bookData.file.includes("http://books.google.com")) {
                     setPreview(bookData.file);
                 } else {
-                    setPreview(`https://api.tuplrc-cla.com/server/${bookData.file}`);
+                    setPreview(`https://api.tuplrc-cla.com/${bookData.file}`);
                 }
             }
         }
