@@ -105,15 +105,15 @@
 .information-inputs{
     font-size: 0.9rem;
     padding: 50px 80px;
-
+    
 }
 
 .information-inputs .patron-input-box{
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    /* gap: 5px; */
     /* margin-bottom: 16px; */
-
+    position: relative;
 }
 
 .information-inputs .patron-input-box input, .information-inputs .patron-input-box select{
@@ -121,8 +121,9 @@
     width: 100%;
     padding: 0 10px;
     border-radius: 5px;
-    border-color: var(--tup-color);
+    border: 1px solid var(--table-border-bottom);
     background-color: var(--white);
+    outline: none !important;
 }
 
 
@@ -170,3 +171,48 @@
     font-size: 12px;
 }
 
+
+
+.patron-photo{
+    display: none;
+}
+
+.patron-photo-box{
+    background-color: var(--white);
+    height: 300px;
+    width: 300px;
+    border-radius: 50%;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--table-border-bottom);
+    overflow: hidden !important;
+}
+
+.photo-edit{
+    background-color: var(--white) !important;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    padding: 20px;
+    border: 1px solid var(--table-border-bottom);
+    right: 50px;
+    bottom: 20px;
+}
+
+.photo-edit .icon{
+    font-size: 2rem;
+}
+
+.patron-image{
+   width: 100%;
+   object-fit: fill;
+}
+
+.no-profile{
+    font-size: 10rem;
+    color: var(--table-border-bottom);
+}

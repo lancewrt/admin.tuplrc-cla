@@ -7,6 +7,7 @@ import ResourceStatusModal from '../ResourceStatusModal/ResourceStatusModal'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux'
 
 
 const Catalog = () => {
@@ -22,7 +23,7 @@ const Catalog = () => {
     status:'',
     message:''
   })
-  const [isOnline, setIsOnline] = useState(true)
+  const isOnline = useSelector(state=>state.isOnline.isOnline)
   const [openFilter, setOpenFilter] = useState(false)
   const [type, setType] = useState('');
   const [department, setDepartment] = useState([])
@@ -32,14 +33,12 @@ const Catalog = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (navigator.onLine) {
-        setIsOnline(true);
+      if (isOnline) {
         getType();
         getDept()
         getTopics()
         await getCatalogOnline();
       } else {
-        setIsOnline(false);
         //get offline type 
         const types = await getAllFromStore('resourcetype');
         setType(types);
@@ -51,25 +50,11 @@ const Catalog = () => {
         setTopic(tps)
 
         await getCatalogOffline();
-
       }
     };
 
     fetchData();
-
-    const handleConnectionChange = () => {
-      setIsOnline(navigator.onLine);
-      fetchData();
-    };
-
-    window.addEventListener('online', handleConnectionChange);
-    window.addEventListener('offline', handleConnectionChange);
-
-    return () => {
-      window.removeEventListener('online', handleConnectionChange);
-      window.removeEventListener('offline', handleConnectionChange);
-    };
-  }, [currentPage, selectedFilters]);
+  }, [currentPage, selectedFilters,isOnline]);
 
   useEffect(()=>{
       if(keyword==''){
@@ -242,6 +227,7 @@ const syncResourcesOnline = async () => {
 
         // Sync related data
         const authors = await getResourceAuthors(resource.resource_id);
+        console.log('offline authors',authors);
         await syncAuthorsOnline(authors, serverResourceId);
 
         const resourceType = resource.type_id;
@@ -265,8 +251,13 @@ const syncResourcesOnline = async () => {
             console.warn(`Unhandled resource type: ${resourceType}`);
         }
 
-        //  Delete resource from IndexedDB after successful sync
-        await deleteResourceFromIndexedDB(resource.resource_id);
+        // Delete resource from IndexedDB after successful sync
+        await Promise.all([
+          deleteResourceFromIndexedDB('resources', resource.resource_id),
+          deleteResourceFromIndexedDB('book', resource.resource_id),
+          deleteResourceFromIndexedDB('thesis', resource.resource_id),
+          deleteResourceFromIndexedDB('journalnewsletter', resource.resource_id),
+        ]);
         console.log(`Resource ${resource.resource_id} deleted from IndexedDB.`);
       } catch (error) {
         setStatusModal(true);
@@ -278,21 +269,13 @@ const syncResourcesOnline = async () => {
       }
     }
 
-    //delete all data from object stores used in cataloging
-    //clear author object store
-    await clearObjectStore('author')
-    //clear resoruceauthors
-    await clearObjectStore('resourceauthors')
-    //clear book
-    await clearObjectStore('book')
-    //clear publisher
-    await clearObjectStore('publisher')
-    //clear adviser
-    await clearObjectStore('adviser')
-    //clear thesis
-    await clearObjectStore('thesis')
-    //clear journalnewsletter
-    await clearObjectStore('journalnewsletter')
+     // Clear object stores used in cataloging
+     await Promise.all([
+      clearObjectStore('author'),
+      clearObjectStore('resourceauthors'),
+      clearObjectStore('publisher'),
+      clearObjectStore('adviser'),
+    ]);
 
     setStatusModal(true);
     setStatusModalContent({
@@ -427,6 +410,19 @@ console.log(selectedFilters)
                   Add item
                 </button>
               </Link>
+              {/* sync*/}
+              {isOnline?
+              <div className="add-author-publisher">
+                  {/* sync to database */}
+                  <button
+                  className='btn sync-2-db'
+                  onClick={syncData2DB}
+                  disabled={!isOnline}
+                  title='You need internet connection to sync to database.'
+                >
+                  Sync offline data to database
+                </button>
+              </div>:''}
           </div>
          
         </div>

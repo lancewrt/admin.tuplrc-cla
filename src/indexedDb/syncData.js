@@ -1,9 +1,9 @@
 import { initDB } from "./initializeIndexedDb";
 
-export const deleteResourceFromIndexedDB = async (resourceId) => {
+export const deleteResourceFromIndexedDB = async (storeName, resourceId) => {
     const db = await initDB();
-    const tx = db.transaction('resources', 'readwrite');
-    const store = tx.objectStore('resources');
+    const tx = db.transaction(storeName, 'readwrite');
+    const store = tx.objectStore(storeName);
     await store.delete(resourceId);
     await tx.done;
     console.log(`Resource with ID ${resourceId} has been removed from IndexedDB.`);

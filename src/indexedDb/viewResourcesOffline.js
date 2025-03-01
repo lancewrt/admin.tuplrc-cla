@@ -67,11 +67,16 @@ const viewBookOffline = async (resource,setBookData)=>{
      const txPub = db.transaction('publisher','readonly');
      const pubStore = txPub.objectStore('publisher')
      let publisher;
-     if(bookDetails.pub_id){
-        publisher = await pubStore.get(bookDetails.pub_id)
-     }else{
+     if (bookDetails?.pub_id) {
+        publisher = await pubStore.get(bookDetails.pub_id);
+        if (!publisher) {
+            console.warn(`Publisher with ID ${bookDetails.pub_id} not found.`);
+            publisher = null; // Handle case where publisher doesn't exist
+        }
+    } else {
         publisher = null;
-     }
+    }
+    
      
      await txBook.done
 

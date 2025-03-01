@@ -10,8 +10,6 @@ import { getAllFromStore } from '../../indexedDb/getDataOffline';
 import { saveResourceOffline } from '../../indexedDb/saveResourcesOffline';
 import { viewResourcesOffline } from '../../indexedDb/viewResourcesOffline';
 import { editResourceOffline } from '../../indexedDb/editResourcesOffline';
-import { useSelector } from 'react-redux';
-
 
 const AddItem = () => {
     //pag may id, nagiging view ung purpose ng add item component
@@ -41,7 +39,7 @@ const AddItem = () => {
     //console.log(resourceId)
     const [resourceStatus,setResourceStatus] = useState([])
     const [editMode, setEditMode] = useState(false)
-    const isOnline = useSelector(state=>state.isOnline.isOnline)
+    const [isOnline, setIsOnline] = useState(true)
 
     const getUsername = async()=>{
         try {
@@ -82,35 +80,40 @@ const AddItem = () => {
     }, [bookData.mediaType]);
 
     useEffect(() => {
-
-        if (isOnline == null) {
-            return;
-        }
-        
-        initDB();
-         // Initialize online/offline state
-        if (isOnline) {
+        const handleOnline = () => {
             getOnlineData();
-        } else {
+            setIsOnline(true);
+        };
+    
+        const handleOffline = () => {
+            initDB();
             getOfflineData();
+            setIsOnline(false);
+        };
+    
+        // Initialize online/offline state
+        if (navigator.onLine) {
+            handleOnline();
+        } else {
+            handleOffline();
         }
-
+    
         // Handle resource view logic (inside useEffect)
         if (id) {
             setDisabled(true);
             // Check if online or offline after setting the state
-            if(isOnline) {
+            if (navigator.onLine) {
                 getOnlineData();
                 viewResourceOnline();
-            }else{
+            } else {
                 getOfflineData();
                 viewResourceOffline();
             }
         }
-    }, [id, isOnline]);  // Add `id` as a dependency to run the effect when `id` changes
+    }, [id]);  // Add `id` as a dependency to run the effect when `id` changes
     
-    console.log('isonline? ', isOnline)
 
+    console.log('isOnline? ', isOnline)
 
 /*-----------------INITIALIZE INPUT---------------------- */
     //get online data
@@ -225,8 +228,6 @@ const AddItem = () => {
         await viewResourcesOffline(parseInt(id),setBookData)
     }
 
-    console.log(bookData)
-
 /*-------------------HANDLE CHANGES---------------------- */
     // Handle input changes
     const handleChange = (e) => {
@@ -319,26 +320,26 @@ const AddItem = () => {
         if (!bookData.title || bookData.title.length === 0) {
             err.title = 'Please enter title';
         }
-        // if (!bookData.description) {
-        //     err.description = 'Please enter description';
-        // }
+        if (!bookData.description) {
+            err.description = 'Please enter description';
+        }
         if (!bookData.department) {
             err.department = 'Please select department';
         }
 
         if (bookData.mediaType === '1') {
-            // if (!bookData.file&&!bookData.url) {
-            //     err.file = 'Please select cover';
-            // }
+            if (!bookData.file&&!bookData.url) {
+                err.file = 'Please select cover';
+            }
             if (!bookData.authors || bookData.authors.length === 0) {
                 err.authors = 'Please specify author/s';
             }
             // if (!bookData.isbn) {
             //     err.isbn = 'Please enter ISBN';
             // } 
-            // if (bookData.publisher_id === 0 && bookData.publisher === '') {
-            //     err.publisher = 'Please enter publisher';
-            // }
+            if (bookData.publisher_id === 0 && bookData.publisher === '') {
+                err.publisher = 'Please enter publisher';
+            }
             if (!bookData.publishedDate) {
                 err.publishedDate = 'Please enter publish date';
             }
@@ -346,18 +347,18 @@ const AddItem = () => {
                 err.topic = 'Please select topic';
             }
         }else if(bookData.mediaType==='2'||bookData.mediaType==='3'){
-            // if (!bookData.file&&!bookData.url) {
-            //     err.file = 'Please select cover';
-            // }
+            if (!bookData.file&&!bookData.url) {
+                err.file = 'Please select cover';
+            }
             if (!bookData.authors || bookData.authors.length === 0) {
                 err.authors = 'Please specify author/s';
             }
-            // if(!bookData.volume){
-            //     err.volume = 'Please enter volume'
-            // }
-            // if(!bookData.issue){
-            //     err.issue = 'Please enter issue'
-            // }
+            if(!bookData.volume){
+                err.volume = 'Please enter volume'
+            }
+            if(!bookData.issue){
+                err.issue = 'Please enter issue'
+            }
             if (!bookData.publishedDate) {
                 err.publishedDate = 'Please enter publish date';
             }
@@ -599,6 +600,9 @@ const AddItem = () => {
             console.log(err.message);
         }
     };
+
+    console.log(bookData)
+    console.log(publishers)
 
     return (
         <div className='add-item-container'>

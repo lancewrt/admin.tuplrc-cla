@@ -176,8 +176,8 @@ const editJournalNewsletterOffline = async(jnVol, jnIssue, jnCover, resourceId, 
 
     await store.put({
         jn_id: jn.jn_id,
-        jn_volume:jnVol,
-        jn_issue:jnIssue,
+        jn_volume:jnVol||'',
+        jn_issue:jnIssue||'',
         file: jnCover,
         resource_id:resourceId,
         topic_id: topic
