@@ -5,7 +5,7 @@ import { getAllFromStore, getAllUnsyncedFromStore, getBook, getBookPub, getCatal
 import { clearObjectStore, deleteResourceFromIndexedDB, markAsSynced } from '../../indexedDb/syncData'
 import ResourceStatusModal from '../ResourceStatusModal/ResourceStatusModal'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faArrowRight, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faArrowRight, faSearch, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux'
 
@@ -208,6 +208,7 @@ const syncData2DB = async () => {
 // Sync resources
 const syncResourcesOnline = async () => {
   try {
+    setLoading(true)
     // Get all resources in IndexedDB
     const resources = await getAllFromStore('resources');
     console.log('Preparing resources for syncing: ', resources);
@@ -277,6 +278,8 @@ const syncResourcesOnline = async () => {
       clearObjectStore('adviser'),
     ]);
 
+    setLoading(false)
+
     setStatusModal(true);
     setStatusModalContent({
       status: 'success',
@@ -284,6 +287,7 @@ const syncResourcesOnline = async () => {
     });
     console.log('All resources processed.');
   } catch (error) {
+    setLoading(false)
     setStatusModal(true);
     setStatusModalContent({
       status: 'error',
@@ -406,7 +410,7 @@ console.log(selectedFilters)
               {/* add item */}
               <Link to='/catalog/add'>
                 <button type="button" class="btn cat-add-item">
-                  <i class="fa-solid fa-pen"></i>
+                  <FontAwesomeIcon icon={faPlus} className='icon'/>
                   Add item
                 </button>
               </Link>
