@@ -77,9 +77,7 @@ const AttendancePage = () => {
         
       <div className="content">
 
-      <div className="d-flex justify-content-center">
-          <Webcam height={300} width={300} mirrored='true'/>
-      </div>
+      
 
         
       <div>
