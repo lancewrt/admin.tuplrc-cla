@@ -77,8 +77,6 @@ const AttendancePage = () => {
         
       <div className="content">
 
-      
-
         
       <div>
         <div className="results">
