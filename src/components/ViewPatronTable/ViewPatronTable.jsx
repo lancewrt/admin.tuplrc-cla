@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import './ViewPatronTable.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import {faArrowLeft, faArrowRight, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import ViewPatronFilter from '../ViewPatronFilter/ViewPatronFilter';
 
 const ViewPatronTable = ({header, title, data, exportXLSX}) => {
@@ -150,9 +150,9 @@ const ViewPatronTable = ({header, title, data, exportXLSX}) => {
             <span className='m-0'>to</span>
             <input type="date" name="end_date" id="" onChange={handleChange}/>
             <button className='btn search' onClick={search}>Search</button> */}
-            <button className='btn search' onClick={reset}>Reset filter </button>
+            <button className='btn search fw-semibold' onClick={reset}>Clear filter </button>
           </div>
-          <button className="btn export" onClick={exportXLSX}>Export</button>
+          <button className="btn export fw-semibold" onClick={exportXLSX}>Export</button>
         </div>
         {/* table */}
         <table>
@@ -179,8 +179,15 @@ const ViewPatronTable = ({header, title, data, exportXLSX}) => {
                   <td>{item.att_log_in_time}</td>
                 </tr>
               ))
-              :<tr>
-                <td colSpan="2">No records found</td>
+              :
+              <tr>
+                <td colSpan="2" className='no-data-box text-center'>
+                  <div className='d-flex flex-column align-items-center gap-2 my-3'>
+                    <FontAwesomeIcon icon={faExclamationCircle} className="fs-2 no-data" />
+                    <span>No resources available.<br/>Please try a different filter.</span>
+                    {/* <button className='btn btn-secondary' onClick={reset}>Clear Filter</button> */}
+                  </div>
+                </td>
               </tr>
             :paginatedData.length!=0
             ?paginatedData.map(item=>(
@@ -195,7 +202,13 @@ const ViewPatronTable = ({header, title, data, exportXLSX}) => {
               </tr>
             ))
             :<tr>
-            <td colSpan="5">No records found</td>
+            <td colSpan="5" className='no-data-box text-center'>
+              <div className='d-flex flex-column align-items-center gap-2 my-3'>
+                <FontAwesomeIcon icon={faExclamationCircle} className="fs-2 no-data" />
+                <span>No resources available.<br/>Please try a different filter.</span>
+                {/* <button className='btn btn-secondary' onClick={reset}>Clear Filter</button> */}
+              </div>
+            </td>
           </tr>}
             
           </tbody>

@@ -95,6 +95,70 @@
     font-size: 0.9rem;
 }
 
+.dashboard-container .dash-box2{
+    /* width: 400px; */
+    background-color: var(--white);
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 1px 2px var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--tup-color);
+    height: 120px;
+}
+
+/* .dashboard-container .dash-box:hover{
+    background-color: var(--tup-color);
+    color: var(--white);
+} */
+
+.dashboard-container .dash-box2 .icon{
+    font-size: 1.5rem;
+    background-color: var(--shadow);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+
+.dashboard-container .dash-box2 .total-box{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+ .dashboard-container .dash-box2 .total-box .total{
+    font-size: 2.5rem;
+    font-weight: bold;
+    width: 100px;
+    height: 50px;
+    background-color: var(--shadow);
+ }
+
+.dashboard-container .dash-box2 .label{
+    font-size: 0.9rem;
+    width: 100px;
+    height: 20px; 
+    background-color: var(--shadow);
+}
+
+.dashboard-container .dash-box2 .icon,
+.dashboard-container .dash-box2 .total-box .total,
+.dashboard-container .dash-box2 .label {
+    animation: shimmer 1.5s infinite linear;
+    background: linear-gradient(to right, #e0e0e0 25%, #f5f5f5 50%, #e0e0e0 75%);
+    background-size: 200% 100%;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+
 .dashboard-container .bar-chart{
     background-color: var(--white);
     padding: 40px;
@@ -143,4 +207,80 @@
     width: 35px;
     height: 35px;
     color: var(--white);
+}
+
+.dashboard-container .top-choices-container2 {
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Loading Animations */
+@keyframes shimmer {
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: 200px 0;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.6;
+    }
+}
+
+/* Animated Number Circle */
+.dashboard-container .top-number2 {
+    background: linear-gradient(90deg, #E0E0E0 25%, rgba(255, 255, 255, 0.4) 50%, #E0E0E0 75%);
+    background-size: 400% 100%;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: shimmer 1.5s infinite linear;
+}
+
+/* Content Grid */
+.dashboard-container .top-choices-content2 {
+    display: grid;
+    grid-template-columns: 100px auto;
+    gap: 20px;
+}
+
+/* Cover Image Placeholder with Light Gray Shimmer */
+.dashboard-container .top-choices-cover2 {
+    width: 100%;
+    height: 130px;
+    border-radius: 5px;
+    background: linear-gradient(90deg, #E0E0E0 25%, rgba(255, 255, 255, 0.4) 50%, #E0E0E0 75%);
+    background-size: 400% 100%;
+    object-fit: cover;
+    animation: shimmer 1.5s infinite linear;
+}
+
+/* Details Placeholder */
+.dashboard-container .top-choices-details2 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 0.9rem;
+}
+
+/* Animated Placeholder Text */
+.dashboard-container .top-choices-details2 div {
+    width: 150px;
+    height: 25px;
+    background: linear-gradient(90deg, #E0E0E0 25%, rgba(255, 255, 255, 0.4) 50%, #E0E0E0 75%);
+    background-size: 400% 100%;
+    border-radius: 5px;
+    animation: shimmer 1.5s infinite linear;
 }

@@ -5,7 +5,7 @@ import { getAllFromStore, getAllUnsyncedFromStore, getBook, getBookPub, getCatal
 import { clearObjectStore, deleteResourceFromIndexedDB, markAsSynced } from '../../indexedDb/syncData'
 import ResourceStatusModal from '../ResourceStatusModal/ResourceStatusModal'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faArrowRight, faSearch, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faArrowRight, faSearch, faPlus, faBarcode, faArrowsRotate, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux'
 
@@ -32,6 +32,9 @@ const Catalog = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
+    if(isOnline == null){
+      return 
+    }
     const fetchData = async () => {
       if (isOnline) {
         getType();
@@ -404,32 +407,46 @@ console.log(selectedFilters)
     <div className='cat-container'>
       <h1>Catalog</h1>
       {/* <img src="https://barcodeapi.org/api/128/9789719654025" /> */}
-        <div className='cat-buttons'>
           {/* add and scan item buttons */}
           <div className="add-scan-item">
-              {/* add item */}
+            <div className='d-flex gap-1'>
+              {/* add item  */}
               <Link to='/catalog/add'>
                 <button type="button" class="btn cat-add-item">
-                  <FontAwesomeIcon icon={faPlus} className='icon'/>
+                <FontAwesomeIcon icon={faPlus} className='icon'/>
                   Add item
                 </button>
               </Link>
+              {/* generate barcode */}
+              {/* <Link to='/catalog/generate-barcode'>
+                <button type="button" class="btn cat-add-item">
+                  <FontAwesomeIcon icon={faBarcode} className='icon'/>
+                  Generate Barcode
+                </button>
+              </Link> */}
+              {/* generate barcode */}
+              {/* <Link to='/catalog/manage-catalog'>
+                <button type="button" class="btn cat-add-item">
+                  <FontAwesomeIcon icon={faPenToSquare} className='icon'/>
+                  Manage Catalog
+                </button>
+              </Link> */}
+            </div>
+              
               {/* sync*/}
               {isOnline?
-              <div className="add-author-publisher">
+              <div>
                   {/* sync to database */}
                   <button
                   className='btn sync-2-db'
                   onClick={syncData2DB}
                   disabled={!isOnline}
-                  title='You need internet connection to sync to database.'
+                  title='Sync offline data to online.'
                 >
-                  Sync offline data to database
+                  <FontAwesomeIcon icon={faArrowsRotate} />
                 </button>
               </div>:''}
           </div>
-         
-        </div>
         
         {/* search-filter */}
           <div className="search-filter">

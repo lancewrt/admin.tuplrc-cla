@@ -9,6 +9,7 @@ import ActivateModal from '../ActivateModal/ActivateModal';
 import axios from 'axios';
 import Loading from '../Loading/Loading';
 import ResourceStatusModal from '../ResourceStatusModal/ResourceStatusModal';
+import Swal from 'sweetalert2'
 
 const Accounts = () => {
   const [openCreateUser, setOpenCreateUser] = useState(false);
@@ -24,12 +25,12 @@ const Accounts = () => {
     password: '',
     confirmPassword: '',
   });
+  const [toEditAccount, setToEditAccount] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState({});
   const [errorEdit, setErrorEdit] = useState({});
   const [statusModal, setStatusModal] = useState(false);
   const [statusModalContent, setStatusModalContent] = useState({ status: '', message: '' });
-  const [toEditAccount, setToEditAccount] = useState({});
   const [selectedUname, setSelectedUname] = useState('');
   const [selectedId, setSelectedId] = useState('');
   const [pagination, setPagination] = useState(5); // Items per page
@@ -171,6 +172,18 @@ const Accounts = () => {
 
   // Edit user account
   const editUserAccount = async (id) => {
+    const result = await Swal.fire({
+      title: "Are you sure",
+      text: `You want to edit this user?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#54CB58",
+      cancelButtonColor: "#94152b",
+      confirmButtonText: "Yes, edit!"
+    });
+
+    if (!result.isConfirmed) return; // Exit if user cancels
+
     formValidationEdit();
     if (Object.keys(errorEdit).length === 0) {
       setLoading(true);
@@ -178,11 +191,14 @@ const Accounts = () => {
         console.log('Editing account with id: ', id);
         appendToEditAccount('username', staffUname);
         const response = await axios.put(`https://api.tuplrc-cla.com/api/account/${id}`, toEditAccount);
-        if (response.data.status === 201) {
-          console.log("to edit", toEditAccount)
-          setEditUser(false);
-          setStatusModal(true);
-          setStatusModalContent({ status: 'success', message: response.data.message });
+        const result2 = await Swal.fire({
+          title: "Edited!",
+          text: `You edited the user successfully.`,
+          icon: "success"
+        });
+
+        if(result2.isConfirmed){
+          window.location.reload()
         }
       } catch (err) {
         console.log('Cannot edit account. An error occurred: ', err.message);
@@ -193,17 +209,34 @@ const Accounts = () => {
   };
 
   // Deactivate user
-  const deactivateUser = async () => {
+  const deactivateUser = async (uname, id) => {
+
+    const result = await Swal.fire({
+          title: "Are you sure",
+          text: `You want to deactivate '${uname}'?`,
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#54CB58",
+          cancelButtonColor: "#94152b",
+          confirmButtonText: "Yes, deactivate!"
+    });
+
+    if (!result.isConfirmed) return; // Exit if user cancels
+
     setLoading(true);
     try {
       console.log('account: ', staffUname)
-      const response = await axios.put(`https://api.tuplrc-cla.com/api/account/deactivate/${selectedId}`, {staffUname});
-      if (response.data.status === 201) {
-        setOpenDeactivate(false);
-        setStatusModal(true);
-        setStatusModalContent({ status: 'success', message: response.data.message });
+      const response = await axios.put(`https://api.tuplrc-cla.com/api/account/deactivate/${id}`, {staffUname});
+      const result2 = await Swal.fire({
+        title: "Deactivated!",
+        text: `${uname} deactivated successfully.`,
+        icon: "success"
+      });
+
+      if(result2.isConfirmed){
+        window.location.reload()
       }
-      window.location.reload();
+      
     } catch (err) {
       console.log('Cannot deactivate user. An error occurred: ', err.message);
     } finally {
@@ -212,15 +245,32 @@ const Accounts = () => {
   };
 
   // Activate user
-  const activateUser = async () => {
+  const activateUser = async (uname, id) => {
+    const result = await Swal.fire({
+      title: "Are you sure",
+      text: `You want to activate '${uname}'?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#54CB58",
+      cancelButtonColor: "#94152b",
+      confirmButtonText: "Yes, activate!"
+    });
+
+    if (!result.isConfirmed) return; // Exit if user cancels
+
     setLoading(true);
     try {
-      const response = await axios.put(`https://api.tuplrc-cla.com/api/account/activate/${selectedId}`, {staffUname});
-      if (response.data.status === 201) {
-        setOpenActivate(false);
-        setStatusModal(true);
-        setStatusModalContent({ status: 'success', message: response.data.message });
+      const response = await axios.put(`https://api.tuplrc-cla.com/api/account/activate/${id}`, {staffUname});
+      const result2 = await Swal.fire({
+        title: "Activated!",
+        text: `${uname} activated successfully.`,
+        icon: "success"
+      });
+
+      if(result2.isConfirmed){
+        window.location.reload()
       }
+
     } catch (err) {
       console.log('Cannot activate user. An error occurred: ', err.message);
     } finally {
@@ -251,17 +301,6 @@ const Accounts = () => {
     getToEdit(id);
   };
 
-  const handleDeac = (uname, id) => {
-    setOpenDeactivate(true);
-    setSelectedUname(uname);
-    setSelectedId(id);
-  };
-
-  const handleAct = (uname, id) => {
-    setOpenActivate(true);
-    setSelectedUname(uname);
-    setSelectedId(id);
-  };
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
@@ -345,7 +384,7 @@ const Accounts = () => {
     setErrorEdit(err);
   };
 
-  console.log(selectedFilters)
+  console.log(toEditAccount)
 
   return (
     <div className="accounts-container">
@@ -440,11 +479,11 @@ const Accounts = () => {
                 </button>
                 {/* Deactivate / Activate */}
                 {item.staff_status === 'active' ? (
-                  <button className="btn deac-acc-btn" onClick={() => handleDeac(item.staff_uname, item.staff_id)} title='Deactivate user'>
+                  <button className="btn deac-acc-btn" onClick={() => deactivateUser(item.staff_uname, item.staff_id)} title='Deactivate user'>
                     <FontAwesomeIcon icon={faUserSlash} />
                   </button>
                 ) : (
-                  <button className="btn deac-acc-btn" onClick={() => handleAct(item.staff_uname, item.staff_id)} title='Activate user'>
+                  <button className="btn deac-acc-btn" onClick={() => activateUser(item.staff_uname, item.staff_id)} title='Activate user'>
                     <FontAwesomeIcon icon={faUser} />
                   </button>
                 )}

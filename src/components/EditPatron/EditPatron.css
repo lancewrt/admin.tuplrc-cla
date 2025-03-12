@@ -63,21 +63,17 @@
 }
 
 .edit-patron-back-button{
-    width: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    padding: 5px;
-    border-radius: 20px;
     color: var(--button);
     border: 1px solid var(--button);
     background-color: var(--white);
     transition: all 0.2s linear;
 }
 
-.edit-patron-back-button:hover{
+.edit-patron-back-button:hover,
+.edit-patron-back-button:focus,
+.edit-patron-back-button:active{
     background-color: var(--button);
+    /* border: 1px solid var(--button); */
     color: var(--white);
 
 }
@@ -139,8 +135,8 @@
 }
 
 
-.patron-input-box select {
-    border-color: var(--tup-color);
+.patron-input-box select, .patron-input-box input {
+    border: 1px solid var(--tup-color) !important;
     background-color: var(--white);
 }
 
@@ -159,9 +155,8 @@
     margin-right: auto; /* Align to the left */
 }
 
-
-.save-button:hover {
-    background-color: var(--button-hover); /* Darker green on hover */
+.save-button:disabled{
+    background-color: var(--shadow);
 }
 
 .patron-error{
@@ -169,50 +164,4 @@
     color: var(--tup-color);
     font-style: italic;
     font-size: 12px;
-}
-
-
-
-.patron-photo{
-    display: none;
-}
-
-.patron-photo-box{
-    background-color: var(--white);
-    height: 300px;
-    width: 300px;
-    border-radius: 50%;
-    margin: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid var(--table-border-bottom);
-    overflow: hidden !important;
-}
-
-.photo-edit{
-    background-color: var(--white) !important;
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50%;
-    padding: 20px;
-    border: 1px solid var(--table-border-bottom);
-    right: 50px;
-    bottom: 20px;
-}
-
-.photo-edit .icon{
-    font-size: 2rem;
-}
-
-.patron-image{
-   width: 100%;
-   object-fit: fill;
-}
-
-.no-profile{
-    font-size: 10rem;
-    color: var(--table-border-bottom);
 }

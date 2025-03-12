@@ -37,3 +37,4 @@ const DeactivateModal = ({open, close,uname,deactivateUser}) => {
 }
 
 export default DeactivateModal
+

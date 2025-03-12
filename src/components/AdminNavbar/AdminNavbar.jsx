@@ -3,7 +3,7 @@ import './AdminNavbar.css';
 import tuplogo from '../../assets/tuplogo.png';
 import clalogo from '../../assets/clalogo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFile, faChartSimple, faFileLines, faCartShopping, faUser, faList, faFileExcel, faUsersGear, faUserPlus, faBookOpenReader, faLayerGroup, faBook, faArrowDown, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faFile, faChartSimple, faFileLines, faCartShopping, faUser, faList, faFileExcel, faUsersGear, faUserPlus, faBookOpenReader, faLayerGroup, faBook, faArrowDown, faChevronDown, faBarcode, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Loading from '../Loading/Loading';
 import axios from 'axios';
@@ -97,6 +97,26 @@ const AdminNavbar = () => {
                             <div className='menu'>
                                <div><FontAwesomeIcon icon={faList} className='menu-icon'/></div>
                                 <div><p>Cataloging</p></div>
+                            </div>
+                        </Link>
+                    </li>
+
+                    {/* generate barcode */}
+                    <li className={currentPathname=='/catalog'?'selected-sub':''}>
+                        <Link to='/catalog/generate-barcode'className='d-flex align-items-center gap-3 ps-4'>
+                            <div className='menu'>
+                               <div><FontAwesomeIcon icon={faBarcode} className='menu-icon'/></div>
+                                <div><p>Generate Barcode</p></div>
+                            </div>
+                        </Link>
+                    </li>
+
+                    {/* manage catalog */}
+                    <li className={currentPathname=='/catalog'?'selected-sub':''}>
+                        <Link to='/catalog/manage-catalog'className='d-flex align-items-center gap-3 ps-4'>
+                            <div className='menu'>
+                               <div><FontAwesomeIcon icon={faPenToSquare} className='menu-icon'/></div>
+                                <div><p>Manage Catalog</p></div>
                             </div>
                         </Link>
                     </li>

@@ -2,7 +2,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom';
 import './DashBox.css'
 
-const DashBox = ({icon, title,total}) => {
+const DashBox = ({icon, title,total, loading}) => {
   const navigate = useNavigate();
 
 
@@ -24,14 +24,27 @@ const DashBox = ({icon, title,total}) => {
         console.log('Invalid. Please try again later')
     }
   }
+
   return (
-    <div className="dash-box col" onClick={handleClick}>
+    <>
+    {loading
+    ?<div className="dash-box2 col">
+        <div className="total-box">
+            <span className='total'></span>
+            <span className='label'></span>
+        </div>
+        <div className="icon"></div>
+    </div>
+    :<div className="dash-box col" onClick={handleClick}>
         <div className="total-box">
             <span className='total'>{total}</span>
             <span className='label'>{title}</span>
         </div>
         {icon}
-    </div>
+    </div>}
+    </>
+    
+    
   )
 }
 

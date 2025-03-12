@@ -113,11 +113,7 @@
     text-align: start;
     outline: 1px solid var(--tup-color);
     width: 100%;
-    table-layout: fixed; /* Fix column width */
-    
 }
-
-
 
 .audit-container table thead tr td,
 .audit-container table tbody tr td {
@@ -126,13 +122,11 @@
     white-space: normal; /* Allow text to wrap */
     overflow-wrap: break-word; /* Break long words if necessary */
      /* Adjust this value as needed for consistent cell size */
+     font-size: 0.8rem !important;
 }
 
 .audit-container table thead {
     background-color: var(--tup-color);
-   
-    table-layout: fixed;
-    
 }
 
 
@@ -162,4 +156,9 @@
 
 .audit-container table tbody tr:nth-child(even) {
     background-color: var(--light-red);
+}
+
+.audit-container .pagination div button{
+    border: none;
+    color: var(--tup-color);
 }

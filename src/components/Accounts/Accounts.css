@@ -136,7 +136,6 @@
     background-color: var(--tup-color);
     color: var(--white);
 }
-
 .accounts-container .pagination{
     display: flex;
     align-items: center;

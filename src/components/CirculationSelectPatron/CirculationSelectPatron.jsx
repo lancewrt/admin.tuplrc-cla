@@ -3,7 +3,7 @@ import axios from 'axios';
 import './CirculationSelectPatron.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faArrowRight, faExclamationCircle, faSearch } from '@fortawesome/free-solid-svg-icons';
 
 const CirculationSelectPatron = () => {
   const navigate = useNavigate();
@@ -54,16 +54,17 @@ const CirculationSelectPatron = () => {
   const handleSearch = () => {
     const query = searchQuery.toLowerCase();
     const filtered = patrons.filter((patron) => {
-      return (
-        patron.tup_id.toLowerCase().includes(query) ||
-        `${patron.patron_fname} ${patron.patron_lname}`.toLowerCase().includes(query) ||
-        patron.category.toLowerCase().includes(query) ||
-        patron.course_name.toLowerCase().includes(query)
-      );
+        return (
+            (patron.tup_id?.toLowerCase() || "").includes(query) ||
+            (`${patron.patron_fname || ''} ${patron.patron_lname || ''}`.toLowerCase()).includes(query) ||
+            (patron.category?.toLowerCase() || "").includes(query) ||
+            (patron.course_name?.toLowerCase() || "").includes(query)
+        );
     });
     setFilteredPatrons(filtered);
     setCurrentPage(1);
-  };
+};
+
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -81,6 +82,15 @@ const CirculationSelectPatron = () => {
 
   // Determine the action to display in the UI
   const actionText = localStorage.getItem('clickedAction') === 'Check Out' ? 'Check out item for' : 'Check in item for';
+
+  const clearFilter = () => {
+    setSearchQuery('');
+    setFilteredPatrons(patrons); // Reset to full patron list
+    setCurrentPage(1);
+    searchInputRef.current?.focus(); // Refocus input
+};
+
+
 
   return (
     <div className='circ-select-patron-container'>
@@ -106,7 +116,9 @@ const CirculationSelectPatron = () => {
           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           placeholder="Search by name, ID, category, or course, or simply scan the student ID."
         />
-        <button className="btn" onClick={handleSearch}>Search</button>
+        <button className="btn" onClick={handleSearch}>
+          <FontAwesomeIcon icon={faSearch} className='icon'/>
+        </button>
       </div>
 
       {/* list of patrons */}
@@ -124,7 +136,11 @@ const CirculationSelectPatron = () => {
 
 
         {filteredPatrons.length === 0 ? (
-          <div className="no-patrons">No patrons found</div>
+          <div className='d-flex flex-column align-items-center gap-2 my-3 text-center'>
+            <FontAwesomeIcon icon={faExclamationCircle} className="fs-2 no-data" />
+            <span>'{searchQuery}' user not found.<br/>Please try again.</span>
+            <button className='btn btn-secondary' onClick={clearFilter}>Clear Filter</button>
+          </div>
         ) : (
           currentItems.map((patron, index) => {
             const isCheckIn = localStorage.getItem('clickedAction') === 'Check In';
@@ -132,11 +148,11 @@ const CirculationSelectPatron = () => {
               <Link to={`/circulation/patron/item/${patron.patron_id}`} key={index}>
                 <div className="row patron">
                   <div className="col"><input type="radio" /> {patron.tup_id}</div>
-                  <div className="col-3 text-start d-flex align-items-center">
+                  <div className="col-3 text-start d-flex align-items-center justify-content-center">
                     {patron.patron_fname} {patron.patron_lname}
                   </div>
                   <div className="col d-flex align-items-center justify-content-center">{patron.category}</div>
-                  <div className="col-3 d-flex align-items-center">{patron.course_name}</div>
+                  <div className="col-3 d-flex align-items-center justify-content-center">{patron.course_name==null?'No course':patron.course_name}</div>
                   <div className="col-2 d-flex align-items-center justify-content-center">{patron.total_checkouts}</div>
                 </div>
               </Link>

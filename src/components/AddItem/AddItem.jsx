@@ -9,12 +9,10 @@ import { initDB } from '../../indexedDb/initializeIndexedDb';
 import { getAllFromStore } from '../../indexedDb/getDataOffline';
 import { saveResourceOffline } from '../../indexedDb/saveResourcesOffline';
 import { viewResourcesOffline } from '../../indexedDb/viewResourcesOffline';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
 import { editResourceOffline } from '../../indexedDb/editResourcesOffline';
 import { useSelector } from 'react-redux';
-
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
 
 const AddItem = () => {
     //pag may id, nagiging view ung purpose ng add item component
@@ -28,7 +26,7 @@ const AddItem = () => {
         mediaType: '1',
         authors: [],
         genre: [],
-        isCirculation: false,
+        isCirculation: true,
         publisher_id: 0,
         publisher: '',
     });
@@ -70,7 +68,7 @@ const AddItem = () => {
                 setBookData({
                     mediaType: bookData.mediaType, // keep the changed mediaType
                     authors: [],
-                    isCirculation: false,
+                    isCirculation: true,
                     publisher_id: 0,
                     publisher: '',
                 });

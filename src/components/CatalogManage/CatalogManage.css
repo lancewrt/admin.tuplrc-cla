@@ -1,0 +1,139 @@
+@font-face {
+    font-family: 'Inter';
+    font-weight: 400;
+    src: url('../../assets/Fonts/Inter_24pt-Regular.ttf') format('ttf');
+}
+
+::-webkit-scrollbar-corner { background: rgba(0,0,0,0.5); }
+
+    
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter';
+    text-decoration: none;
+}
+
+:root{
+    --black:#1F1F1F;
+    --gray:#c2c2c2;
+    --tup-color: #94152b;
+    --tup-color-hover: #7c1224;
+    --white: #fff;
+    --button:  #97170E;
+    --button-hover:  #75110a;
+    --shadow: #0000003b;
+    --yellow: #FFE900;
+    --yellow-hover:#FEDD00;
+    --yellow-filter: brightness(0) saturate(10%) invert(90%) sepia(41%) saturate(1000%) hue-rotate(332deg) brightness(103%) contrast(103%);
+    --white-filter:  brightness(100%) saturate(0) invert(100%) sepia(0) saturate(0) hue-rotate(0) brightness(1000%) contrast(100%);
+    --green: #54CB58;
+    --light-gray: #F7F7F7;
+    --blue: #5499CB;
+    --table-header: #6F6A6A;
+    --disabled: #b9b9b9;
+    --table-border-bottom:#d9d9d93d;
+    --light-red: rgba(148, 21, 43, 0.1);
+}
+
+.manage-catalog{
+    padding: 10px 70px 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    overflow-x: hidden;   
+    overflow-y: hidden;
+}
+
+.manage-catalog h1{
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--black);
+    margin: 0;
+}
+
+.manage-catalog .back-path{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.manage-catalog .back-path button{
+    background-color: var(--white);
+    border-color: var(--tup-color);
+    color: var(--tup-color);
+}
+
+.manage-catalog .back-path button:hover,
+.manage-catalog .back-path button:active,
+.manage-catalog .back-path button:focus{
+    background-color: var(--tup-color);
+    border-color: var(--tup-color);
+    color: var(--white);
+}
+
+.manage-catalog .back-path p{
+    margin: 0;
+}
+
+.manage-catalog .back-path p span{
+    color: var(--tup-color);
+    font-weight: bold;
+}
+
+.manage-catalog .dept-btn .icon{
+    color: var(--tup-color);
+}
+
+.manage-catalog .add-dept-btn{
+    background-color: var(--tup-color);
+    color: var(--white);
+}
+
+.manage-catalog .add-dept-btn:hover,
+.manage-catalog .add-dept-btn:active,
+.manage-catalog .add-dept-btn:focus{
+    background-color: var(--button);
+    color: var(--white);
+}
+
+.manage-catalog .selected{
+    background-color: var(--table-border-bottom);
+}
+
+.manage-catalog .edit-btn{
+    color: var(--tup-color);
+}
+
+
+.manage-catalog .instructions{
+    color: var(--tup-color);
+    font-size: 0.8rem;
+}
+
+.manage-catalog .add-topic{
+    color: var(--tup-color);
+}
+
+.manage-catalog .add-topic:hover,
+.manage-catalog .add-topic:active,
+.manage-catalog .add-topic:focus{
+    color: var(--tup-color);
+    border: none;
+}
+
+.manage-catalog .trash-btn{
+    color: var(--tup-color);
+}
+
+.manage-catalog input{
+    border: 1px solid var(--tup-color);
+}
+
+.btn-secondary {
+    background-color: transparent !important;
+    color: #1F1F1F;
+    border: none;
+}

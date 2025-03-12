@@ -12,7 +12,6 @@
     text-decoration: none;
 }
 
-
 :root{
     --black:#1F1F1F;
     --tup-color: #94152B;
@@ -64,7 +63,7 @@
 
 
 .patrons-container .patrons-search-bar{
-    height: 40px;
+    height: 50px;
     padding: 10px;
     padding-left: 15px;
     width: 600px;
@@ -79,7 +78,11 @@
 }
 
 .patrons-container .patrons-search-button{
-    max-height: 40px;
+    width: 50px;
+}
+
+.patrons-container .patrons-search-button, .patrons-container .patrons-add-btn{
+    height: 50px;
     border: none;
     background-color: var(--tup-color);
     color: var(--white);
@@ -216,4 +219,26 @@
 .patron-edit-button:hover,
 .patron-view-button:hover {
     opacity: 0.8;
+}
+
+.patrons-container select{
+    height: 50px;
+}
+
+.patrons-container .no-data{
+    color: var(--tup-color);
+}
+
+.patrons-container .sort{
+    height: auto;
+    width: 20px;
+    background-color: transparent;
+    border: none;
+    margin-left: 5px;
+    color: var(--white);
+    cursor: pointer;
+}
+
+.patrons-container .sort option{
+    color: var(--black);
 }

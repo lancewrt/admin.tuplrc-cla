@@ -31,6 +31,7 @@ const ResourceStatusModal = ({ open, content, close, path }) => {
         return null;
     }
 
+
     return (
         <div className="res-status-container">
             {/* Overlay */}
@@ -45,7 +46,6 @@ const ResourceStatusModal = ({ open, content, close, path }) => {
                     onClick={() => {
                         close();
                         !path?navigate('/catalog'):navigate(path)
-                      
                     }}
                 >
                     Okay

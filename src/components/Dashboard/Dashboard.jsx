@@ -15,14 +15,31 @@ import { setBorrowedStats, setVisitorStats } from '../../features/chartSlice.js'
 const Dashboard = () => {
   const [dateTime,setDateTime] = useState(new Date());
   const [uname, setUname] = useState(null)
+
   const [totalVisitors, setTotalVisitors] = useState("");
+  const [totalVisitorsLoading, setTotalVisitorsLoading] = useState(false);
+
   const [totalBorrowed, setTotalBorrowed] = useState("");
+  const [totalBorrowedLoading, setTotalBorrowedLoading] = useState(false);
+
   const [totalReturned, setTotalReturned] = useState("");
+  const [totalReturnedLoading, setTotalReturnedLoading] = useState(false);
+
   const [totalOverdue, setTotalOverdue] = useState("");
+  const [totalOverdueLoading, setTotalOverdueLoading] = useState(false);
+
   const [overdueBooks, setOverdueBooks] = useState([]);
+  const [overdueBooksLoading, setOverdueBooksLoading] = useState(false);
+
   const [bookList, setBookList] = useState([]);
+  const [bookListLoading, setBookListLoading] = useState(false);
+
   const [issuedBooks, setIssuedBooks] = useState([]);
+  const [issuedBooksLoading, setIssuedBooksLoading] = useState(false);
+
   const [popularChoices, setPopularChoices] = useState([]);
+  const [popularChoicesLoading, setPopularChoicesLoading] = useState(false);
+  
   const overdueListHeader = ["Tup ID","Borrower's Name","Book ID","Title","Overdue Days"];
   const bookListHeader = ["Book ID","Title","Author","Copies Available"];
   const bookIssuedHeader = ["Tup ID","Title","Return Date"];
@@ -61,50 +78,71 @@ const Dashboard = () => {
 
   //total visitors
   const getTotalVisitors = async () => {
+    setTotalVisitorsLoading(true)
     try {
       const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/total-visitors`);
       setTotalVisitors(response.data.total_attendance); // Adjust based on your backend response
       console.log(response.data);
     } catch (err) {
       console.error("Error fetching total visitors:", err.message);
+    } finally{
+      setTimeout(()=>{
+        setTotalVisitorsLoading(false)
+      },3000)
     }
   };
 
   //total borrowed
   const getTotalBorrowed = async () => {
+    setTotalBorrowedLoading(true)
     try {
       const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/total-borrowed`);
       setTotalBorrowed(response.data.total_borrowed); // Adjust based on your backend response
       console.log(response.data);
     } catch (err) {
       console.error("Error fetching total borrowed books:", err.message);
+    } finally{
+      setTimeout(()=>{
+        setTotalBorrowedLoading(false)
+      },3000)
     }
   };
 
   //total returned
   const getTotalReturned = async () => {
+    setTotalReturnedLoading(true)
     try {
       const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/total-returned`);
       setTotalReturned(response.data.total_returned); // Adjust based on your backend response
       console.log(response.data);
     } catch (err) {
       console.error("Error fetching total returned books:", err.message);
+    } finally{
+      setTimeout(()=>{
+        setTotalReturnedLoading(false)
+      },3000)
     }
   };
 
   //total overdue
   const getTotalOverdue = async () => {
+    setTotalOverdueLoading(true)
     try {
       const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/total-overdue`);
       setTotalOverdue(response.data.total_overdue); // Adjust based on your backend response
       console.log(response.data);
     } catch (err) {
       console.error("Error fetching total overdue books:", err.message);
+    } finally{
+      setTimeout(()=>{
+        setTotalOverdueLoading(false)
+      },3000)
     }
   };
 
   //overdue books
   const getOverdueBooks = async () => {
+    setOverdueBooksLoading(true)
     try {
         await axios.get(`https://api.tuplrc-cla.com/api/dashboard/overdue-books`)
         .then(response=>{
@@ -113,6 +151,10 @@ const Dashboard = () => {
         })
     } catch (error) {
         console.error('Error fetching overdue books:', error);
+    } finally{
+      setTimeout(()=>{
+        setOverdueBooksLoading(false)
+      },3000)
     }
   };
 
@@ -123,7 +165,7 @@ const Dashboard = () => {
       const books = response.data;
       console.log(books)
       const borrowingTrends = books.map(item=>
-        item.total_books_borrowed
+        item.total_checkouts
       )
       dispatch(setBorrowedStats(borrowingTrends))
     }catch(err){
@@ -149,34 +191,50 @@ const Dashboard = () => {
 
   //books list
   const getBookList = async()=>{
+    setBookListLoading(true);
     try {
       const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/book-list`).then(res=>res.data);
       setBookList(response)
       console.log(response)
     } catch (err) {
         console.log(err.message);
+    } finally{
+      setTimeout(()=>{
+        setBookListLoading(false)
+      },3000)
     }
   }
 
    //book issued
    const getIssued = async()=>{
+    setIssuedBooksLoading(true)
     try {
       const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/issued-books`).then(res=>res.data);
       setIssuedBooks(response)
       console.log(response)
     } catch (err) {
         console.log(err.message);
+    } finally{
+      setTimeout(()=>{
+        setIssuedBooksLoading(false)
+      },3000)
     }
   }
 
   //book issued
   const getPopularChoices = async()=>{
+    setPopularChoicesLoading(true);
     try {
       const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/popular-choices`).then(res=>res.data);
       setPopularChoices(response)
       console.log(response)
     } catch (err) {
         console.log(err.message);
+    } finally{
+      setTimeout(()=>{
+        setPopularChoicesLoading(false);
+      },3000)
+      
     }
   }
 
@@ -200,16 +258,16 @@ const Dashboard = () => {
         {/* column 1 */}
         <div className="dashboard-1 row gap-3">
           {/* total visitors */}
-          <DashBox icon={<FontAwesomeIcon icon={faUsers} className='icon'/>} title={"Total Visits"} total={totalVisitors}/>
+          <DashBox icon={<FontAwesomeIcon icon={faUsers} className='icon'/>} title={"Total Visits"} total={totalVisitors} loading={totalVisitorsLoading}/>
 
           {/* borrowed resources */}
-          <DashBox icon={<FontAwesomeIcon icon={faBookBookmark} className='icon'/>} title={"Borrowed Resources"} total={totalBorrowed}/>
+          <DashBox icon={<FontAwesomeIcon icon={faBookBookmark} className='icon'/>} title={"Borrowed Resources"} total={totalBorrowed} loading={totalBorrowedLoading}/>
 
           {/* returned resources */}
-          <DashBox icon={<FontAwesomeIcon icon={faBook} className='icon'/>} title={"Returned Resources"} total={totalReturned}/>
+          <DashBox icon={<FontAwesomeIcon icon={faBook} className='icon'/>} title={"Returned Resources"} total={totalReturned} loading={totalReturnedLoading}/>
           
           {/* overdue resources */}
-          <DashBox icon={<FontAwesomeIcon icon={faTriangleExclamation} className='icon'/>} title={"Overdue Resources"} total={totalOverdue}/>
+          <DashBox icon={<FontAwesomeIcon icon={faTriangleExclamation} className='icon'/>} title={"Overdue Resources"} total={totalOverdue} loading={totalOverdueLoading}/>
 
           {/* bar chart */}
           <div className="bar-chart col-12">
@@ -223,7 +281,7 @@ const Dashboard = () => {
               <h5 className='m-0'>Overdue Book List</h5>
               {/* <button className='see-all btn'>See all</button> */}
             </div>
-            <DashboardTable header={overdueListHeader} data={overdueBooks} type={"overdue"}/>
+            <DashboardTable header={overdueListHeader} data={overdueBooks} type={"overdue"} loading={overdueBooksLoading}/>
           </div>
 
           {/* book list */}
@@ -245,7 +303,7 @@ const Dashboard = () => {
               
             </div>
             
-            <DashboardTable header={bookListHeader}  data={bookList} type={"books"}/>
+            <DashboardTable header={bookListHeader}  data={bookList} type={"books"} loading={bookListLoading}/>
           </div>
         </div>
 
@@ -254,9 +312,25 @@ const Dashboard = () => {
           {/* top choices*/}
           <div className="top-choices d-flex flex-column gap-3">
             <h5>Popular Choices</h5>
-            {popularChoices ? popularChoices.map((item, index) => (
+            {popularChoicesLoading?[1,2,3,4,5].map(item=>(
+              <div className='top-choices-container d-flex align-items-center gap-3'>
+                <div>
+                    <div className='m-0 top-number2 d-flex align-items-center justify-content-center'></div>
+                </div>
+                <div className='top-choices-content2'>
+                    <div>
+                      <div className='top-choices-cover2'></div>
+                    </div>
+                    <div className='top-choices-details2'>
+                        <div className='m-0 fw-semibold'></div>
+                        <div className='mt-1'></div>
+                        <div className='mt-2'></div>
+                    </div>
+                </div>
+            </div>
+            )):popularChoices ? popularChoices.map((item, index) => (
               <DashboardTopChoices key={index} data={item} number={index + 1} />
-            )) : ''} 
+            )) : ''}
           </div>
 
           {/* books issued list */}
@@ -264,7 +338,7 @@ const Dashboard = () => {
             <div className='d-flex align-items-center justify-content-between'>
               <div className='d-flex align-items-center justify-content-start gap-3 py-3'>
                 <h5 className='m-0'>Books Issued</h5>
-                <p className='books-issued-total m-0 d-flex align-items-center justify-content-center rounded-5'>{issuedBooks&&issuedBooks.length}</p>
+                <p className='books-issued-total m-0 d-flex align-items-center justify-content-center rounded-5'>{issuedBooks&&issuedBooksLoading?'':issuedBooks.length}</p>
               </div>
               <Link to='/circulation'>
                 <button className='btn see-all'>See all</button>
@@ -272,7 +346,7 @@ const Dashboard = () => {
               
             </div>
             
-            <DashboardTable header={bookIssuedHeader} data={issuedBooks} type={"issued"}/>
+            <DashboardTable header={bookIssuedHeader} data={issuedBooks} type={"issued"} loading={issuedBooksLoading}/>
           </div>
 
         </div>

@@ -47,6 +47,7 @@
 
 .logbook-container .log-search-bar{
     width: 50%;
+    height: 50px;
 }
 
 .logbook-container .logbook-search{
@@ -60,7 +61,10 @@
     color: var(--white);
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 5px;
+    width: 50px;
+    padding: 0;
 }
 
 .logbook-container .log-search-button:hover,.logbook-container .log-search-button:focus{
@@ -77,6 +81,7 @@
 
 .logbook-container .logbook-filters select{
     width: 100px;
+    height: 50px;
 }
 
 .logbook-container .logbook-table{
@@ -136,3 +141,8 @@
     color: var(--white);
     background-color: var(--tup-color)   ;
 }
+
+.logbook-container .no-data{
+    color: var(--tup-color);
+}
+

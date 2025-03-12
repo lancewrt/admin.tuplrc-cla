@@ -3,7 +3,7 @@ import axios from 'axios'
 import './Logbook.css'
 import { useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faArrowLeft, faArrowRight} from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faArrowLeft, faArrowRight, faExclamationCircle} from '@fortawesome/free-solid-svg-icons';
 import * as XLSX from 'xlsx'; // Import xlsx for Excel export
 
 const Logbook = () => {
@@ -14,7 +14,7 @@ const Logbook = () => {
     const [entriesPerPage, setEntriesPerPage] = useState(5);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalEntries, setTotalEntries] = useState(0); // Total number of entries
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
     const location = useLocation();
 
     /* useEffect(() => {
@@ -24,13 +24,31 @@ const Logbook = () => {
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const filterToday = params.get('filter') === 'today';
-
+    
         if (filterToday) {
             fetchTodayEntries();
         } else {
-            getPatron();
+            if (searchInput !== '') {
+                getPatron(); // Fetch once if searchInput is not empty
+            } else {
+                const interval = setInterval(getPatron, 1000); // Start polling if searchInput is empty
+    
+                return () => clearInterval(interval); // Cleanup on unmount or re-run
+            }
         }
-    }, [location.search, currentPage, entriesPerPage]);
+    }, [location.search, currentPage, entriesPerPage, searchInput]); // Add searchInput to dependency array
+    
+
+    function backupData() {
+        const backup = localStorage.getItem("backupData");
+        const parsedData = backup ? JSON.parse(backup) : [];
+        setPatron(parsedData)
+        if (backup) {
+            console.log("Using backup data:", JSON.parse(backup));
+        } else {
+            console.log("No backup data available.");
+        }
+    }
 
     const getPatron = async () => {
         setLoading(true)
@@ -58,16 +76,7 @@ const Logbook = () => {
         }
     };
 
-    function backupData() {
-        const backup = localStorage.getItem("backupData");
-        const parsedData = backup ? JSON.parse(backup) : [];
-        setPatron(parsedData)
-        if (backup) {
-            console.log("Using backup data:", JSON.parse(backup));
-        } else {
-            console.log("No backup data available.");
-        }
-    }
+    
 
     const fetchTodayEntries = async () => {
         setLoading(true);
@@ -156,6 +165,7 @@ const Logbook = () => {
                         onChange={(e) => setSearchInput(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter') {
+                               
                               getPatron();
                             }
                           }}
@@ -220,18 +230,23 @@ const Logbook = () => {
                             ))
                         ) : patron.length==0 && !loading?(
                             <tr>
-                                <td colSpan="10">No records available</td>
+                                <td colSpan="10" className='no-data-box text-center'>
+                                    <div className='d-flex flex-column align-items-center gap-2 '>
+                                        <FontAwesomeIcon icon={faExclamationCircle} className="fs-2 no-data" />
+                                        <span>No logbook data available.<br/></span>
+                                    </div>
+                                </td>
                             </tr>
                         ):(
                             <tr>
-                            <td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>
-                              <div className="spinner-box">
-                                <div className="spinner-grow text-danger" role="status">
-                                  <span className="sr-only">Loading...</span>
+                                <td colSpan="10" style={{ textAlign: 'center', padding: '20px' }}>
+                                <div className="spinner-box">
+                                    <div className="spinner-grow text-danger" role="status">
+                                    <span className="sr-only">Loading...</span>
+                                    </div>
                                 </div>
-                              </div>
-                            </td>
-                          </tr>
+                                </td>
+                            </tr>
                         ):''}
                     </tbody>
                     

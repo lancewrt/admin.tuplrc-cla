@@ -42,15 +42,55 @@
 }
 
 .view-patron-back-button{
-    width: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    padding: 5px;
-    border-radius: 20px;
     color: var(--button);
     border: 1px solid var(--button);
     background-color: var(--white);
     transition: all 0.2s linear;
+}
+
+.view-patron-back-button:hover,
+.view-patron-back-button:focus,
+.view-patron-back-button:active{
+    background-color: var(--tup-color);
+    color: var(--white);
+}
+
+.viewpatron-container .loadingName,
+.viewpatron-container .loadingID,
+.viewpatron-container .loadingInfo,
+.viewpatron-container .loadingTable {
+    border-radius: 5px;
+    background: linear-gradient(90deg, #E0E0E0 25%, rgba(255, 255, 255, 0.4) 50%, #E0E0E0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite linear;
+}
+
+/* Adjusting sizes individually */
+.viewpatron-container .loadingName {
+    width: 20%;
+    height: 50px;
+}
+
+.viewpatron-container .loadingID {
+    width: 20%;
+    height: 30px;
+}
+
+.viewpatron-container .loadingInfo {
+    width: 30%;
+    height: 100px;
+}
+
+.viewpatron-container .loadingTable{
+    width: 100%;
+    height: 500px;
+}
+
+@keyframes shimmer {
+0% {
+    background-position: -200px 0;
+}
+100% {
+    background-position: 200px 0;
+    }
 }

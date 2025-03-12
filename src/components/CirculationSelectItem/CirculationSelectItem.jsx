@@ -118,7 +118,7 @@ const CirculationSelectItem = () => {
 
         {/* Items added */}
         <div className="col summary">
-          <div>
+          <div className=''>
             <div className="header">
               <h5>Items added (<span>{selectedItems.length}</span>)</h5>
               <button className="btn" onClick={handleClearItems}>
@@ -127,7 +127,7 @@ const CirculationSelectItem = () => {
               </button>
             </div>
 
-            <div className='inner overflow-y-auto'>
+            <div className=''>
               {selectedItems.map((item) => (
                 <div className="item row mt-2" key={item.resource_id}>
                   <div className="col-3 cover">

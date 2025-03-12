@@ -11,6 +11,7 @@ const chartSlice = createSlice({
     reducers:{
         setBorrowedStats: (state, action)=>{
             state.borrowedStats = action.payload;
+            console.log(state.borrowedStats)
         },
         setVisitorStats:(state,action)=>{
             state.visitorStats = action.payload;

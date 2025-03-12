@@ -16,11 +16,8 @@ const EditPatron = () => {
         tup_id: 'TUPM-',
         username: '',
     });
-    const [originalPatronData, setOriginalPatronData] = useState({})
 
-    console.log('Patron Data: ',patronData)
-    console.log('Original Patron Data: ',originalPatronData)
-
+    console.log(patronData)
 
     // const [categories, setCategories] = useState([]); // To store category options
     const [colleges, setColleges] = useState([]); // To store college options
@@ -28,15 +25,12 @@ const EditPatron = () => {
     const [filteredCourses, setFilteredCourses] = useState([]);
     const { id } = useParams(); // ID from the route parameter
     const navigate = useNavigate(); // For programmatic navigation
-    const [errors, setErrors] = useState({
-        error:'error'
-    });
+    const [errors, setErrors] = useState({});
     const [editMode, setEditMode] = useState(false);
     const [isloading,setIsLoading]=useState(false)
     const inputRef = useRef(null);
     const [userName, setUserName ]= useState('');
    
-    console.log('Error', errors)
 
     useEffect(()=>{
        if(id>0){
@@ -47,6 +41,8 @@ const EditPatron = () => {
        getColleges()
        getCourses()  
     },[])
+
+    
 
     const getUsername = async()=>{
         try {
@@ -89,41 +85,30 @@ const EditPatron = () => {
         }
     }
 
-    const getPatronEdit = async () => {
-        setIsLoading(true);
-        try {
-            const res = await axios.get(`https://api.tuplrc-cla.com/api/patron/update/${id}`);
-    
-            const fetchedData = {
-                patron_fname: res.data.patronData.patron_fname,
-                patron_lname: res.data.patronData.patron_lname,
-                patron_sex: res.data.patronData.patron_sex,
-                patron_mobile: res.data.patronData.patron_mobile,
-                patron_email: res.data.patronData.patron_email,
-                category: res.data.patronData.category,
-                college: res.data.patronData.college_id, 
-                college_name: res.data.patronData.college_name, 
-                program: res.data.patronData.course_id, 
-                course_name: res.data.patronData.course_name, 
-                tup_id: res.data.patronData.tup_id || '',
-            };
-    
-            // Fetch username before updating patron data
-            const userResponse = await axios.get(`https://api.tuplrc-cla.com/api/user/check-session`, { withCredentials: true });
-            if (userResponse.data.loggedIn) {
-                fetchedData.username = userResponse.data.username;
-                setUserName(userResponse.data.username);
-            }
-    
-            setPatronData(fetchedData);
-            setOriginalPatronData(fetchedData); // Now, correctly setting backup data
-    
-            setIsLoading(false);
-        } catch (err) {
-            console.error('Error fetching patron data:', err);
-            setIsLoading(false);
-        }
-    };    
+    const getPatronEdit = async ()=>{
+        setIsLoading(true)
+        axios.get(`https://api.tuplrc-cla.com/api/patron/update/${id}`)
+            .then(res => {
+                setPatronData({
+                    patron_fname: res.data.patronData.patron_fname,
+                    patron_lname: res.data.patronData.patron_lname,
+                    patron_sex: res.data.patronData.patron_sex,
+                    patron_mobile: res.data.patronData.patron_mobile,
+                    patron_email: res.data.patronData.patron_email,
+                    category: res.data.patronData.category,
+                    college: res.data.patronData.college_id, // Keep ID for saving
+                    college_name: res.data.patronData.college_name, // Show name in dropdown
+                    program: res.data.patronData.course_id, // Keep ID for saving
+                    course_name: res.data.patronData.course_name, // Show name in dropdown
+                    tup_id: res.data.patronData.tup_id || '',
+                });
+                getUsername();
+                console.log("username: ",userName)
+
+                setIsLoading(false);
+            })
+            .catch(err => console.error(err));
+    }
     
     const handleChange = async (e) => {
         const { name, value } = e.target;
@@ -167,30 +152,22 @@ const EditPatron = () => {
     console.log(filteredCourses)
 
     const validateField = async (name, value) => {
-        const phoneRegex = /^09[0-9]{9}$/; // Must start with 09-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const phoneRegex = /^09[0-9]{9}$/; //must start with 09-
+        const emailRegex = /^[^\s@]+@gmail\.com$/; //ensures that it ends with gmail.com
         const tupIdRegex = /^TUPM-\d{2}-\d{4}$/;
     
         let error = '';
     
-        // Remove default error message on first validation
-        setErrors((prev) => {
-            if (prev.error) {
-                const { error, ...rest } = prev; // Remove the default 'error' key
-                return rest;
-            }
-            return prev;
-        });
-    
         switch (name) {
             case 'patron_fname':
-            case 'patron_lname':
-                if (!value.trim()) {
-                    error = `${name === 'patron_fname' ? 'First' : 'Last'} name is required.`;
-                } else if (!/^[A-Za-z\s\-]+$/.test(value.trim())) {
-                    error = `${name === 'patron_fname' ? 'First' : 'Last'} name can only contain letters, spaces, or hyphens.`;
-                }
-                break;
+                case 'patron_lname':
+                    if (!value.trim()) {
+                        error = `${name === 'patron_fname' ? 'First' : 'Last'} name is required.`;
+                    } else if (!/^[A-Za-z\s\-]+$/.test(value.trim())) {
+                        error = `${name === 'patron_fname' ? 'First' : 'Last'} name can only contain letters, spaces, or hyphens.`;
+                    }
+                    break;
+                
     
             case 'patron_mobile':
                 if (!phoneRegex.test(value)) {
@@ -208,45 +185,30 @@ const EditPatron = () => {
                 if (!tupIdRegex.test(value)) {
                     error = 'TUP ID must follow the format TUPM-**-****.';
                 } else {
-                    if(!editMode){
-                       try {
-                            const response = await axios.post('https://api.tuplrc-cla.com/api/validate-tup-id', { tup_id: value });
-                            if (response.data.exists) {
-                                error = response.data.message || 'TUP ID already exists.';
-                            }
-                        } catch (err) {
-                            console.error('Error validating TUP ID:', err);
-                            error = 'Unable to validate TUP ID. Please try again.';
-                        } 
+                    try {
+                        const response = await axios.post('https://api.tuplrc-cla.com/api/validate-tup-id', { tup_id: value });
+                        if (response.data.exists) {
+                            error = response.data.message || 'TUP ID already exists.';
+                        }
+                    } catch (err) {
+                        console.error('Error validating TUP ID:', err);
+                        error = 'Unable to validate TUP ID. Please try again.';
                     }
-                    
                 }
-            break;
-
-            case 'college':
-                if(!value){
-                    error = 'Please select a college.'
-                }
-            break;
+                break;
     
             default:
                 break;
         }
     
-        setErrors((prev) => {
-            const newErrors = { ...prev };
+        setErrors((prev) => ({
+            ...prev,
+            [name]: error,
+        }));
     
-            if (error) {
-                newErrors[name] = error;
-            } else {
-                delete newErrors[name];
-            }
-    
-            return newErrors;
-        });
-    
-        return error;
+        return error; // Return the error for blocking logic
     };
+    
     
     /* const handleTupIdChange = async (e) => {
         const { value, selectionStart } = e.target;
@@ -348,17 +310,16 @@ const EditPatron = () => {
         }
     };
 
-    const handleSave = async () => {
-        const isFormValid = await validateAll();
-        if (!isFormValid) {
-            console.error('Form has validation errors. Fix them before saving.');
+    const handleSave = () => {
+        // if formvalidation returns false, dont save data
+        if(!formValidation){
             return;
-        }
-    
-        if (editMode) {
-            updatePatron();
-        } else {
-            addPatron();
+        }else{
+            if(editMode){
+                updatePatron()
+            }else{
+                addPatron()
+            }
         }
     };
 
@@ -366,6 +327,7 @@ const EditPatron = () => {
         if(!formValidation){
             return
         }
+        
         try {
             await axios.post(`https://api.tuplrc-cla.com/api/patron`, patronData);
             navigate('/patron'); // Redirect after saving
@@ -388,7 +350,7 @@ const EditPatron = () => {
     
             await axios.put(`https://api.tuplrc-cla.com/api/patron/update/${id}`, updatedData);
             console.log('Patron updated successfully');
-            navigate('/patron'); // Redirect after saving
+            navigate(''); // Redirect after saving
             window.toast.fire({icon:"success", title:"Patron Updated"})
         } catch (error) {
             console.error('Error saving patron:', error);
@@ -420,25 +382,6 @@ const EditPatron = () => {
             return false
         }
     }
-
-    const validateAll = async () => {
-        let newErrors = {};
-        let isValid = true;
-    
-        // Iterate over all keys in patronData and validate each field
-        for (const field in patronData) {
-            const error = await validateField(field, patronData[field]);
-            if (error) {
-                newErrors[field] = error;
-                isValid = false;
-            }
-        }
-    
-        // Update errors state
-        setErrors(newErrors);
-    
-        return isValid;
-    };
 
     console.log(patronData)
     
@@ -590,7 +533,7 @@ const EditPatron = () => {
                                             </option>
                                         ))}
                                     </select>
-                                    <p className='patron-error'>{errors.college}</p>
+                                    <p className='patron-error'></p>
                                 </div>
                             </div>
                             
@@ -624,7 +567,6 @@ const EditPatron = () => {
                                         type='button' 
                                         className='save-button' 
                                         onClick={handleSave}
-                                        disabled={editMode?JSON.stringify(patronData)==JSON.stringify(originalPatronData)||Object.keys(errors).length>0:Object.keys(errors).length>0}
                                     >
                                         Save
                                     </button>

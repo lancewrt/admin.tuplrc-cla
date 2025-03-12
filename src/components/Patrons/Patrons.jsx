@@ -3,7 +3,7 @@ import axios from 'axios';
 import './Patrons.css';
 import edit from '../../assets/Management System/patrons/edit-patron.svg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass, faPlus, faPen, faFile, faArrowRight, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlass, faPlus, faPen, faFile, faArrowRight, faArrowLeft, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 
 const Patrons = () => {
@@ -37,8 +37,11 @@ const Patrons = () => {
     }, []);
 
     useEffect(() => {
-        getPatron();
-    }, []);
+        if(searchTerm==''){
+            getPatron();
+        }
+        
+    }, [searchTerm]);
 
     const getPatron = async () => {
         setLoading(true);
@@ -56,7 +59,7 @@ const Patrons = () => {
     };
 
     const handleSearchChange = (event) => {
-        const term = event.target.value.toLowerCase();
+        const term = event.target.value;
         setSearchTerm(term);
     };
 
@@ -72,13 +75,16 @@ const Patrons = () => {
 
     const filterPatrons = (term, category) => {
         const filtered = patrons.filter((patron) => {
+        
             const matchesSearch =
-                patron.tup_id.toString().includes(term) ||
+                patron.tup_id.toString().toLowerCase().includes(term.toLowerCase()) ||
                 `${patron.patron_fname} ${patron.patron_lname}`.toLowerCase().includes(term) ||
                 patron.patron_email.toLowerCase().includes(term);
+
             const matchesCategory =
                 category === '' || patron.category.toLowerCase() === category.toLowerCase();
-            return matchesSearch && matchesCategory;
+                
+            return matchesSearch && matchesCategory; //if true, it returns the patron object
         });
         setFilteredPatrons(filtered);
         setCurrentPage(1);
@@ -95,6 +101,14 @@ const Patrons = () => {
         currentPage * itemsPerPage
     );
 
+    const handleClearFilter = () => {
+        setSearchTerm('');
+        setCategoryFilter('');
+        setFilteredPatrons(patrons);
+        setCurrentPage(1);
+    };
+    
+
     return (
         <div className="patrons-container">
             <h1>Patrons</h1>
@@ -110,13 +124,13 @@ const Patrons = () => {
             </div>
             <div className="search-bar-box">
                 <div className='d-flex gap-2'>
-                    <input type="text" className="patrons-search-bar" placeholder="Search" value={searchTerm} onChange={handleSearchChange} onKeyDown={(e)=>e.key=='Enter'&&handleSearch()}/>
+                    <input type="text" className="patrons-search-bar" placeholder="Search by TUP ID, email, or name" value={searchTerm} onChange={handleSearchChange} onKeyDown={(e)=>e.key=='Enter'&&handleSearch()}/>
                     <button className="patrons-search-button" onClick={handleSearch} >
                         <FontAwesomeIcon icon={faMagnifyingGlass} />
                     </button>
                 </div>
                 <Link to="/patron/add">
-                    <button className="patrons-search-button">
+                    <button className="patrons-add-btn">
                         <FontAwesomeIcon icon={faPlus} /> Add Patron
                     </button>
                 </Link>
@@ -159,7 +173,13 @@ const Patrons = () => {
                         ))
                     ) : !loading ? (
                         <tr>
-                            <td colSpan="7" style={{ textAlign: 'center' }}>No results found.</td>
+                            <td colSpan="8" className='no-data-box text-center'>
+                                <div className='d-flex flex-column align-items-center gap-2 my-3'>
+                                    <FontAwesomeIcon icon={faExclamationCircle} className="fs-2 no-data" />
+                                    <span>'{searchTerm}' resource not available.<br/>Please try again.</span>
+                                    <button className='btn btn-secondary' onClick={handleClearFilter}>Clear Filter</button>
+                                </div>
+                            </td>
                         </tr>
                     ) : (
                         <tr>

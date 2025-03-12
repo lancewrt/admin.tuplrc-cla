@@ -1,8 +1,10 @@
 import React from 'react';
 import './DashboardTable.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from "react-router";
 
-const DashboardTable = ({ header, data, type }) => {
+const DashboardTable = ({ header, data, type, loading }) => {
   const navigate = useNavigate();
   
   const handleClick = (id)=>{
@@ -45,6 +47,7 @@ const DashboardTable = ({ header, data, type }) => {
   }
 
   return (
+    
     <table className='dashboard-table'>
       <thead>
         <tr>
@@ -54,24 +57,40 @@ const DashboardTable = ({ header, data, type }) => {
         </tr>
       </thead>
       <tbody>
-        {Array.isArray(data) && data.length !== 0 ? (
-          data.map((item, rowIndex) => (
-            <tr key={rowIndex} className={type!='issued'?'clickable':''} onClick={()=>{
-              if(type=='overdue'){
-                handleClick(item.patron_id)
-              }else if(type=='books'){
-                handleClick(item.resource_id)
-              }
-            }}>
-              {displayData(item)}
-            </tr>
-          ))
-        ) : (
-          <tr>
-            <td colSpan={header.length}>No records found</td>
+      {loading ? (
+        // Show skeleton rows while loading
+        [...Array(5)].map((_, index) => (
+          <tr key={index}>
+            <td colSpan={header.length}>
+              <div className='d-flex flex-column align-items-center gap-2 my-3 text-center'>
+                <div className="skeleton skeleton-text"></div>
+              </div>
+            </td>
           </tr>
-        )}
-      </tbody>
+        ))
+      ) : Array.isArray(data) && data.length !== 0 ? (
+        data.map((item, rowIndex) => (
+          <tr key={rowIndex} className={type !== 'issued' ? 'clickable' : ''} onClick={() => {
+            if (type === 'overdue') {
+              handleClick(item.patron_id);
+            } else if (type === 'books') {
+              handleClick(item.resource_id);
+            }
+          }}>
+            {displayData(item)}
+          </tr>
+        ))
+      ) : (
+        <tr>
+          <td colSpan={header.length}>
+            <div className='d-flex flex-column align-items-center gap-2 my-3 text-center'>
+              <FontAwesomeIcon icon={faExclamationCircle} className="fs-2 no-data" />
+              <span>No resources available<br/>for this category.</span>
+            </div>
+          </td>
+        </tr>
+      )}
+    </tbody>
     </table>
   );
 };

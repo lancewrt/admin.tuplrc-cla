@@ -43,6 +43,7 @@
 }
 
 .view-patron-table-container .search{
+    height: 50px;
     background-color: var(--tup-color);
     color: var(--white);
     border: none;
@@ -57,6 +58,7 @@
 }
 
 .view-patron-table-container .export{
+    height: 50px;
     background-color: var(--yellow);
     border: none;
 }
@@ -106,4 +108,8 @@
 .view-patron-table-container .pagination button:focus{
     color: var(--tup-color);
     border: none;
+}
+
+.view-patron-table-container .no-data{
+    color: var(--tup-color);
 }

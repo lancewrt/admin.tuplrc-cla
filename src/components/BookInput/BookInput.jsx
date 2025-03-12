@@ -126,7 +126,7 @@ const BookInput = ({disabled,handleChange,bookData,addAuthor,setBookData,formVal
                 <div className="col-12 info-input-box mb-3">
                     <label htmlFor="">Publish Date *</label>
                     {/* <input type="date" name="" id="" placeholder='Select date' disabled={disabled?true:false}/> */}
-                    <input type="text" name="publishedDate" id="" placeholder='Enter Date' disabled={disabled?true:false} onChange={handleChange} value={bookData.publishedDate?bookData.publishedDate:''} onBlur={formValidation}/>
+                    <input type="text" name="publishedDate" id="" placeholder='Enter Date' disabled={disabled?true:false} onChange={handleChange} value={bookData.publishedDate?bookData.publishedDate:''} onBlur={formValidation} maxLength={4}/>
                     <p className="resource-error">{error.publishedDate?error.publishedDate:''}</p>
                 </div>
             </div>

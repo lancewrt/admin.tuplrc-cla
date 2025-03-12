@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Audit.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileExport,faArrowRight, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { faFileExport } from "@fortawesome/free-solid-svg-icons";
 
 const Audit = () => {
   const [audit, setAudit] = useState([]); // Stores all audit data
@@ -11,10 +11,6 @@ const Audit = () => {
   const [selectedActivity, setSelectedActivity] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-
-  // Pagination states
-  const [currentPage, setCurrentPage] = useState(1);
-  const recordsPerPage = 10;
 
   // Format timestamp function
   const formatTimestamp = (timestamp) => {
@@ -43,7 +39,7 @@ const Audit = () => {
         formatted_timestamp: formatTimestamp(item.action_timestamp),
       }));
       setAudit(updatedAudit);
-      setFilteredAudit(updatedAudit);
+      setFilteredAudit(updatedAudit); // Display all data initially
       setLoading(false);
     } catch (err) {
       console.error("Error fetching audit logs:", err.message);
@@ -66,7 +62,7 @@ const Audit = () => {
     if (startDate && endDate) {
       const start = new Date(startDate);
       const end = new Date(endDate);
-      end.setHours(23, 59, 59, 999);
+      end.setHours(23, 59, 59, 999); // Set end date to the end of the day
 
       filtered = filtered.filter((item) => {
         const itemDate = new Date(item.action_timestamp);
@@ -75,28 +71,17 @@ const Audit = () => {
     }
 
     setFilteredAudit(filtered);
-    setCurrentPage(1); // Reset to first page on new filter
   }, [selectedActivity, startDate, endDate, audit]);
 
-  // Clear filters and reset pagination
+  // Clear filters and show all data
   const clearFilters = () => {
     setStartDate("");
     setEndDate("");
     setSelectedActivity("");
     setFilteredAudit(audit);
-    setCurrentPage(1);
   };
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredAudit.length / recordsPerPage);
-  const indexOfLastRecord = currentPage * recordsPerPage;
-  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
-  const currentRecords = filteredAudit.slice(indexOfFirstRecord, indexOfLastRecord);
-
-  const nextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-  const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
-
-  // Export to CSV
+  // Function to export filtered data to CSV
   const exportToCSV = () => {
     if (filteredAudit.length === 0) {
       alert("No data to export.");
@@ -110,7 +95,7 @@ const Audit = () => {
       const row = [
         `"${item.user_id}"`,
         `"${item.action_type}"`,
-        `"${item.new_value.replace(/[{}"]/g, "").replace(/,/g, ";")}"`,
+        `"${item.new_value.replace(/[{}"]/g, "").replace(/,/g, ";")}"`, // Formatting description properly
         `"${item.formatted_timestamp}"`
       ];
       csvRows.push(row.join(","));
@@ -130,7 +115,7 @@ const Audit = () => {
     <div className="audit-container">
       <h1>User Activity Log</h1>
 
-      {/* Filter Section */}
+      {/* Filter by Activity */}
       <div className="filter-dropdown">
         <select
           className="form-select"
@@ -141,24 +126,33 @@ const Audit = () => {
           <option value="Added a new user">Insert User</option>
           <option value="Added a new resource">Insert Resource</option>
           <option value="Edited a resource">Update Resource</option>
-          <option value="Added new patron">Insert Patron</option>
-          <option value="Edited a patron">Edited Patron</option>
+          <option value="Added new patron"> Insert Patron</option>
+          <option value="Edited a patron"> Edited Patron</option>
           <option value="borrowed a book">Borrowed Book</option>
           <option value="returned a book">Returned Book</option>
           <option value="Edited a user">Edited User</option>
           <option value="Logged In">Login</option>
           <option value="Logged Out">Logout</option>
-          
         </select>
       </div>
 
-      {/* Date Filters & Export */}
+      {/* Filter by Date and Export */}
       <div className="filter-date-export">
         <div className="filter-date">
-          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
           <span>to</span>
-          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-          <button className="btn" onClick={clearFilters}>Clear</button>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
+          <button className="btn" onClick={clearFilters}>
+            Clear
+          </button>
         </div>
         <button className="btn export-btn" onClick={exportToCSV}>
           <FontAwesomeIcon icon={faFileExport} />
@@ -167,46 +161,47 @@ const Audit = () => {
       </div>
 
       {/* Table */}
-      <div className="audit-table-box">
-        <table className="audit-table">
-          <thead>
+      <div className="t-overflow table-bordered" style={{ height: "50vh", overflowY: "auto" }}>
+        <table>
+          <thead style={{ position: "sticky", zIndex: 10 }}>
             <tr>
-              <td>User</td>
-              <td>Action</td>
-              <td>Description</td>
-              <td>Timestamp</td>
+              <td className="col-2 text-center">User</td>
+              <td className="col-2 text-center">Action</td>
+              <td className="col-6 text-center">Description</td>
+              <td className="col-2 text-center">Timestamp</td>
             </tr>
           </thead>
           <tbody>
-            {currentRecords.length > 0 ? (
-              currentRecords.map((item, index) => (
+            {filteredAudit.length > 0 ? (
+              filteredAudit.map((item, index) => (
                 <tr key={index}>
-                  <td>{item.user_id}</td>
-                  <td>{item.action_type}</td>
-                  <td>{item.new_value.replace(/[{}"]/g, "").replace(/,/g, "\n")}</td>
-                  <td>{item.formatted_timestamp}</td>
+                  <td className="col-2 text-center">{item.user_id}</td>
+                  <td className="col-2 text-center">{item.action_type}</td>
+                  <td className="col-6 text-start border-start border-end">
+                    {item.new_value.replace(/[{}"]/g, "").replace(/,/g, "\n")}
+                  </td>
+                  <td className="col-2 text-center">{item.formatted_timestamp}</td>
                 </tr>
               ))
+            ) : !loading ? (
+              <tr>
+                <td colSpan="4" className="text-center">
+                  No records available
+                </td>
+              </tr>
             ) : (
               <tr>
-                <td colSpan="4" className="text-center">No records available</td>
+                <td colSpan="4" style={{ textAlign: "center", padding: "20px" }}>
+                  <div className="spinner-box">
+                    <div className="spinner-grow text-danger" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                </td>
               </tr>
             )}
           </tbody>
         </table>
-      </div>
-
-      {/* Pagination */}
-      <div className="pagination">
-        <span> Page {currentPage} of {totalPages} </span>
-        <div>
-          <button className="btn" disabled={currentPage === 1} onClick={prevPage}>
-            <FontAwesomeIcon icon={faArrowLeft} className="icon" />
-          </button>
-          <button className="btn" disabled={currentPage === totalPages} onClick={nextPage}>
-            <FontAwesomeIcon icon={faArrowRight} className="icon" />
-          </button>
-        </div>
       </div>
     </div>
   );

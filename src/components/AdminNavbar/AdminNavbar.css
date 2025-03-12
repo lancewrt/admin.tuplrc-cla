@@ -33,7 +33,7 @@ li p{
 :root{
     --tup-color: #94152B;
     --white: #fff;
-    --button:  #97170E;
+    --button:  #861109;
     --button-hover:  #75110a;
     --shadow: #0000003b;
     --yellow: #EDDF13;
@@ -118,3 +118,6 @@ li p{
     background-color: var(--button);
 }
 
+.navbar-menu .selected-sub{
+    background-color: var(--button-hover);
+}

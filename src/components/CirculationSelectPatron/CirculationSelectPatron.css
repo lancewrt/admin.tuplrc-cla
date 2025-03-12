@@ -28,7 +28,7 @@
     --green: #54CB58;
     --light-gray: #F7F7F7;
     --blue: #5499CB;
-    --table-header: #6F6A6A;
+    --table-header: #c7c7c7;
     --disabled: #b9b9b9;
     --table-border-bottom:#D9D9D9;
     --light-red: rgba(148, 21, 43, 0.1);
@@ -91,9 +91,9 @@
 }
 
 .circ-select-patron-container .search-container input{
-    height: 39px;
+    height: 50px;
     width: 70%;
-    border:1px solid var(--table-border-bottom);
+    border:1px solid gainsboro;
     outline: none !important;
     border-radius: 5px;
     padding-left: 10px;
@@ -102,6 +102,8 @@
 .circ-select-patron-container .search-container button{
     background-color: var(--tup-color);
     color: var(--white);
+    height: 50px;
+    width: 50px;
 }
 
 .circ-select-patron-container .search-container button:hover,
@@ -142,6 +144,7 @@
     font-size: 0.9rem;
     color: var(--black);
     margin-bottom: 5px;
+    min-height: 60px;
 
 }
 
@@ -190,4 +193,8 @@
 
     .patron input[type="radio"]:disabled {
     cursor: not-allowed; /* Indicate disabled radio button */
+}
+
+.circ-select-patron-container .no-data{
+    color: var(--tup-color);
 }

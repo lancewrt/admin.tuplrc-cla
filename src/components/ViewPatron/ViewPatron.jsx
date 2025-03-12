@@ -11,8 +11,13 @@ const ViewPatron = () => {
   const {id} = useParams();
 
   const [patron, setPatron] = useState([]);
+  const [patronLoading, setPatronLoading] = useState(false);
+  
   const [logHistory, setLogHistory] = useState([]);
+  const [logHistoryLoading, setLogHistoryLoading] = useState(false)
+
   const [circulationHistory, setCirculationHistory] = useState([]);
+  const [circulationHistoryLoading, setCirculationHistoryLoading] = useState(false)
 
   useEffect(()=>{
     getPatron();
@@ -21,32 +26,47 @@ const ViewPatron = () => {
   },[])
 
   const getPatron = async ()=>{
+    setPatronLoading(true)
     axios.get(`https://api.tuplrc-cla.com/api/patron/${id}`) 
       .then((response) => {
          setPatron(response.data[0]);
       })
       .catch((error) => {
         console.error('Error fetching patron data:', error);
+      }).finally(()=>{
+        setTimeout(()=>{
+          setPatronLoading(false)
+        },3000)
       })
   }
 
   const getLogHistory = async ()=>{
+    setLogHistoryLoading(true)
     axios.get(`https://api.tuplrc-cla.com/api/patron/log/${id}`) 
       .then((response) => {
          setLogHistory(response.data);
       })
       .catch((error) => {
         console.error('Error fetching patron data:', error);
+      }).finally(()=>{
+        setTimeout(()=>{
+          setLogHistoryLoading(false)
+        },3000)
       })
   }
 
   const getCirculationHistory = async ()=>{
+    setCirculationHistoryLoading(true)
     axios.get(`https://api.tuplrc-cla.com/api/patron/circulation/${id}`) 
       .then((response) => {
          setCirculationHistory(response.data);
       })
       .catch((error) => {
         console.error('Error fetching patron data:', error);
+      }).finally(()=>{
+        setTimeout(()=>{
+          setCirculationHistoryLoading(false)
+        },3000)
       })
   }
 
@@ -108,8 +128,7 @@ const ViewPatron = () => {
     <div className='viewpatron-container'>
       <div className=''>
           <Link to={'/patron'}>
-              <button className='view-patron-back-button'>
-                <i className='fa-solid fa-arrow-left'></i>
+              <button className='view-patron-back-button btn'>
                 <p className='m-0'>Back</p>
               </button>
           </Link>
@@ -117,12 +136,19 @@ const ViewPatron = () => {
       {/* user profile */}
       <div className='d-flex flex-column gap-2 py-3'>
         <div>
-          <h1 className='m-0 fs-1'>{patron.patron_fname} {patron.patron_lname}</h1>
-          <p  className='m-0 fs-3'>{patron.tup_id}</p>
+          {patronLoading
+          ?<div className='loadingName'></div>
+          :<h1 className='m-0 fs-1'>{patron.patron_fname} {patron.patron_lname}</h1>}
+
+          {patronLoading
+          ?<div className='loadingID mt-2'></div>
+          :<p  className='m-0 fs-3'>{patron.tup_id}</p>}
         </div>
-        <div className='row w-50 py-1'>
+        {patronLoading
+        ?<div className='loadingInfo'></div>
+        :<div className='row w-50 py-1'>
           <div className="col-2 fw-semibold">Category:</div>
-          <div className="col-10">{patron.category}</div>
+          <div className='col-10'>{patron.category}</div>
           
           <div className="col-2 fw-semibold">Sex:</div>
           <div className="col-10">{patron.patron_sex}</div>
@@ -138,18 +164,24 @@ const ViewPatron = () => {
 
           <div className="col-2 fw-semibold">Program:</div>
           <div className="col-10">{patron.course_name}</div>
-        </div>  
+        </div>}
+        
       </div>
 
       <hr />
 
       {/* log history */}
-      <ViewPatronTable header={logHistoryHeader} title={'Log History'} data={logHistory} exportXLSX={exportLogHistory}/>
-
+      {logHistoryLoading
+      ?<div className='loadingTable'></div>
+      :<ViewPatronTable header={logHistoryHeader} title={'Log History'} data={logHistory} exportXLSX={exportLogHistory}/>}
+      
       <hr />
 
       {/* Circulation history */}
-      <ViewPatronTable header={circulationHistoryHeader} title={'Circulation History'} data={circulationHistory} exportXLSX={exportCirculationHistory}/>
+      {circulationHistoryLoading
+      ?<div className='loadingTable'></div>
+      :<ViewPatronTable header={circulationHistoryHeader} title={'Circulation History'} data={circulationHistory} exportXLSX={exportCirculationHistory}/>}
+      
     </div>
   )
 }

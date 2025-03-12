@@ -8,8 +8,9 @@ import { useSelector } from 'react-redux'
 const Cataloging = ({disabled,handleChange,bookData,handleToggle,formValidation, error,editMode}) => {
     const [department, setDepartment] = useState([])
     const [catalog, setCatalog] = useState([])
-    const [topic,setTopic] = useState([]);
+    const [topic,setTopic] = useState([])
     const isOnline = useSelector(state=>state.isOnline.isOnline)
+    
 
     useEffect(() => {
         if(isOnline){
@@ -20,6 +21,8 @@ const Cataloging = ({disabled,handleChange,bookData,handleToggle,formValidation,
             getDeptOffline()
             getTopicsOffline()
         }
+        
+       
     }, []);
 
     //get existing department offline
