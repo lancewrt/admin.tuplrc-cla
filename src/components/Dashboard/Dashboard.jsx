@@ -53,7 +53,7 @@ const Dashboard = () => {
   
   useEffect(() => {
     // Initialize socket connection
-    const newSocket = io('https://api.tuplrc-cla.com', {
+    const newSocket = io('wss://api.tuplrc-cla.com', {
       transports: ['websocket'], // Match server configuration
       withCredentials: true,
       reconnection: true,
