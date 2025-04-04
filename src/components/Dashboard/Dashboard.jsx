@@ -54,10 +54,31 @@ const Dashboard = () => {
   useEffect(() => {
     // Initialize socket connection
     const newSocket = io('https://api.tuplrc-cla.com', {
-      transports: ['websocket'],
-      secure: true
+      transports: ['websocket', 'polling'],
+      secure: true,
+      debug: true  // Enable debugging
     });
     setSocket(newSocket);
+
+    console.log('Attempting to connect to socket.io server...');
+
+  newSocket.on('connect', () => {
+    console.log('Socket connected successfully with ID:', newSocket.id);
+  });
+
+  newSocket.on('connect_error', (error) => {
+    console.error('Socket connection error:', error);
+  });
+
+  newSocket.on('error', (error) => {
+    console.error('Socket error:', error);
+  });
+
+  newSocket.on('disconnect', (reason) => {
+    console.log('Socket disconnected:', reason);
+  });
+
+    
 
     getTotalVisitors();
     getTotalBorrowed();
