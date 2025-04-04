@@ -18,47 +18,30 @@ const Logbook = () => {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        // Initialize socket connection with better configuration
-        const newSocket = io('https://api.tuplrc-cla.com', {
-            transports: ['websocket', 'polling'],  // Add polling as fallback
-            reconnection: true,
-            reconnectionAttempts: 5
-        });
-    
-        // Add event handlers for debugging
-        newSocket.on('connect', () => {
-            console.log('Socket connected successfully');
-        });
-    
-        newSocket.on('connect_error', (error) => {
-            console.error('Socket connection error:', error.message);
-        });
-    
+        // Initialize socket connection
+        const newSocket = io('wss://api.tuplrc-cla.com');
         setSocket(newSocket);
-    
+
         // Clean up socket connection on unmount
         return () => {
             newSocket.disconnect();
         };
     }, []);
-    
+
     useEffect(() => {
         if (socket) {
             // Listen for attendance updates
-            const handleAttendanceUpdate = () => {
+            socket.on('attendanceUpdated', () => {
                 console.log('Attendance updated, refreshing data...');
-                fetchTodayEntries();  // Ensure error handling inside this function
-            };
-    
-            socket.on('attendanceUpdated', handleAttendanceUpdate);
-    
-            // Clean up event listener when socket or component unmounts
+                fetchTodayEntries();
+            });
+
+            // Clean up event listener
             return () => {
-                socket.off('attendanceUpdated', handleAttendanceUpdate);
+                socket.off('attendanceUpdated');
             };
         }
-    }, [socket]);
-    
+    }, [socket, currentPage, entriesPerPage, searchInput]);
 
     useEffect(() => {
         fetchTodayEntries();

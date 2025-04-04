@@ -53,71 +53,65 @@ const Dashboard = () => {
   
   useEffect(() => {
     // Initialize socket connection
-    const newSocket = io('https://api.tuplrc-cla.com', {
-        transports: ['websocket'],
-        withCredentials: true,
-    });
+    const newSocket = io('wss://api.tuplrc-cla.com');
     setSocket(newSocket);
 
-    // Make initial data fetching calls after socket connection
-    newSocket.on('connect', () => {
-        getTotalVisitors();
-        getTotalBorrowed();
-        getTotalReturned();
-        getTotalOverdue();
-        getOverdueBooks();
-        getBookList();
-        getIssued();
-        getPopularChoices();
-        getBookTrends();
-        getVisitorStats();
-    });
+    getTotalVisitors();
+    getTotalBorrowed();
+    getTotalReturned();
+    getTotalOverdue();
+    getOverdueBooks();
+    getBookList();
+    getIssued();
+    getPopularChoices();
+    getBookTrends();
+    getVisitorStats();
 
     // Clean up socket connection on unmount
     return () => {
-        newSocket.disconnect();
+      newSocket.disconnect();
     };
-}, []);
+  }, []);
 
-useEffect(() => {
+
+  useEffect(() => {
     if (socket) {
-        // Event handlers for different updates
-        const attendanceHandler = () => {
-            console.log('Attendance updated, refreshing data...');
-            getTotalVisitors();
-            getVisitorStats();
-        };
-        const checkinHandler = () => {
-            console.log('Checkin updated, refreshing data...');
-            getTotalReturned();
-            getBookTrends();
-        };
-        const checkoutHandler = () => {
-            console.log('Checkout updated, refreshing data...');
-            getTotalBorrowed();
-            getBookTrends();
-        };
-        const overdueHandler = () => {
-            console.log('Overdue updated, refreshing data...');
-            getTotalOverdue();
-        };
+      // Listen for attendance updates
+      socket.on('attendanceUpdated', () => {
+        console.log('Attendance updated, refreshing data...');
+        getTotalVisitors();
+        getVisitorStats();
+      });
 
-        // Attach socket event listeners
-        socket.on('attendanceUpdated', attendanceHandler);
-        socket.on('checkinUpdated', checkinHandler);
-        socket.on('checkoutUpdated', checkoutHandler);
-        socket.on('overdueUpdated', overdueHandler);
+      // Listen for checkin updates
+      socket.on('checkinUpdated', () => {
+        console.log('checkin updated, refreshing data...');
+        getTotalReturned();
+        getBookTrends();
+      });
 
-        // Clean up event listeners on component unmount
-        return () => {
-            socket.off('attendanceUpdated', attendanceHandler);
-            socket.off('checkinUpdated', checkinHandler);
-            socket.off('checkoutUpdated', checkoutHandler);
-            socket.off('overdueUpdated', overdueHandler);
-        };
+      // Listen for checkout updates
+      socket.on('checkoutUpdated', () => {
+        console.log('checkout updated, refreshing data...');
+        getTotalBorrowed();
+        getBookTrends();
+      });
+
+      // Listen for checkout updates
+      socket.on('overdueUpdated', () => {
+        console.log('overdue updated, refreshing data...');
+        getTotalOverdue();
+      });
+
+      // Clean up event listener
+      return () => {
+        socket.off('attendanceUpdated');
+        socket.off('checkinUpdated');
+        socket.off('checkoutUpdated');
+        socket.off('overdueUpdated');
+      };
     }
-}, [socket]);
-
+    }, [socket]);
 
   //total visitors
   const getTotalVisitors = async () => {
