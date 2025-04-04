@@ -1,28 +1,4 @@
-@font-face {
-    font-family: 'Inter';
-    font-weight: 400;
-    src: url('../../assets/Fonts/Inter_24pt-Regular.ttf') format('ttf');
-}
-
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Inter';
-    text-decoration: none;
-}
-
-:root{
-    --black:#1F1F1F;
-    --tup-color: #94152B;
-    --white: #fff;
-    --button:  #97170E;
-    --button-hover:  #75110a;
-    --shadow: #0000003b;
-    --light-red: rgba(148, 21, 43, 0.1);
-    --catalog-info-bg: #EEEEEE;
-    --overlay: #3838388a;
-}
+@import '../../assets/styles/globals.css';
 
 .activate-modal-container{
     position: fixed;

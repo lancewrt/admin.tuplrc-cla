@@ -2,19 +2,24 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import './Dashboard.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUsers ,faBook, faPlus, faBookBookmark, faTriangleExclamation} from '@fortawesome/free-solid-svg-icons';
+import { faUsers ,faBook, faPlus, faBookBookmark, faTriangleExclamation, faExclamationCircle} from '@fortawesome/free-solid-svg-icons';
 import { VerticalBarChart } from '../VerticalBarChart';
 import DashboardTable from '../DashboardTable/DashboardTable';
 import DashboardTopChoices from '../DashboardTopChoices/DashboardTopChoices';
 import DashBox from '../DashBox/DashBox';
 import { Link, useNavigate } from 'react-router-dom';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import { setBorrowedStats, setVisitorStats } from '../../features/chartSlice.js';
-
+import { io } from 'socket.io-client';
+import { setTypeArr } from '../../features/typeSlice.js';
+import { fetchDepartmentOnline, setDepartmentArr } from '../../features/departmentSlice.js';
+import { setTopicArr } from '../../features/topicSlice.js';
+import { fetchPublisherOnline, setPublisherArr } from '../../features/publisherSlice.js';
+import { setStatusArr } from '../../features/statusSlice.js';
 
 const Dashboard = () => {
   const [dateTime,setDateTime] = useState(new Date());
-  const [uname, setUname] = useState(null)
+  const {username} = useSelector(state=>state.username)
 
   const [totalVisitors, setTotalVisitors] = useState("");
   const [totalVisitorsLoading, setTotalVisitorsLoading] = useState(false);
@@ -44,9 +49,13 @@ const Dashboard = () => {
   const bookListHeader = ["Book ID","Title","Author","Copies Available"];
   const bookIssuedHeader = ["Tup ID","Title","Return Date"];
   const dispatch = useDispatch()
+  const [socket, setSocket] = useState(null);
   
   useEffect(() => {
-    getUsername()
+    // Initialize socket connection
+    const newSocket = io('http://localhost:3001');
+    setSocket(newSocket);
+
     getTotalVisitors();
     getTotalBorrowed();
     getTotalReturned();
@@ -57,24 +66,52 @@ const Dashboard = () => {
     getPopularChoices();
     getBookTrends();
     getVisitorStats();
+
+    // Clean up socket connection on unmount
+    return () => {
+      newSocket.disconnect();
+    };
   }, []);
 
-  const getUsername = async()=>{
-    try {
-      // Request server to verify the JWT token
-      const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
-      console.log(response.data)
-      // If session is valid, set the role
-      if (response.data.loggedIn) {
-        setUname(response.data.username);
-      } else {
-        setUname(null); // If not logged in, clear the role
-      }
-    } catch (error) {
-      console.error('Error verifying session:', error);
-      setUname(null); // Set null if there's an error
+
+  useEffect(() => {
+    if (socket) {
+      // Listen for attendance updates
+      socket.on('attendanceUpdated', () => {
+        console.log('Attendance updated, refreshing data...');
+        getTotalVisitors();
+        getVisitorStats();
+      });
+
+      // Listen for checkin updates
+      socket.on('checkinUpdated', () => {
+        console.log('checkin updated, refreshing data...');
+        getTotalReturned();
+        getBookTrends();
+      });
+
+      // Listen for checkout updates
+      socket.on('checkoutUpdated', () => {
+        console.log('checkout updated, refreshing data...');
+        getTotalBorrowed();
+        getBookTrends();
+      });
+
+      // Listen for checkout updates
+      socket.on('overdueUpdated', () => {
+        console.log('overdue updated, refreshing data...');
+        getTotalOverdue();
+      });
+
+      // Clean up event listener
+      return () => {
+        socket.off('attendanceUpdated');
+        socket.off('checkinUpdated');
+        socket.off('checkoutUpdated');
+        socket.off('overdueUpdated');
+      };
     }
-  }
+    }, [socket]);
 
   //total visitors
   const getTotalVisitors = async () => {
@@ -86,9 +123,10 @@ const Dashboard = () => {
     } catch (err) {
       console.error("Error fetching total visitors:", err.message);
     } finally{
-      setTimeout(()=>{
-        setTotalVisitorsLoading(false)
-      },3000)
+      // setTimeout(()=>{
+      //   setTotalVisitorsLoading(false)
+      // },3000)
+      setTotalVisitorsLoading(false)
     }
   };
 
@@ -102,9 +140,10 @@ const Dashboard = () => {
     } catch (err) {
       console.error("Error fetching total borrowed books:", err.message);
     } finally{
-      setTimeout(()=>{
-        setTotalBorrowedLoading(false)
-      },3000)
+      // setTimeout(()=>{
+      //   setTotalBorrowedLoading(false)
+      // },3000)
+      setTotalBorrowedLoading(false)
     }
   };
 
@@ -118,9 +157,10 @@ const Dashboard = () => {
     } catch (err) {
       console.error("Error fetching total returned books:", err.message);
     } finally{
-      setTimeout(()=>{
-        setTotalReturnedLoading(false)
-      },3000)
+      // setTimeout(()=>{
+      //   setTotalReturnedLoading(false)
+      // },3000)
+      setTotalReturnedLoading(false)
     }
   };
 
@@ -134,9 +174,10 @@ const Dashboard = () => {
     } catch (err) {
       console.error("Error fetching total overdue books:", err.message);
     } finally{
-      setTimeout(()=>{
-        setTotalOverdueLoading(false)
-      },3000)
+      // setTimeout(()=>{
+      //   setTotalOverdueLoading(false)
+      // },3000)
+      setTotalOverdueLoading(false)
     }
   };
 
@@ -238,18 +279,13 @@ const Dashboard = () => {
     }
   }
 
-  const navigate = useNavigate();
-
-  const handleTodayEntriesClick = () => {
-      navigate('/logbook?filter=today'); // Navigate to logbook with filter
-  };
 
   return (
-    <div className='dashboard-container'>
+    <div className='dashboard-container bg-light'>
        {/* dashboard heading */}
        <div className="dashboard-heading">
           {/* Goodmorning,admin */}
-          <p className='dashboard-heading-text'>{dateTime.getHours()>=1 && dateTime.getHours()<12?'Good morning, ':dateTime.getHours()>=12&&dateTime.getHours()<17?'Good afternoon, ':'Good evening,'} <span>{uname}</span></p>
+          <p className='dashboard-heading-text'>{dateTime.getHours()>=1 && dateTime.getHours()<12?'Good morning, ':dateTime.getHours()>=12&&dateTime.getHours()<17?'Good afternoon, ':'Good evening,'} <span>{username}</span></p>
       </div>
       
 
@@ -270,13 +306,13 @@ const Dashboard = () => {
           <DashBox icon={<FontAwesomeIcon icon={faTriangleExclamation} className='icon'/>} title={"Overdue Resources"} total={totalOverdue} loading={totalOverdueLoading}/>
 
           {/* bar chart */}
-          <div className="bar-chart col-12">
+          <div className="bar-chart col-12 shadow-sm">
             <h5>Visitors and Borrowers Statistics</h5>
             <VerticalBarChart/>
           </div>
 
           {/* overdue book list */}
-          <div className="overdue-table py-4">
+          <div className="overdue-table bg-light py-4">
             <div className='d-flex align-items-center justify-content-start gap-5 py-3'>
               <h5 className='m-0'>Overdue Book List</h5>
               {/* <button className='see-all btn'>See all</button> */}
@@ -285,7 +321,7 @@ const Dashboard = () => {
           </div>
 
           {/* book list */}
-          <div className="book-table py-4">
+          <div className="book-table bg-light py-4">
             <div className='d-flex justify-content-between'>
               <div className='d-flex align-items-center justify-content-start gap-5 py-3'>
                 <h5 className='m-0'>Book List</h5>
@@ -295,8 +331,8 @@ const Dashboard = () => {
                 
               </div>
               <Link to="/catalog/add">
-                <button className="btn add-btn d-flex align-items-center justify-content-center gap-3">
-                  <FontAwesomeIcon icon={faPlus} className='icon'/>
+                <button className="btn btn-outline-dark d-flex align-items-center gap-2">
+                  <FontAwesomeIcon icon={faPlus}/>
                   Add new
                 </button>
               </Link>
@@ -328,9 +364,13 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div>
-            )):popularChoices ? popularChoices.map((item, index) => (
+            )):popularChoices&&popularChoices.length>0 ? popularChoices.map((item, index) => (
               <DashboardTopChoices key={index} data={item} number={index + 1} />
-            )) : ''}
+            )) : 
+            <div className='d-flex flex-column align-items-center gap-2 my-3 text-center'>
+              <FontAwesomeIcon icon={faExclamationCircle} className="fs-2 no-data" />
+              <span>No popular choices yet.</span>
+            </div>}
           </div>
 
           {/* books issued list */}

@@ -2,7 +2,7 @@ import React from 'react'
 import './JournalInput.css'
 import AuthorInput from '../AuthorInput/AuthorInput'
 
-const JournalInput = ({disabled,handleChange,bookData,addAuthor,setBookData,formValidation,error,publishers,authorOptions,handleAddAuthor,selectedOptions,deleteAuthor,authorList}) => {
+const JournalInput = ({disabled,handleChange,bookData,addAuthor,setBookData,error,handleAddAuthor,selectedOptions,deleteAuthor}) => {
     
   return (
     <div className='row'>
@@ -10,7 +10,8 @@ const JournalInput = ({disabled,handleChange,bookData,addAuthor,setBookData,form
         <div className="col-6 info-input-box">
             <label htmlFor="">Author/s *</label>
             {/* author box */}
-            <AuthorInput disabled={disabled} handleChange={handleChange} bookData={bookData} addAuthor={addAuthor} authorOptions={authorOptions} setBookData={setBookData} handleAddAuthor={handleAddAuthor} selectedOptions={selectedOptions} deleteAuthor={deleteAuthor} authorList={authorList}/>
+            <AuthorInput disabled={disabled} handleChange={handleChange} bookData={bookData} addAuthor={addAuthor} setBookData={setBookData} handleAddAuthor={handleAddAuthor} selectedOptions={selectedOptions} deleteAuthor={deleteAuthor}/>
+            <p className="resource-error">{error.authors?error.authors:''}</p>
         </div>
 
         {/* volume, issue, publish date */}
@@ -31,6 +32,7 @@ const JournalInput = ({disabled,handleChange,bookData,addAuthor,setBookData,form
                     <label htmlFor="">Publish Date *</label>
                     <input type="text" name="publishedDate" id="" placeholder='Select date' disabled={disabled?true:false} onChange={handleChange} value={bookData.publishedDate?bookData.publishedDate:''}/>
                 </div>
+                <p className="resource-error">{error.publishedDate?error.publishedDate:''}</p>
             </div>
         </div>
     </div>

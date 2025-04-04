@@ -121,67 +121,127 @@ const ViewPatron = () => {
     XLSX.writeFile(workbook, fileName);
   };
   
-
-    console.log(logHistory)
-
   return (
-    <div className='viewpatron-container'>
-      <div className=''>
-          <Link to={'/patron'}>
-              <button className='view-patron-back-button btn'>
-                <p className='m-0'>Back</p>
-              </button>
-          </Link>
+    <div className='viewpatron-container  bg-light'>
+      <div className='d-flex justify-content-between align-items-center mb-4'>
+        <Link to={'/patron'}>
+          <button className='view-patron-back-button btn '>
+            Back
+          </button>
+        </Link>
+        {!patronLoading && (
+          <h5 className="text-muted">Patron ID: {patron.tup_id}</h5>
+        )}
       </div>
-      {/* user profile */}
-      <div className='d-flex flex-column gap-2 py-3'>
-        <div>
-          {patronLoading
-          ?<div className='loadingName'></div>
-          :<h1 className='m-0 fs-1'>{patron.patron_fname} {patron.patron_lname}</h1>}
 
-          {patronLoading
-          ?<div className='loadingID mt-2'></div>
-          :<p  className='m-0 fs-3'>{patron.tup_id}</p>}
+      {/* Patron Profile Card */}
+      <div className='card shadow-sm mb-4'>
+        <div className='card-body p-5'>
+          <div className='row'>
+            {/* Left side - Profile Picture */}
+            <div className='col-md-3 text-center mb-3 mb-md-0'>
+              {patronLoading ? (
+                <div className='loadingAvatar rounded-circle mx-auto'></div>
+              ) : (
+                <div className='patron-avatar rounded-circle d-flex justify-content-center align-items-center bg-primary text-white mx-auto' style={{width: '150px', height: '150px', fontSize: '3rem'}}>
+                  {patron.patron_fname && patron.patron_lname ? 
+                    `${patron.patron_fname.charAt(0)}${patron.patron_lname.charAt(0)}` : '??'}
+                </div>
+              )}
+            </div>
+            
+            {/* Right side - Profile Info */}
+            <div className='col-md-9'>
+              {patronLoading ? (
+                <>
+                  <div className='loadingName mb-3'></div>
+                  <div className='loadingInfo'></div>
+                </>
+              ) : (
+                <>
+                  <h1 className='card-title mb-3 fw-bold'>{patron.patron_fname} {patron.patron_lname}</h1>
+                  
+                  <div className='row g-3'>
+                    <div className='col-md-6'>
+                      <div className='patron-info-item'>
+                        <span className='text-muted me-2'>Category:</span>
+                        <span className='badge bg-primary'>{patron.category}</span>
+                      </div>
+                    </div>
+                    
+                    <div className='col-md-6'>
+                      <div className='patron-info-item'>
+                        <span className='text-muted me-2'>Sex:</span>
+                        <span>{patron.patron_sex}</span>
+                      </div>
+                    </div>
+                    
+                    <div className='col-md-6'>
+                      <div className='patron-info-item'>
+                        <span className='text-muted me-2'>Email:</span>
+                        <span>{patron.patron_email}</span>
+                      </div>
+                    </div>
+                    
+                    <div className='col-md-6'>
+                      <div className='patron-info-item'>
+                      <span className='text-muted me-2'>Mobile no.:</span>
+                        <span>{patron.patron_mobile}</span>
+                      </div>
+                    </div>
+                    
+                    <div className='col-md-6'>
+                      <div className='patron-info-item'>
+                        <span className='text-muted me-2'>College:</span>
+                        <span>{patron.college_name}</span>
+                      </div>
+                    </div>
+                    
+                    <div className='col-md-6'>
+                      <div className='patron-info-item'>
+                        <span className='text-muted me-2'>Program:</span>
+                        <span>{patron.course_name}</span>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         </div>
-        {patronLoading
-        ?<div className='loadingInfo'></div>
-        :<div className='row w-50 py-1'>
-          <div className="col-2 fw-semibold">Category:</div>
-          <div className='col-10'>{patron.category}</div>
-          
-          <div className="col-2 fw-semibold">Sex:</div>
-          <div className="col-10">{patron.patron_sex}</div>
-
-          <div className="col-2 fw-semibold">Email:</div>
-          <div className="col-10">{patron.patron_email}</div>
-
-          <div className="col-2 fw-semibold">Mobile:</div>
-          <div className="col-10">{patron.patron_mobile}</div>
-
-          <div className="col-2 fw-semibold">College:</div>
-          <div className="col-10">{patron.college_name}</div>
-
-          <div className="col-2 fw-semibold">Program:</div>
-          <div className="col-10">{patron.course_name}</div>
-        </div>}
-        
       </div>
 
-      <hr />
+      {/* Log History Table */}
+      <div className='card mb-4 shadow-sm p-5'>
+        <div className='card-body p-0'>
+          {logHistoryLoading ? (
+            <div className='loadingTable p-4'></div>
+          ) : (
+            <ViewPatronTable 
+              header={logHistoryHeader} 
+              title={'Log History'} 
+              data={logHistory} 
+              exportXLSX={exportLogHistory}
+            />
+          )}
+        </div>
+      </div>
 
-      {/* log history */}
-      {logHistoryLoading
-      ?<div className='loadingTable'></div>
-      :<ViewPatronTable header={logHistoryHeader} title={'Log History'} data={logHistory} exportXLSX={exportLogHistory}/>}
-      
-      <hr />
-
-      {/* Circulation history */}
-      {circulationHistoryLoading
-      ?<div className='loadingTable'></div>
-      :<ViewPatronTable header={circulationHistoryHeader} title={'Circulation History'} data={circulationHistory} exportXLSX={exportCirculationHistory}/>}
-      
+      {/* Circulation History Table */}
+      <div className='card shadow-sm p-5'>
+        <div className='card-body p-0'>
+          {circulationHistoryLoading ? (
+            <div className='loadingTable p-4'></div>
+          ) : (
+            <ViewPatronTable 
+              header={circulationHistoryHeader} 
+              title={'Circulation History'} 
+              data={circulationHistory} 
+              exportXLSX={exportCirculationHistory}
+            />
+          )}
+        </div>
+      </div>
     </div>
   )
 }

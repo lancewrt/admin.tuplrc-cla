@@ -3,62 +3,42 @@ import React, { useEffect, useState } from 'react'
 import './Cataloging.css'
 import axios from 'axios'
 import { getAllFromStore } from '../../indexedDb/getDataOffline'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchDepartmentOffline, fetchDepartmentOnline, setDepartmentArr } from '../../features/departmentSlice'
+import { fetchTopicOffline, fetchTopicOnline, setTopicArr } from '../../features/topicSlice'
 
 const Cataloging = ({disabled,handleChange,bookData,handleToggle,formValidation, error,editMode}) => {
-    const [department, setDepartment] = useState([])
-    const [catalog, setCatalog] = useState([])
-    const [topic,setTopic] = useState([])
+    const dispatch = useDispatch();
+    const {department} = useSelector(state=>state.department)
+    const {topic} = useSelector(state=>state.topic)
+    const [filteredTopic, setFilteredTopic] = useState([])
     const isOnline = useSelector(state=>state.isOnline.isOnline)
     
-
     useEffect(() => {
-        if(isOnline){
-            console.log('getting cataloging info online')
-            getDept()
-            getTopics()
-        }else{
-            getDeptOffline()
-            getTopicsOffline()
+        if (isOnline !== null) { 
+            if (isOnline) {
+                console.log('getting cataloging info online');
+                dispatch(fetchDepartmentOnline());
+                dispatch(fetchTopicOnline());
+            } else {
+                dispatch(fetchDepartmentOffline());
+                dispatch(fetchTopicOffline());
+            }
         }
-        
-       
-    }, []);
-
-    //get existing department offline
-    const getDeptOffline = async ()=>{
-        const depts = await getAllFromStore('department')
-        setDepartment(depts)
-    }
-
-    //get existing topics offline
-    const getTopicsOffline = async()=>{
-        const tps = await getAllFromStore('topic');
-        setTopic(tps)
-    }
+    }, [isOnline, dispatch]); 
     
-    //get existing department online
-    const getDept = async()=>{
-        try{
-            const response = await axios.get('https://api.tuplrc-cla.com/api/data/departments').then(res=>res.data)
-            setDepartment(response)
-        }catch(err){
-            console.log("Couldn't retrieve department online. An error occurred: ", err.message)
-        }
-    }
 
-    //get existing topics online
-    const getTopics =async ()=>{
-        try{
-            const response = await axios.get('https://api.tuplrc-cla.com/api/data/topic').then(res=>res.data)
-            setTopic(response)
-        }catch(err){
-            console.log("Couldn't retrieve topics online. An error occurred: ", err.message)
-        }
-    }
+    useEffect(()=>{
+        const filtered = topic.filter(item=>item.dept_id==bookData.department)
+        setFilteredTopic(filtered)
+    },[bookData.department])
+
+
+    console.log(filteredTopic)
+    console.log(topic)
 
   return (
-    <div className='cataloging-box'>
+    <div className='cataloging-box shadow-sm'>
         <div className="row">
             {/* header */}
             <div className="col-12 cataloging-info-header">Cataloging</div>
@@ -70,9 +50,13 @@ const Cataloging = ({disabled,handleChange,bookData,handleToggle,formValidation,
                         {/* department */}
                         <div className="col-6 info-input-box">
                             <label htmlFor="">Department *</label>
-                            <select className="form-select"
-                            name='department'
-                            disabled={disabled} onChange={handleChange} onBlur={formValidation}>
+                            <select 
+                                className="form-select"
+                                name='department'
+                                disabled={disabled} 
+                                onChange={handleChange} 
+                                // onBlur={formValidation}
+                                >
                                 <option selected disabled className=''>Select department</option>
                                 {department.length>0?department.map((item,key)=>(
                                     <option value={item.dept_id} className='dept_name' selected={disabled||editMode?item.dept_id==bookData.department:''}>{item.dept_name}</option>
@@ -84,9 +68,16 @@ const Cataloging = ({disabled,handleChange,bookData,handleToggle,formValidation,
                         {/* topic */}
                         {bookData.mediaType=='4'?'':<div className="col-6 info-input-box">
                             <label htmlFor="">Topics *</label>
-                            <select className="form-select" name='topic' disabled={disabled} onChange={handleChange} onBlur={formValidation}>
-                                <option selected disabled>Select Topic</option>
-                                {topic.length>0?topic.map((item,key)=>(
+                            <select 
+                                className="form-select" 
+                                name='topic' 
+                                disabled={disabled} 
+                                onChange={handleChange} 
+                                // onBlur={formValidation} 
+                                value={bookData.topic}
+                            >
+                                <option value='' selected disabled>Select Topic</option>
+                                {filteredTopic.length>0?filteredTopic.map((item,key)=>(
                                     <option value={item.topic_id} selected={disabled||editMode?item.topic_id==bookData.topic:''}>{item.topic_name}</option>
                                 )):''}
                             </select>

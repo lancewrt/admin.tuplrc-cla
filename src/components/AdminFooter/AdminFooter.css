@@ -1,22 +1,4 @@
-@font-face {
-    font-family: 'Inter';
-    font-weight: 400;
-    src: url('../../assets/Fonts/Inter_24pt-Regular.ttf') format('ttf');
-}
-
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Inter';
-    text-decoration: none;
-}
-
-
-:root{
-    --tup-color: #94152B;
-    --white: #fff;
-}
+@import '../../assets/styles/globals.css';
 
 .adminfooter{
     position: absolute;

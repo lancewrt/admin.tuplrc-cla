@@ -85,7 +85,7 @@ const DashboardTable = ({ header, data, type, loading }) => {
           <td colSpan={header.length}>
             <div className='d-flex flex-column align-items-center gap-2 my-3 text-center'>
               <FontAwesomeIcon icon={faExclamationCircle} className="fs-2 no-data" />
-              <span>No resources available<br/>for this category.</span>
+              <span className='fw-semibold'>No resources available<br/>for this category.</span>
             </div>
           </td>
         </tr>

@@ -1,96 +1,103 @@
-@font-face {
-    font-family: 'Inter';
-    font-weight: 400;
-    src: url('../../assets/Fonts/Inter_24pt-Regular.ttf') format('ttf');
-}
+@import '../../assets/styles/globals.css';
 
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Inter';
-    text-decoration: none;
-}
+/* ViewPatron.css */
 
-
-
-:root{
-    --black:#1F1F1F;
-    --tup-color: #94152B;
-    --white: #fff;
-    --button:  #97170E;
-    --button-hover:  #75110a;
-    --shadow: #0000003b;
-    --yellow: #EDDF13;
-    --yellow-hover: rgb(218, 168, 3);
-    --yellow-filter: brightness(0) saturate(10%) invert(90%) sepia(41%) saturate(1000%) hue-rotate(332deg) brightness(103%) contrast(103%);
-    --white-filter:  brightness(100%) saturate(0) invert(100%) sepia(0) saturate(0) hue-rotate(0) brightness(1000%) contrast(100%);
-    --green: #54CB58;
-    --light-gray: #F7F7F7;
-    --blue: #5499CB;
-    --table-header: #6F6A6A;
-    --table-border-bottom:#D9D9D9;
-    --light-red: rgba(148, 21, 43, 0.1);
-}
-
-.viewpatron-container{
+.viewpatron-container {
+    /* background-color: #f7f7f7b4; */
     padding: 10px 70px 50px;
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-    overflow-x: hidden;   
-}
-
-.view-patron-back-button{
-    color: var(--button);
-    border: 1px solid var(--button);
-    background-color: var(--white);
-    transition: all 0.2s linear;
-}
-
-.view-patron-back-button:hover,
-.view-patron-back-button:focus,
-.view-patron-back-button:active{
-    background-color: var(--tup-color);
-    color: var(--white);
-}
-
-.viewpatron-container .loadingName,
-.viewpatron-container .loadingID,
-.viewpatron-container .loadingInfo,
-.viewpatron-container .loadingTable {
-    border-radius: 5px;
-    background: linear-gradient(90deg, #E0E0E0 25%, rgba(255, 255, 255, 0.4) 50%, #E0E0E0 75%);
+    min-height: 100vh;
+  }
+  
+  /* Avatar placeholder */
+  .patron-avatar {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  /* .patron-avatar:hover {
+    transform: scale(1.05);
+  } */
+  
+  /* Loading Skeletons */
+  .loadingName, .loadingID, .loadingInfo, .loadingTable, .loadingAvatar {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
     background-size: 200% 100%;
-    animation: shimmer 2s infinite linear;
-}
-
-/* Adjusting sizes individually */
-.viewpatron-container .loadingName {
-    width: 20%;
-    height: 50px;
-}
-
-.viewpatron-container .loadingID {
-    width: 20%;
-    height: 30px;
-}
-
-.viewpatron-container .loadingInfo {
-    width: 30%;
-    height: 100px;
-}
-
-.viewpatron-container .loadingTable{
+    animation: loading 1.5s infinite;
+    border-radius: 4px;
+  }
+  
+  .loadingName {
+    height: 38px;
+    width: 300px;
+    margin-bottom: 8px;
+  }
+  
+  .loadingID {
+    height: 24px;
+    width: 180px;
+  }
+  
+  .loadingInfo {
+    height: 180px;
     width: 100%;
-    height: 500px;
-}
-
-@keyframes shimmer {
-0% {
-    background-position: -200px 0;
-}
-100% {
-    background-position: 200px 0;
-    }
-}
+  }
+  
+  .loadingTable {
+    height: 300px;
+    width: 100%;
+  }
+  
+  .loadingAvatar {
+    height: 150px;
+    width: 150px;
+    border-radius: 50% !important;
+    margin: 0 auto;
+  }
+  
+  @keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  
+  /* Card hover effects */
+  .card {
+    transition: all 0.3s ease;
+    border: none;
+    overflow: hidden;
+  }
+  
+  /* .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+  } */
+  
+  /* Patron info styling */
+  .patron-info-item {
+    /* padding: 8px 0; */
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Button styling */
+  .view-patron-back-button {
+    transition: all 0.3s ease;
+    font-weight: 500;
+    color: var(--tup-color);
+    border-color: var(--tup-color);
+  }
+  
+  .view-patron-back-button:hover {
+    color: var(--white);
+    background-color: var(--tup-color);
+  }
+  
+  /* Card headers */
+  .card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Custom table styling - if needed to override ViewPatronTable styles */
+  .table-responsive {
+    border-radius: 0 0 0.25rem 0.25rem;
+    overflow: hidden;
+  }

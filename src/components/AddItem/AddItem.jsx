@@ -10,90 +10,74 @@ import { getAllFromStore } from '../../indexedDb/getDataOffline';
 import { saveResourceOffline } from '../../indexedDb/saveResourcesOffline';
 import { viewResourcesOffline } from '../../indexedDb/viewResourcesOffline';
 import { editResourceOffline } from '../../indexedDb/editResourcesOffline';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
+import { useRef } from 'react';
+import { fetchTypeOffline, fetchTypeOnline } from '../../features/typeSlice';
+import { fetchStatusOffline, fetchStatusOnline } from '../../features/statusSlice';
+import { fetchPublisherOffline, fetchPublisherOnline } from '../../features/publisherSlice';
+import { fetchAuthorOffline, fetchAuthorOnline } from '../../features/authorSlice';
+import { fetchAdviserOnline } from '../../features/adviserSlice';
 
 const AddItem = () => {
     //pag may id, nagiging view ung purpose ng add item component
     const {id} = useParams()
-    const [uname, setUname] = useState(null);
+    const {username} = useSelector(state=>state.username)
     const navigate = useNavigate()
     // initialize offline database
     const [disabled,setDisabled] = useState(false)
-    const [type, setType] = useState('');
     const [bookData, setBookData] = useState({
         mediaType: '1',
         authors: [],
         genre: [],
-        isCirculation: true,
+        isCirculation: 1,
         publisher_id: 0,
         publisher: '',
+        status:''
     });
     const [error, setError] = useState({});
-    const [publishers, setPublishers] = useState([]);
-    // authorlist and adviserlist are for the <Select>. These are the options to be displayed
-    const [authorList, setAuthorList] = useState([]);
-    const [adviserList, setAdviserList] = useState([]);
     // for loading modal
-    const [loading,setLoading] = useState(false)
-    const [resourceType,setResourceType]=useState([])
-    // Reset bookData when mediaType changes
-    //console.log(resourceId)
-    const [resourceStatus,setResourceStatus] = useState([])
-    const [editMode, setEditMode] = useState(false)
+    const [loading,setLoading] = useState(false);
+    const [editMode, setEditMode] = useState(false);
+    const [isOfflineView, setIsOfflineView] = useState(false)
     const isOnline = useSelector(state=>state.isOnline.isOnline)
-
-    const getUsername = async()=>{
-        try {
-          // Request server to verify the JWT token
-          const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
-          console.log(response.data)
-          // If session is valid, set the role
-          if (response.data.loggedIn) {
-            setUname(response.data.username);
-          } else {
-            setUname(null); // If not logged in, clear the role
-          }
-        } catch (error) {
-          console.error('Error verifying session:', error);
-          setUname(null); // Set null if there's an error
-        }
-      }
+    const dispatch = useDispatch();
 
     useEffect(() => {
-        getUsername();
-        if(!disabled){
+        setError({});
+        if(!disabled&&!isOfflineView){
             if (bookData.mediaType== 1) {
                 setBookData({
                     mediaType: bookData.mediaType, // keep the changed mediaType
                     authors: [],
-                    isCirculation: true,
+                    isCirculation: 1,
                     publisher_id: 0,
                     publisher: '',
+                    status:''
                 });
             } else {
                 setBookData({
                     mediaType: bookData.mediaType, // keep the changed mediaType
                     authors: [],
-                    isCirculation: false,
+                    isCirculation: 0,
+                    status:''
                 });
             }
         }
     }, [bookData.mediaType]);
 
     useEffect(() => {
-
         if (isOnline == null) {
             return;
         }
         
-        initDB();
+        // initDB();
          // Initialize online/offline state
         if (isOnline) {
-            getOnlineData();
+            getDataOnline();
         } else {
-            getOfflineData();
+            getDataOffline();
         }
 
         // Handle resource view logic (inside useEffect)
@@ -101,10 +85,10 @@ const AddItem = () => {
             setDisabled(true);
             // Check if online or offline after setting the state
             if(isOnline) {
-                getOnlineData();
+                getDataOnline();
                 viewResourceOnline();
             }else{
-                getOfflineData();
+                getDataOffline();
                 viewResourceOffline();
             }
         }
@@ -112,38 +96,22 @@ const AddItem = () => {
     
     console.log('isonline? ', isOnline)
 
-
-/*-----------------INITIALIZE INPUT---------------------- */
-    //get online data
-    const getOnlineData = async ()=>{
-        getType()
-        getStatus()
-        getPublishers()
-        getAuthors()
-        getAdvisers()
+    const getDataOnline = ()=>{
+        dispatch(fetchTypeOnline());
+        dispatch(fetchStatusOnline());
+        dispatch(fetchPublisherOnline());
+        dispatch(fetchAuthorOnline());
+        dispatch(fetchAdviserOnline());
     }
 
-    //get offline data
-    const getOfflineData = async ()=>{
-        // get type offline
-        const types = await getAllFromStore('resourcetype');
-        setResourceType(types);
-
-        //get status offline
-        const status = await getAllFromStore('availability');
-        setResourceStatus(status)
-
-        //get existing publishers offline
-        getPublishersOffline()
-
-        //get existing authors offline
-        getAuthorsOffline()
-
-        //get existing advisers offline
-        getAdvisersOffline()
-        
+    const getDataOffline = ()=>{
+        dispatch(fetchTypeOffline())
+        dispatch(fetchStatusOffline())
+        dispatch(fetchPublisherOffline())
+        dispatch(fetchAuthorOffline())
+        dispatch(fetchAdviserOnline())
     }
-
+   
 /*-------------------VIEW RESOURCE---------------------- */
     const viewResourceOnline = async()=>{
         console.log('view resource')
@@ -162,7 +130,7 @@ const AddItem = () => {
                         mediaType:mediaType,
                         authors:data.author_names.split(', '),
                         description:data.resource_description,
-                        quantity:data.resource_quantity.toString(),
+                        quantity:data.original_resource_quantity.toString(),
                         title:data.resource_title.toString(),
                         isbn:data.book_isbn?data.book_isbn.toString():'',
                         status:data.avail_id.toString(),
@@ -172,7 +140,7 @@ const AddItem = () => {
                         publishedDate:data.resource_published_date.toString(),
                         department: data.dept_id.toString(),
                         topic:data.topic_id.toString(),
-                        isCirculation:data.resource_is_circulation==0?false:true,
+                        isCirculation:data.resource_is_circulation,
                     }))
                     break;
                     
@@ -183,7 +151,7 @@ const AddItem = () => {
                         mediaType:mediaType,
                         authors:data.author_names.split(', '),
                         description:data.resource_description,
-                        quantity:data.resource_quantity.toString(),
+                        quantity:data.original_resource_quantity.toString(),
                         title:data.resource_title.toString(),
                         status:data.avail_id.toString(),
                         file:data.filepath,
@@ -192,7 +160,7 @@ const AddItem = () => {
                         topic:data.topic_id.toString(),
                         volume: data.jn_volume.toString(),
                         issue: data.jn_issue.toString(),
-                        isCirculation:data.resource_is_circulation==0?false:true,
+                        isCirculation:data.resource_is_circulation,
                     }))
                     break;
 
@@ -203,12 +171,12 @@ const AddItem = () => {
                         authors:data.author_names.split(', '),
                         adviser:data.adviser_name,
                         description:data.resource_description,
-                        quantity:data.resource_quantity.toString(),
+                        quantity:data.original_resource_quantity.toString(),
                         title:data.resource_title.toString(),
                         status:data.avail_id.toString(),
                         publishedDate:data.resource_published_date.toString(),
                         department: data.dept_id.toString(),
-                        isCirculation:data.resource_is_circulation==0?false:true,
+                        isCirculation:data.resource_is_circulation,
                     }))
                     break;
 
@@ -223,17 +191,32 @@ const AddItem = () => {
 
     const viewResourceOffline = async()=>{
         console.log('viewing resource offline')
+        setIsOfflineView(true)
         await viewResourcesOffline(parseInt(id),setBookData)
+        
     }
 
     console.log(bookData)
-
 /*-------------------HANDLE CHANGES---------------------- */
+    useEffect(()=>{
+        if(Object.keys(error).length>0){
+            formValidation();
+        }
+    },[error])
+
+    useEffect(()=>{
+        if(!isOfflineView){
+            setBookData((prevData)=>({
+                ...prevData,
+                topic:''
+            }))
+        }
+    },[bookData.department])
+
     // Handle input changes
     const handleChange = (e) => {
         const { name, value } = e.target;
         setBookData({ ...bookData, [name]: value });
-        formValidation();
     };
     // Add author
     const addAuthor = (author) => {
@@ -263,23 +246,12 @@ const AddItem = () => {
     }
     // delete adviser 
     const deleteAdviser = ()=>{
-       
         setBookData(prevData => ({
             ...prevData,
             adviser: ''
         }));
     }
-    // Add publisher
-    const addPublisher = (publisher) => {
-        if (publisher.length !== 1) {
-            setBookData((prevData) => ({
-                ...prevData,
-                publisher
-            }));
-        } else {
-            console.log('Please enter valid publisher data');
-        }
-    };
+
     // Add adviser
     const addAdviser = (adviser) => {
         console.log(adviser)
@@ -327,54 +299,23 @@ const AddItem = () => {
             err.department = 'Please select department';
         }
 
-        if (bookData.mediaType === '1') {
-            // if (!bookData.file&&!bookData.url) {
-            //     err.file = 'Please select cover';
-            // }
-            if (!bookData.authors || bookData.authors.length === 0) {
-                err.authors = 'Please specify author/s';
-            }
-            // if (!bookData.isbn) {
-            //     err.isbn = 'Please enter ISBN';
-            // } 
-            // if (bookData.publisher_id === 0 && bookData.publisher === '') {
-            //     err.publisher = 'Please enter publisher';
-            // }
-            if (!bookData.publishedDate) {
-                err.publishedDate = 'Please enter publish date';
-            }
+        if (!bookData.authors || bookData.authors.length == 0) {
+            err.authors = 'Please specify author/s';
+        }
+
+        const yearRegex = /^\d{4}$/;
+        if (!yearRegex.test(bookData.publishedDate)) {
+            err.publishedDate = "Please enter publish date in 'YYYY' format";
+        }
+
+        if (bookData.mediaType === '1'|| bookData.mediaType==='2'||bookData.mediaType==='3') {
             if (!bookData.topic) {
                 err.topic = 'Please select topic';
             }
-        }else if(bookData.mediaType==='2'||bookData.mediaType==='3'){
-            // if (!bookData.file&&!bookData.url) {
-            //     err.file = 'Please select cover';
-            // }
-            if (!bookData.authors || bookData.authors.length === 0) {
-                err.authors = 'Please specify author/s';
-            }
-            // if(!bookData.volume){
-            //     err.volume = 'Please enter volume'
-            // }
-            // if(!bookData.issue){
-            //     err.issue = 'Please enter issue'
-            // }
-            if (!bookData.publishedDate) {
-                err.publishedDate = 'Please enter publish date';
-            }
-            if (!bookData.topic) {
-                err.topic = 'Please select topic';
-            }
-        }else if(bookData.mediaType==='4'){
-            if (!bookData.authors || bookData.authors.length === 0) {
-                err.authors = 'Please specify author/s';
-            }
+        }else {
             if(!bookData.adviser){
                 err.adviser = 'Please specify adviser';
 
-            }
-            if (!bookData.publishedDate) {
-                err.publishedDate = 'Please enter publish date';
             }
         }
 
@@ -390,7 +331,7 @@ const AddItem = () => {
             setLoading(true)
             try{
                 const formData = new FormData();
-                formData.append('username', uname);
+                formData.append('username', username);
                 Object.entries(bookData).forEach(([key, value]) => {
                     formData.append(key, value);
                 }
@@ -413,7 +354,7 @@ const AddItem = () => {
                  setBookData({
                     mediaType: 'book',
                     authors: [],
-                    isCirculation: false,
+                    isCirculation: 1,
                     publisher_id: 0,
                     publisher: ''
                 });
@@ -430,8 +371,14 @@ const AddItem = () => {
     const handleSaveResourceOffline = async ()=>{
         if (formValidation() === true) {
             setLoading(true)
+            
             try{
-                const response = await saveResourceOffline(bookData);
+                const updatedBookData = {
+                    ...bookData,      // Spread the existing bookData
+                    username: username // Add the username to the bookData object
+                };
+
+                const response = await saveResourceOffline(updatedBookData);
                 navigate('/catalog')
                 window.toast.fire({icon:"success", title:"Resource added successfully"})
             }catch(err){
@@ -449,7 +396,7 @@ const AddItem = () => {
             try{
                 setLoading(true)
                 const formData = new FormData();
-                formData.append('username', uname);
+                formData.append('username', username);
                 Object.entries(bookData).forEach(([key, value]) => {
                     formData.append(key, value);  
                 });
@@ -477,132 +424,9 @@ const AddItem = () => {
             }
     };
 
-/*--------------FETCH DATA ONLINE---------------------*/ 
-    // Fetch publishers from the backend
-    const getPublishers = async () => {
-        console.log('publishers online')
-        const pubs = [];
-        try {
-            const response = await axios.get('https://api.tuplrc-cla.com/api/data/publishers');
-            console.log(response.data)
-            response.data.forEach(item => {
-                pubs.push({
-                    value: item.pub_id,
-                    label: item.pub_name
-                });
-            });
-            setPublishers(pubs);
-        } catch (err) {
-            console.log(err.message);
-        }
-    };
-    // Fetch publishers from the backend
-    const getAuthors = async () => {
-        const auth = [];
-        try {
-            const response = await axios.get('https://api.tuplrc-cla.com/api/data/authors');
-            response.data.forEach(item => {
-                auth.push({
-                    value: `${item.author_fname} ${item.author_lname}`,
-                    label: `${item.author_fname} ${item.author_lname}`
-                });
-            });
-            setAuthorList(auth);
-        } catch (err) {
-            console.log(err.message);
-        }
-    };
-    //Fetch advisers
-    const getAdvisers = async () => {
-        const adv = [];
-        try {
-            const response = await axios.get('https://api.tuplrc-cla.com/api/data/advisers');
-            response.data.forEach(item => {
-                adv.push({
-                    value: `${item.adviser_fname} ${item.adviser_lname}`,
-                    label: `${item.adviser_fname} ${item.adviser_lname}`
-                });
-            });
-            setAdviserList(adv);
-        } catch (err) {
-            console.log(err.message);
-        }
-    };
-    // fetch resourceType ( book, journal, newsletter, thesis)
-    const getType = async()=>{
-        try {
-            const response = await axios.get('https://api.tuplrc-cla.com/api/data/type').then(res=>res.data);
-            //console.log(response)
-            setResourceType(response)
-        } catch (err) {
-            console.log(err.message);
-        }
-    };
-    // fetch status (available,lost,damaged)
-    const getStatus = async()=>{
-        try {
-            const response = await axios.get('https://api.tuplrc-cla.com/api/data/status').then(res=>res.data);
-            //console.log(response)
-            setResourceStatus(response)
-        } catch (err) {
-            console.log(err.message);
-        }
-    };
-
-/*--------------FETCH DATA OFFLINE---------------------*/ 
-    // Fetch publishers from the backend
-    const getPublishersOffline = async () => {
-        console.log('publishers offline')
-        const pubs = [];
-        try {
-            const response = await getAllFromStore('publisher');
-            response.forEach(item => {
-                pubs.push({
-                    value: item.pub_id,
-                    label: item.pub_name
-                });
-            });
-            setPublishers(pubs);
-        } catch (err) {
-            console.log(err.message);
-        }
-    };
-    // Fetch publishers from the backend
-    const getAuthorsOffline = async () => {
-        const auth = [];
-        try {
-            const response = await getAllFromStore('author');
-            response.forEach(item => {
-                auth.push({
-                    value: `${item.author_fname} ${item.author_lname}`,
-                    label: `${item.author_fname} ${item.author_lname}`
-                });
-            });
-            setAuthorList(auth);
-        } catch (err) {
-            console.log(err.message);
-        }
-    };
-    //Fetch advisers
-    const getAdvisersOffline = async () => {
-        const adv = [];
-        try {
-            const response = await getAllFromStore('adviser');
-            console.log('adviser list: ', response)
-            response.forEach(item => {
-                adv.push({
-                    value: `${item.adviser_fname} ${item.adviser_lname}`,
-                    label: `${item.adviser_fname} ${item.adviser_lname}`
-                });
-            });
-            setAdviserList(adv);
-        } catch (err) {
-            console.log(err.message);
-        }
-    };
-
+    console.log(bookData)
     return (
-        <div className='add-item-container'>
+        <div className='add-item-container bg-light'>
             <h1 className='m-0'>Cataloging</h1>
 
             <div className='add-item-path-button'>
@@ -622,21 +446,14 @@ const AddItem = () => {
                     handleChange={handleChange}
                     bookData={bookData}
                     addAuthor={addAuthor}
-                    setType={setType}
                     addAdviser={addAdviser}
                     setBookData={setBookData}
                     handleFileChange={handleFileChange}
                     formValidation={formValidation}
                     error={error}
-                    publishers={publishers}
                     deleteAuthor={deleteAuthor}
-                    authorList={authorList}
-                    resourceType={resourceType}
-                    adviserList={adviserList}
                     deleteAdviser={deleteAdviser}
-                    resourceStatus={resourceStatus}
                     editMode={editMode}
-                    isOnline={isOnline}
                 />
             </div>
 
@@ -649,13 +466,13 @@ const AddItem = () => {
                     formValidation={formValidation}
                     error={error}
                     editMode={editMode}
-                    isOnline={isOnline}
                 />
             </div>
 
             {disabled?<div className='edit-btn-cont'><button className="btn edit-item" onClick={()=>{
                 setDisabled(false);
                 setEditMode(true);
+                setIsOfflineView(false);
                 }}>
                     Edit
                 </button></div>:<div className="cancel-save">
@@ -679,7 +496,7 @@ const AddItem = () => {
                         
                     }
                 }} disabled={Object.values(error).length>=1&&!editMode}>
-                    <FontAwesomeIcon icon={faFloppyDisk} className='icon'/>
+                    <FontAwesomeIcon icon={faFloppyDisk}/>
                     <span>Save</span>
                 </button>
             </div>}

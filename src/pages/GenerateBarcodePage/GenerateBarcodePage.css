@@ -91,10 +91,8 @@
 }
 
 .barcodepage .generate-btn{
-    background-color: var(--yellow);
-    font-weight: 500;
-    border-color: var(--yellow);
-    color: var(--black);
+    height: 50px;
+    box-shadow: 0px 1px 2px var(--shadow);
 }
 
 .barcodepage .generate-btn:hover,
@@ -111,6 +109,7 @@
     padding: 13px;
     color: var(--white);
     font-size: 0.85rem;
+    box-shadow: 0px 1px 2px var(--shadow);
 }
 
 .barcodepage .data{
@@ -119,6 +118,7 @@
     color: var(--black);
     font-size: 0.85rem;
     border: 1px solid var(--tup-color);
+    box-shadow: 0px 1px 2px var(--shadow);
 }
 
 .barcode-data, .barcode-instruct{
@@ -143,4 +143,33 @@
 
 .barcodepage .qnty-reminder{
     font-size: 0.6rem;
+}
+
+.barcodepage .search-bar{
+    width: 500px !important;
+    height: 50px;
+
+}
+
+.barcodepage .search-bar:hover,
+.barcodepage .search-bar:active,
+.barcodepage .search-bar:focus{
+    outline: none;
+}
+
+
+.barcodepage .search-btn{
+    height: 50px;
+    width: 50px;
+    background-color: var(--tup-color);
+    color: var(--white);
+    box-shadow: 0px 1px 2px var(--shadow);
+}
+
+.barcodepage .search-btn:hover,
+.barcodepage .search-btn:focus,
+.barcodepage .search-btn:active{
+    background-color: var(--button);
+    color: var(--white);
+    border: 1px solid  var(--button);
 }

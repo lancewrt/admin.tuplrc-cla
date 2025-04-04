@@ -81,14 +81,14 @@ const GenerateBarcodePage = () => {
     const totalPages = Math.ceil(dataToGenerate.length / itemsPerPage);
 
     return (
-        <div className='barcodepage'>
+        <div className='barcodepage bg-light'>
             <div>
                <AdminNavbar /> 
             </div>
             <div>
                 <AdminTopNavbar />
                 <div className='cat-container'>
-                <h1>Catalog</h1>
+                <h1>Generate QR Code</h1>
                 <div className='barcode-path-box'>
                     {/* <Link to={'/catalog'}>
                         <button className='back'>
@@ -96,18 +96,18 @@ const GenerateBarcodePage = () => {
                             <p>Back</p>
                         </button>
                     </Link> */}
-                    <div className='barcode-path'>
-                        <p>Catalog / <span> Generate Barcode</span></p>
-                    </div>
+                    {/* <div className='barcode-path'>
+                        <p>Cataloging / <span> Generate Barcode</span></p>
+                    </div> */}
                 </div>
-                <div className="search-filter">
-                    <input type="search" placeholder="Search by title" onChange={(e)=>setSearchQuery(e.target.value)} onKeyDown={(e)=>e.key=='Enter'&&search()}/>
-                    <button className="btn cat-search-button">
-                        <FontAwesomeIcon icon={faSearch} className='icon' />
+                <div className="search-filter input-group w-50 shadow-sm">
+                    <input type="search" className='form-control' placeholder="Search by title" onChange={(e)=>setSearchQuery(e.target.value)} onKeyDown={(e)=>e.key=='Enter'&&search()}/>
+                    <button className="btn search-btn">
+                        <FontAwesomeIcon icon={faSearch}/>
                     </button>
                 </div>
                 <div className='d-flex align-items-end justify-content-between barcode-instruct m-auto'>
-                    <p className='m-0'>Select book/s to generate its barcode</p>
+                    <p className='m-0'>Select book/s to generate its QR code</p>
                     <div className='d-flex gap-2'>
                     {selectedResourcesWithQuantity.length > 0 ? (
                     <PDFDownloadLink 
@@ -115,15 +115,15 @@ const GenerateBarcodePage = () => {
                         fileName="Generated_Barcodes.pdf"
                     >
                         {({ loading }) => (
-                            <button className='btn d-flex align-items-center gap-2 generate-btn' disabled={loading}>
-                                <FontAwesomeIcon icon={faBarcode} className='icon' />
+                            <button className='btn d-flex align-items-center gap-2 btn-success' disabled={loading}>
+                                <FontAwesomeIcon icon={faBarcode} />
                                 {loading ? "Generating PDF..." : "Export as PDF"}
                             </button>
                         )}
                     </PDFDownloadLink>
                 ) : (
-                    <button className='btn d-flex align-items-center gap-2 generate-btn' disabled>
-                        <FontAwesomeIcon icon={faBarcode} className='icon' />
+                    <button className='btn d-flex align-items-center gap-2 btn-success' disabled>
+                        <FontAwesomeIcon icon={faBarcode}/>
                         Export as PDF
                     </button>
                 )}
@@ -131,7 +131,7 @@ const GenerateBarcodePage = () => {
                     </div>
                 </div>
                 <div className='barcode-data m-auto d-flex flex-column gap-2'>
-                    <div className='row d-flex align-items-center header rounded'>
+                    <div className='row d-flex align-items-center header rounded text-center'>
                         <div className="col-2 d-flex gap-2 justify-content-center">
                             <input type="checkbox" onChange={handleSelectAll} checked={selectedResource.length === dataToGenerate.length && dataToGenerate.length > 0}/>
                             Select all
@@ -139,7 +139,7 @@ const GenerateBarcodePage = () => {
                         <div className="col-3">Title</div>
                         <div className="col-3">Type</div>
                         <div className="col-2">ISBN</div>
-                        <div className="col-2">Quantity <span className='qnty-reminder'>(Specify no. of barcode to generate)</span></div>
+                        <div className="col-2">Quantity <span className='qnty-reminder'>(Specify no. of QR code to generate)</span></div>
                     </div>
                     {currentItems.length!=0?currentItems.map((item) => (
                         <BarcodeData

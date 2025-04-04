@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import './LoginPage.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import './LoginPage.css'
 
 const LoginPage = () => {
     const [username, setUsername] = useState("");
@@ -48,7 +48,6 @@ const LoginPage = () => {
                 console.log("Login successful:", response.data);
                 // Redirect to dashboard
                 navigate('/dashboard');
-                
             }
         } catch (err) {
             setError(err.response?.data?.message || "An error occurred during login.");
@@ -65,43 +64,62 @@ const LoginPage = () => {
     };
 
     return (
-        <div className='login-container'>
-            <div className='wrapper'>
-                <div className="logo-container">
-                    <img src="/tuplogo.png" alt="Logo 1" className="logo" />
-                    <img src="/clalogo.png" alt="Logo 2" className="logo" />
-                </div>
-                <div>
-                    <h1>College of Liberal Arts</h1>
-                    <h2>Learning Resource Center</h2>
-                </div>
-                <div className='input-box'>
-                    <input
-                        type="text"
-                        placeholder="Enter Username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                    />
-                    <input
-                        type="password"
-                        placeholder="Enter Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                    />
-                </div>
-                {error && <div className="error-message">{error}</div>}
-                <div className="login">
-                    {loading ? (
-                        <div className="spinner-grow text-danger" role="status">
-                            <span className="visually-hidden">Loading...</span>
+        <div className="min-vh-100 d-flex align-items-center justify-content-center login-container">
+            <div className="card shadow-lg border-0" style={{ maxWidth: "400px" }}>
+                <div className="card-body p-5">
+                    <div className="text-center mb-4">
+                        <div className="d-flex justify-content-center gap-3 mb-3">
+                            <img src="/tuplogo.png" alt="TUP Logo" className="img-fluid" style={{ height: "60px" }} />
+                            <img src="/clalogo.png" alt="CLA Logo" className="img-fluid" style={{ height: "60px" }} />
                         </div>
-                    ) : (
-                        <button className="btn login-btn" onClick={login}>
-                            Login
-                        </button>
+                        <h1 className="h3 fw-bold text-dark">College of Liberal Arts</h1>
+                        <p className="fw-medium">Learning Resource Center</p>
+                    </div>
+                    
+                    <div className="mb-3 form-floating">
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="username"
+                            placeholder=""
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                        />
+                        <label htmlFor="username" className="form-label">Username</label>
+                    </div>
+                    
+                    <div className="mb-4 form-floating">
+                        <input
+                            type="password"
+                            className="form-control"
+                            id="password"
+                            placeholder=""
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                        />
+                        <label htmlFor="password" className="form-label">Password</label>
+                    </div>
+                    
+                    {error && (
+                        <div className="alert alert-danger py-2" role="alert">
+                            {error}
+                        </div>
                     )}
+                    
+                    <div className="d-grid gap-2">
+                        {loading ? (
+                            <button className="btn btn-dark btn-lg" type="button" disabled>
+                                {/* <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> */}
+                                Loading...
+                            </button>
+                        ) : (
+                            <button className="btn btn-dark py-2" onClick={login}>
+                                Login
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import ReactDom from 'react-dom'
 import './PublisherModal.css'
-import Select from 'react-select'
 
-const PublisherModal = ({open,close,handleChange,bookData,setBookData,publishers,publisherDetails,handlePublisher}) => {
-    
-    const [selectedPublisher,setSelectedPublisher] = useState('')
+const PublisherModal = ({open,close,setBookData,publisherDetails,handlePublisher}) => {
 
     if(!open){
         return null

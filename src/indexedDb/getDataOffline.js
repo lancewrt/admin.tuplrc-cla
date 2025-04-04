@@ -8,112 +8,85 @@ export const getAllFromStore = async (storeName) => {
     return await store.getAll();
 };
 
+export const getAllResources = async (username) => {
+    const db = await initDB();
+    const txResource = db.transaction('resources', 'readonly');
+    const resourceStore = txResource.objectStore('resources');
+    const resources = await resourceStore.getAll(); // Ensure this is awaited
+    await txResource.done;
+
+    // Filter resources by username
+    const filteredResources = resources.filter(resource => resource.username === username);
+    return filteredResources
+};
+
+
+
 //displays resources in catalog page
-export const getCatalogDetailsOffline = async ()=>{
-    const db = await initDB()
+export const getCatalogDetailsOffline = async (username) => {
+    const db = await initDB();
     const catalog = [];
 
-    //get resourceauthor
-    const txResourceAuthor = db.transaction('resourceauthors','readonly');
-    const resourceAuthorStore = txResourceAuthor.objectStore('resourceauthors')
-    const resourceAuthorsList = await resourceAuthorStore.getAll()
-    await txResourceAuthor.done
+    try {
+        // Get all resources
+        const txResource = db.transaction('resources', 'readonly');
+        const resourceStore = txResource.objectStore('resources');
+        const resources = await resourceStore.getAll(); // Ensure this is awaited
+        await txResource.done;
 
-    //get all resources
-    const txResource = db.transaction('resources','readonly')
-    const resourceStore = txResource.objectStore('resources')
-    const resources = await resourceStore.getAll()
-    await txResource.done
+        // Filter resources by username
+        const filteredResources = resources.filter(resource => resource.username === username);
 
-    //get related type
-    const txType = db.transaction('resourcetype','readonly');
-    const typeStore = txType.objectStore('resourcetype');
-    const types = await typeStore.getAll()
-    await txType.done
-    
-    //get related author
-    const txAuthor = db.transaction('author','readonly');
-    const authorStore = txAuthor.objectStore('author')
-    const authors = await authorStore.getAll()
-    await txAuthor.done
+        // Get department
+        const txDept = db.transaction('department','readonly');
+        const deptStore = txDept.objectStore('department')
+        const department = await deptStore.getAll();
+        await txDept.done;
+        
+        // Get topic
+        const txTopic = db.transaction('topic','readonly');
+        const topicStore = txTopic.objectStore('topic');
+        const topic = await topicStore.getAll();
+        await txTopic.done;
 
-    //get department
-    const txDept = db.transaction('department','readonly');
-    const deptStore = txDept.objectStore('department')
-    const department = await deptStore.getAll()
-    await txDept.done
-    
-    // get topic
-    const txTopic = db.transaction('topic','readonly');
-    const topicStore = txTopic.objectStore('topic')
-    const topic = await topicStore.getAll()
-    await txTopic.done
+        // Get related type
+        const txType = db.transaction('resourcetype','readonly');
+        const typeStore = txType.objectStore('resourcetype');
+        const types = await typeStore.getAll();
+        await txType.done;
 
-    // get book
-    const txBook = db.transaction('book','readonly');
-    const bookStore = txBook.objectStore('book')
-    const book = await bookStore.getAll()
-    await txBook.done
+        // Process and store data
+        for (const resource of filteredResources) {
+            console.log(resource);
+            const resourceType = types.find(type => type.type_id == resource.mediaType)?.type_name || '';
 
-    // get journalnewsletter
-    const txJn = db.transaction('journalnewsletter','readonly');
-    const jnStore = txJn.objectStore('journalnewsletter')
-    const jn = await jnStore.getAll()
-    await txJn.done
+            const deptName = department.find(dept => dept.dept_id == resource.department)?.dept_name || '';
 
-    for(const resource of resources){
-        //.find() returns the entire object if it finds a match.
-        //resource type
-        const resourceType = types.find(type => type.type_id == resource.type_id)?.type_name || '';
+            const topicName = topic.find(t => t.topic_id == resource.topic)?.topic_name || '';
 
-        // console.log(resourceType)
-        let topicName;
-        let topicId = null;
-        if(resourceType=='book'){
-            topicId = book.find(b=>b.resource_id == resource.resource_id)?.topic_id||'';
-        }else if(resourceType=='journal'){
-            topicId = jn.find(j=>j.resource_id == resource.resource_id)?.topic_id||'';
-        }else if(resourceType=='newsletter'){
-            topicId = jn.find(j=>j.resource_id == resource.resource_id)?.topic_id||'';
+            catalog.push({
+                resource_id: resource.resource_id,
+                type_id: resource.mediaType,
+                dept_id: resource.department,
+                topic_id: resource.topic,
+                resource_title: resource.title,
+                type_name: resourceType,
+                author_names: resource.authors.length > 1 ? resource.authors.join(', ') : resource.authors,
+                dept_name: deptName,
+                topic_name: topicName,
+                resource_quantity: resource.quantity,
+                original_resource_quantity: resource.quantity
+            });
         }
 
-        topicName = topicId?topic.find(t=>t.topic_id == topicId)?.topic_name||'':'n/a';
-
-        
-        //resource shelf no
-        // const shelfNo = department.find(dept=>dept.dept_id == resource.dept_id)?.dept_shelf_no||'';
-
-        //resource dept name
-        const deptName = department.find(dept=>dept.dept_id == resource.dept_id)?.dept_name||'';
-
-        //get authors 
-        //filter returns whole objet that matches the condition
-        //map returns the author id, therefore resoureAuthorId is an array that holds the id of authors
-        const resourceAuthorId = resourceAuthorsList.filter(ra=>ra.resource_id==resource.resource_id).map(ra => ra.author_id);
-
-        //get resource author
-        // filter returns the object of author (yung my lname and fname kapag yung author_id ay nag-eexist sa resourceAuthorId)
-        const resourceAuthors = authors
-            .filter(author => resourceAuthorId.includes(author.author_id))
-            .map(author => `${author.author_fname} ${author.author_lname}`)
-
-
-        catalog.push({
-            resource_id: resource.resource_id,
-            type_id: resource.type_id,
-            dept_id: resource.dept_id,
-            topic_id: topicId,
-            resource_title: resource.resource_title,
-            type_name: resourceType,
-            author_names: resourceAuthors.length>1?resourceAuthors.join(', '):resourceAuthors,
-            // dept_shelf_no: shelfNo,
-            dept_name: deptName,
-            topic_name:topicName,
-            resource_quantity: resource.resource_quantity
-        })
+    } catch (error) {
+        console.error("Error fetching catalog details:", error);
     }
-    return catalog
-}
+
+    return catalog;
+};
+
+
 
 //get all unsynced data
 // Get all unsynced data from a store

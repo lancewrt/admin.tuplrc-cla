@@ -1,35 +1,4 @@
-@font-face {
-    font-family: 'Inter';
-    font-weight: 400;
-    src: url('../../assets/Fonts/Inter_24pt-Regular.ttf') format('ttf');
-}
-
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Inter';
-    text-decoration: none;
-}
-
-:root{
-    --black:#1F1F1F;
-    --tup-color: #94152B;
-    --white: #fff;
-    --button:  #97170E;
-    --button-hover:  #75110a;
-    --shadow: #0000003b;
-    --yellow: #EDDF13;
-    --yellow-hover: rgb(218, 168, 3);
-    --yellow-filter: brightness(0) saturate(10%) invert(90%) sepia(41%) saturate(1000%) hue-rotate(332deg) brightness(103%) contrast(103%);
-    --white-filter:  brightness(100%) saturate(0) invert(100%) sepia(0) saturate(0) hue-rotate(0) brightness(1000%) contrast(100%);
-    --green: #54CB58;
-    --light-gray: #F7F7F7;
-    --blue: #5499CB;
-    --table-header: #6F6A6A;
-    --table-border-bottom:#D9D9D9;
-    --light-red: rgba(148, 21, 43, 0.1);
-}
+@import '../../assets/styles/globals.css';
 
 .logbook-container{
     padding: 10px 70px 50px;
@@ -46,8 +15,16 @@
 }
 
 .logbook-container .log-search-bar{
-    width: 50%;
+    width: 500px;
     height: 50px;
+    padding-left: 10px;
+    border-radius: 5px;
+}
+
+.logbook-container .log-search-bar:hover,
+.logbook-container .log-search-bar:active,
+.logbook-container .log-search-bar:focus{
+    outline: none !important;
 }
 
 .logbook-container .logbook-search{
@@ -65,6 +42,7 @@
     gap: 5px;
     width: 50px;
     padding: 0;
+    box-shadow: 0px 1px 2px var(--shadow);
 }
 
 .logbook-container .log-search-button:hover,.logbook-container .log-search-button:focus{
@@ -77,20 +55,25 @@
     display: flex;
     gap: 10px;
     align-items: center;
+    
 }
 
-.logbook-container .logbook-filters select{
+.logbook-container .logbook-filters .form-select{
     width: 100px;
     height: 50px;
+    box-shadow: 0px 1px 2px var(--shadow);
 }
 
+
 .logbook-container .logbook-table{
-    /* table-layout: fixed; */
+    table-layout: fixed;
     overflow: hidden;
     outline: 1px solid var(--tup-color) !important;
     width: 100%;
-    border-radius: 10px;
+    /* min-height: 500px; */
+    border-radius: 5px;
     font-size: 0.8rem;
+    box-shadow: 0px 1px 5px var(--shadow);
 }
 
 .logbook-container .logbook-table-box thead{
@@ -116,33 +99,9 @@
     background-color: var(--light-red);
 }
 
-
-.logbook-container .logbook-table-pagination{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logbook-container .logbook-table-button-pagination{
-    /* cursor: pointer; */
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-
 .logbook-container .logbook-table-button-pagination button{
     color: var(--tup-color);
     background-color: transparent   ;
-}
-
-
-.logbook-container .logbook-table-button-pagination button:hover{
-    color: var(--white);
-    background-color: var(--tup-color)   ;
-}
-
-.logbook-container .no-data{
-    color: var(--tup-color);
+    border: none;
 }
 

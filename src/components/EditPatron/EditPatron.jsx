@@ -2,8 +2,10 @@ import React, { useEffect, useState, useRef } from 'react';
 import './EditPatron.css';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
 
 const EditPatron = () => {
+    const {username} = useSelector(state=>state.username)
     const [patronData, setPatronData] = useState({
         patron_fname: '',
         patron_lname: '',
@@ -11,81 +13,58 @@ const EditPatron = () => {
         patron_mobile: '',
         patron_email: '',
         category: 'Student',
+        patron_status:'active',
         college: '',
         program: null,
         tup_id: 'TUPM-',
         username: '',
     });
-    const [originalPatronData, setOriginalPatronData] = useState({})
-
-    console.log('Patron Data: ',patronData)
-    console.log('Original Patron Data: ',originalPatronData)
-
-
-    // const [categories, setCategories] = useState([]); // To store category options
-    const [colleges, setColleges] = useState([]); // To store college options
-    const [courses, setCourses] = useState([]); // To store course options
+    const [originalPatronData, setOriginalPatronData] = useState({});
+    const [colleges, setColleges] = useState([]);
+    const [courses, setCourses] = useState([]);
     const [filteredCourses, setFilteredCourses] = useState([]);
-    const { id } = useParams(); // ID from the route parameter
-    const navigate = useNavigate(); // For programmatic navigation
+    const { id } = useParams();
+    const navigate = useNavigate();
     const [errors, setErrors] = useState({
         error:'error'
     });
     const [editMode, setEditMode] = useState(false);
-    const [isloading,setIsLoading]=useState(false)
+    const [isloading, setIsLoading] = useState(false);
     const inputRef = useRef(null);
-    const [userName, setUserName ]= useState('');
+    const [userName, setUserName] = useState('');
    
-    console.log('Error', errors)
-
-    useEffect(()=>{
-       if(id>0){
+    useEffect(() => {
+       if(id > 0) {
         setEditMode(true);
         getPatronEdit();
        }
-       getUsername()
-       getColleges()
-       getCourses()  
-    },[])
+       getColleges();
+       getCourses();  
+    }, []);
 
-    const getUsername = async()=>{
-        try {
-          // Request server to verify the JWT token
-          const response = await axios.get(`https://api.tuplrc-cla.com/api/user/check-session`, { withCredentials: true });
-          console.log(response.data)
-          // If session is valid, set the role
-          if (response.data.loggedIn) {
-            setUserName(response.data.username)
-            setPatronData(prevData => ({
-                ...prevData, 
-                username: response.data.username
-              }));
-            
-          } 
-        } catch (error) {
-          console.error('Error verifying session:', error);
-          
-        }
-      }
+    useEffect(()=>{
+        setPatronData(prevData => ({
+            ...prevData, 
+            username: username
+        }));
+    },[username])
 
-    const getColleges = async()=>{
+    const getColleges = async() => {
         try {
-            const response = await axios.get('https://api.tuplrc-cla.com/api/data/college').then(res=>res.data);
-            console.log(response)
-            setColleges(response)
+            const response = await axios.get('https://api.tuplrc-cla.com/api/data/college').then(res => res.data);
+            setColleges(response);
         } catch (err) {
-            console.log('Error fetching colleges ',err.message);
+            console.log('Error fetching colleges ', err.message);
         }
     }
 
-    const getCourses = async()=>{
+    const getCourses = async() => {
         try {
-            const response = await axios.get('https://api.tuplrc-cla.com/api/data/course').then(res=>res.data);
-            console.log(response)
+            const response = await axios.get('https://api.tuplrc-cla.com/api/data/course').then(res => res.data);
             setCourses(response);
             setFilteredCourses(response);
         } catch (err) {
-            console.log('Error fetching colleges ',err.message);
+            console.log('Error fetching colleges ', err.message);
         }
     }
 
@@ -101,6 +80,7 @@ const EditPatron = () => {
                 patron_mobile: res.data.patronData.patron_mobile,
                 patron_email: res.data.patronData.patron_email,
                 category: res.data.patronData.category,
+                patron_status:res.data.patronData.status,
                 college: res.data.patronData.college_id, 
                 college_name: res.data.patronData.college_name, 
                 program: res.data.patronData.course_id, 
@@ -108,7 +88,6 @@ const EditPatron = () => {
                 tup_id: res.data.patronData.tup_id || '',
             };
     
-            // Fetch username before updating patron data
             const userResponse = await axios.get(`https://api.tuplrc-cla.com/api/user/check-session`, { withCredentials: true });
             if (userResponse.data.loggedIn) {
                 fetchedData.username = userResponse.data.username;
@@ -116,8 +95,7 @@ const EditPatron = () => {
             }
     
             setPatronData(fetchedData);
-            setOriginalPatronData(fetchedData); // Now, correctly setting backup data
-    
+            setOriginalPatronData(fetchedData);
             setIsLoading(false);
         } catch (err) {
             console.error('Error fetching patron data:', err);
@@ -136,10 +114,10 @@ const EditPatron = () => {
             }
     
             formattedValue = formattedValue
-                .replace(/^TUPM-/g, '') // Remove prefix for manipulation
-                .replace(/[^\d-]/g, '') // Allow only digits and dashes
-                .padEnd(7, '-') // Add placeholders for remaining format
-                .slice(0, 7); // Ensure correct length
+                .replace(/^TUPM-/g, '')
+                .replace(/[^\d-]/g, '')
+                .padEnd(7, '-')
+                .slice(0, 7);
     
             setPatronData((prev) => ({
                 ...prev,
@@ -160,23 +138,19 @@ const EditPatron = () => {
 
     useEffect(() => {
         if (!patronData.college) return;
-    
         setFilteredCourses(courses.filter(item => item.college_id == patronData.college));
     }, [patronData.college, courses]);
-    
-    console.log(filteredCourses)
 
     const validateField = async (name, value) => {
-        const phoneRegex = /^09[0-9]{9}$/; // Must start with 09-
+        const phoneRegex = /^09[0-9]{9}$/;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const tupIdRegex = /^TUPM-\d{2}-\d{4}$/;
     
         let error = '';
     
-        // Remove default error message on first validation
         setErrors((prev) => {
             if (prev.error) {
-                const { error, ...rest } = prev; // Remove the default 'error' key
+                const { error, ...rest } = prev;
                 return rest;
             }
             return prev;
@@ -219,13 +193,12 @@ const EditPatron = () => {
                             error = 'Unable to validate TUP ID. Please try again.';
                         } 
                     }
-                    
                 }
             break;
 
             case 'college':
                 if(!value){
-                    error = 'Please select a college.'
+                    error = 'Please select a college.';
                 }
             break;
     
@@ -247,57 +220,21 @@ const EditPatron = () => {
     
         return error;
     };
-    
-    /* const handleTupIdChange = async (e) => {
-        const { value, selectionStart } = e.target;
-        const prefix = "TUPM-";
-        const prefixLength = prefix.length;
-    
-        // Ensure the input starts with "TUPM-"
-        if (!value.startsWith(prefix)) return;
-    
-        // Extract and clean the editable portion
-        let editablePart = value.slice(prefixLength).replace(/[^0-9]/g, ""); // Allow digits only
-    
-        // Auto-format the editable part as **-****
-        if (editablePart.length > 2) {
-            editablePart = `${editablePart.slice(0, 2)}-${editablePart.slice(2)}`;
-        }
-    
-        const formattedValue = `${prefix}${editablePart}`;
-    
-        // Update state with the formatted value
-        setPatronData((prev) => ({
-            ...prev,
-            tup_id: formattedValue,
-        }));
-    
-        // Adjust cursor position after formatting
-        const newCursorPos = Math.max(
-            prefixLength,
-            Math.min(selectionStart, formattedValue.length)
-        );
-        setTimeout(() => e.target.setSelectionRange(newCursorPos, newCursorPos), 0);
-    
-        // Validate the TUP ID
-        await validateField("tup_id", formattedValue);
-    }; */
+
+    console.log(patronData)
 
     const handleTupIdChange = async (e) => {
         const { value, selectionStart } = e.target;
         const prefix = "TUPM-";
         const prefixLength = prefix.length;
     
-        // Ensure the input starts with "TUPM-"
         if (!value.startsWith(prefix)) return;
     
-        // Extract and clean the editable portion
-        let editablePart = value.slice(prefixLength).replace(/[^0-9]/g, ""); // Allow digits only
+        let editablePart = value.slice(prefixLength).replace(/[^0-9]/g, "");
     
         let formattedPart = editablePart;
         let addedDash = false;
     
-        // Auto-format as "XX-XXXX"
         if (editablePart.length > 2) {
             formattedPart = `${editablePart.slice(0, 2)}-${editablePart.slice(2)}`;
             if (!value.includes("-") && selectionStart > prefixLength + 2) {
@@ -307,42 +244,34 @@ const EditPatron = () => {
     
         const formattedValue = `${prefix}${formattedPart}`;
     
-        // Update state with the formatted value
         setPatronData((prev) => ({
             ...prev,
             tup_id: formattedValue,
         }));
     
-        // Adjust cursor position after formatting
         let newCursorPos = selectionStart + (formattedValue.length - value.length);
     
-        // If a dash was added, move cursor forward by 1
         if (addedDash && selectionStart === prefixLength + 2) {
             newCursorPos++;
         }
     
         setTimeout(() => e.target.setSelectionRange(newCursorPos, newCursorPos), 0);
     
-        // Validate the TUP ID
         await validateField("tup_id", formattedValue);
     };
     
-    
-
     const handleTupIdKeyDown = (e) => {
         const cursorPos = e.target.selectionStart;
-        const prefixLength = 5; // "TUPM-"
+        const prefixLength = 5;
     
-        // Prevent moving cursor before the prefix or deleting it
         if (cursorPos < prefixLength && (e.key !== "ArrowRight" && e.key !== "ArrowLeft")) {
             e.preventDefault();
         }
     };
     
     const handleTupIdClick = (e) => {
-        const prefixLength = 5; // "TUPM-"
+        const prefixLength = 5;
     
-        // Ensure the cursor always starts after the prefix
         if (e.target.selectionStart < prefixLength) {
             e.target.setSelectionRange(prefixLength, prefixLength);
         }
@@ -362,22 +291,22 @@ const EditPatron = () => {
         }
     };
 
-    const addPatron = async ()=>{
+    const addPatron = async () => {
         if(!formValidation){
-            return
+            return;
         }
         try {
             await axios.post(`https://api.tuplrc-cla.com/api/patron`, patronData);
-            navigate('/patron'); // Redirect after saving
-            window.toast.fire({icon:"success", title:"Patron Added"})
+            navigate('/patron');
+            window.toast.fire({icon:"success", title:"Patron Added"});
         } catch (error) {
             console.error('Error saving patron:', error);
         }
     }
 
-    const updatePatron = async ()=>{
+    const updatePatron = async () => {
         if(!formValidation){
-            return
+            return;
         }
 
         try {
@@ -388,23 +317,21 @@ const EditPatron = () => {
     
             await axios.put(`https://api.tuplrc-cla.com/api/patron/update/${id}`, updatedData);
             console.log('Patron updated successfully');
-            navigate('/patron'); // Redirect after saving
-            window.toast.fire({icon:"success", title:"Patron Updated"})
+            navigate('/patron');
+            window.toast.fire({icon:"success", title:"Patron Updated"});
         } catch (error) {
             console.error('Error saving patron:', error);
         }
     }
 
-    const formValidation = async ()=>{
+    const formValidation = async () => {
         let errors = {};
     
-        // Validate TUP ID and check if it exists
         const tupIdError = await validateField('tup_id', patronData.tup_id);
         if (tupIdError) {
             errors.tup_id = tupIdError;
         }
     
-        // Validate other fields
         if (!patronData.patron_fname.trim()) {
             errors.patron_fname = 'First name is required.';
         }
@@ -413,11 +340,10 @@ const EditPatron = () => {
             errors.patron_lname = 'Last name is required.';
         }
 
-        // If there are errors, block the save operation
         if (Object.keys(errors).length > 0) {
             setErrors(errors);
             console.error('Validation errors:', errors);  
-            return false
+            return false;
         }
     }
 
@@ -425,7 +351,6 @@ const EditPatron = () => {
         let newErrors = {};
         let isValid = true;
     
-        // Iterate over all keys in patronData and validate each field
         for (const field in patronData) {
             const error = await validateField(field, patronData[field]);
             if (error) {
@@ -434,204 +359,338 @@ const EditPatron = () => {
             }
         }
     
-        // Update errors state
         setErrors(newErrors);
-    
         return isValid;
     };
 
     console.log(patronData)
-    
+
     return (
-        <div className='edit-patron-container'>
-            <h1 className='m-0'>Patrons</h1>
-            <div className='edit-patron-path-button'>
-                <Link to={'/patron'}>
-                    <button className='edit-patron-back-button btn'>
-                        <p>Back</p>
-                    </button>
-                </Link>
-                <div className='edit-patron-path'>
-                    <p>Patrons / 
-                        {editMode?<span> Edit Patron</span>:<span>Add Patron</span>}
-                    </p>
+        <div className='edit-patron-container bg-light'>
+            {/* Header with breadcrumb */}
+            <div className=' mb-4'>
+                <div className=''>
+                    <div className='d-flex justify-content-between align-items-center'>
+                        <div>
+                            <h1 className='h3 mb-0'>
+                                {editMode ? 'Edit Patron' : 'Add New Patron'}
+                            </h1>
+                            <nav aria-label="breadcrumb">
+                                <ol className="breadcrumb d-flex align-items-center mb-0 mt-1">
+                                    <li className="breadcrumb-item">
+                                        <Link to='/patron'>
+                                            <button className='btn edit-patron-back-button'>
+                                                Back
+                                            </button>
+                                        </Link>
+                                    </li>
+                                    <li className="breadcrumb-item">
+                                        <Link to="/patron" className="text-decoration-none">Patrons</Link>
+                                    </li>
+                                    <li className="breadcrumb-item active" aria-current="page">
+                                        {editMode ? 'Edit Patron' : 'Add Patron'}
+                                    </li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div className='patron-info'>
-                <div className='row'>
-                    {/* header */}
-                    <div className='col-12 patron-info-header'>
-                        <p className='m-0'>
-                            {editMode?<span>Edit </span>:<span>Add </span>}
-                            Patron Information
-                        </p>
-                    </div>
-
-                    <div className='row information-inputs'>
-                        <div className='col-12'>
-                            <div className='row'>
-                                {/* TUP ID */}
-                                <div className='col-3 patron-input-box'>
-                                    <label htmlFor=''>TUP ID</label>
+            {/* Main Form Card */}
+            <div className='card shadow-sm'>
+                <div className='card-header py-3'>
+                    <h2 className='card-title text-white text-center h5 mb-0'>
+                        <i className="bi bi-person-badge me-2 text-primary"></i>
+                        Patron Information
+                    </h2>
+                </div>
+                
+                <div className='card-body p-5'>
+                    {isloading ? (
+                        <div className="d-flex justify-content-center my-5">
+                            <div className="spinner-border text-primary" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    ) : (
+                        <form>
+                            {/* TUP ID Section */}
+                            <div className='mb-4'>
+                                <div className='form-floating mb-3'>
                                     <input
                                         type='text'
+                                        className={`form-control ${errors.tup_id ? 'is-invalid' : ''}`}
+                                        id='tup_id'
                                         placeholder='TUPM-**-****'
-                                        maxLength={12} // Includes TUPM- and the rest of the format
+                                        maxLength={12}
                                         name='tup_id'
                                         value={patronData.tup_id}
                                         onChange={handleTupIdChange}
                                         onClick={handleTupIdClick}
                                         onKeyDown={handleTupIdKeyDown}
                                     />
-                                    <p className='patron-error'>{errors.tup_id}</p>
+                                    <label htmlFor='tup_id'>
+                                        <i className="bi bi-person-badge me-2"></i>
+                                        TUP ID
+                                    </label>
+                                    {errors.tup_id && (
+                                        <div className='invalid-feedback'>
+                                            {errors.tup_id}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
-                            <div className='row'>
-                                {/* First Name Input */}
-                                <div className='col-6 patron-input-box'>
-                                    <label htmlFor="">First name</label>
-                                    <input 
-                                        type="text" 
-                                        placeholder='Enter first name' 
-                                        name='patron_fname' 
-                                        value={patronData.patron_fname}
-                                        onChange={handleChange}
-                                    />
-                                    <p className='patron-error'>{errors.patron_fname}</p>
+                            {/* Personal Information Section */}
+                            <div className='row mb-4'>
+                                <div className='col-12'>
+                                    <h3 className='h6 text-muted mb-3'>
+                                        <i className="bi bi-person me-2"></i>
+                                        Personal Information
+                                    </h3>
                                 </div>
-
-                                {/* Last Name Input */}
-                                <div className='col-6 patron-input-box'>
-                                    <label htmlFor="">Last name</label>
-                                    <input 
-                                        type="text" 
-                                        placeholder='Enter last name' 
-                                        name='patron_lname' 
-                                        value={patronData.patron_lname}
-                                        onChange={handleChange}
-                                    />
-                                    <p className='patron-error'>{errors.patron_lname}</p>
-                                </div>
-                            </div>
-
-                            <div className='row'>
-                                {/* SEX */}
-                                <div className='col-3 patron-input-box'>
-                                    <label htmlFor="">Sex</label>
-                                    <select 
-                                        name='patron_sex' 
-                                        value={patronData.patron_sex} 
-                                        onChange={handleChange}
-                                        className='patron-dropdown'
-                                    >
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                        <p className="patron-error"></p>
-                                    </select>
-                                </div>
-
-                                {/* PHONE NUMBER */}
-                                <div className='col-4 patron-input-box'>
-                                    <label htmlFor="">Phone number</label>
-                                    <input 
-                                        type="text" 
-                                        placeholder='Enter phone number' 
-                                        name='patron_mobile' 
-                                        value={patronData.patron_mobile}
-                                        onChange={handleChange}
-                                    />
-                                    <p className='patron-error'>{errors.patron_mobile}</p>
-                                </div>
-
-                                {/* EMAIL */}
-                                <div className='col-5 patron-input-box'>
-                                    <label htmlFor="">Email</label>
-                                    <input 
-                                        type="email" 
-                                        placeholder='Enter email' 
-                                        name='patron_email' 
-                                        value={patronData.patron_email}
-                                        onChange={handleChange}
-                                    />
-                                    <p className='patron-error'>{errors.patron_email}</p>
-                                </div>
-
-                                {/* CATEGORY */}
-                                <div className="col-3 patron-input-box">
-                                    <label htmlFor="">Category</label>
-                                    <select
-                                        name="category"
-                                        value={patronData.category}
-                                        onChange={handleChange}
-                                        className="patron-dropdown"
-                                    >
-                                        <option value="Student">Student</option>
-                                        <option value="Faculty">Faculty</option>
-                                    </select>
-                                    <p className="patron-error"></p>
-                                </div>
-
-
-                                {/* COLLEGE */}
-                                <div className='col-6 patron-input-box'>
-                                    <label htmlFor="">College</label>
-                                    <select
-                                        name='college' 
-                                        value={patronData.college} 
-                                        onChange={handleChange}
-                                        className='patron-dropdown'
-                                    >
-                                        <option value="">Select College</option>
-                                        {colleges.map(college => (
-                                            <option key={college.college_id} value={college.college_id}>
-                                                {college.college_name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <p className='patron-error'>{errors.college}</p>
-                                </div>
-                            </div>
-                            
-                            {patronData.category=='Student'&&
-                            <div className='row'>
-                                {/* PROGRAM */}
-                                    <div className='col-9 patron-input-box'>
-                                        <label htmlFor="">Program</label>
-                                        <select
-                                            name='program'
-                                            value={patronData.program}
+                                
+                                <div className='col-md-6 mb-3'>
+                                    <div className='form-floating'>
+                                        <input 
+                                            type="text"
+                                            className={`form-control ${errors.patron_fname ? 'is-invalid' : ''}`}
+                                            id="patron_fname"
+                                            placeholder=''
+                                            name='patron_fname'
+                                            value={patronData.patron_fname}
                                             onChange={handleChange}
-                                            className='patron-dropdown'
+                                        />
+                                        <label htmlFor="patron_fname">First Name</label>
+                                        {errors.patron_fname && (
+                                            <div className='invalid-feedback'>
+                                                {errors.patron_fname}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className='col-md-6 mb-3'>
+                                    <div className='form-floating'>
+                                        <input 
+                                            type="text"
+                                            className={`form-control ${errors.patron_lname ? 'is-invalid' : ''}`}
+                                            id="patron_lname"
+                                            placeholder=''
+                                            name='patron_lname'
+                                            value={patronData.patron_lname}
+                                            onChange={handleChange}
+                                        />
+                                        <label htmlFor="patron_lname">Last Name</label>
+                                        {errors.patron_lname && (
+                                            <div className='invalid-feedback'>
+                                                {errors.patron_lname}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Contact Information Section */}
+                            <div className='row mb-4'>
+                                <div className='col-12'>
+                                    <h3 className='h6 text-muted mb-3'>
+                                        <i className="bi bi-envelope me-2"></i>
+                                        Contact Information
+                                    </h3>
+                                </div>
+                                
+                                <div className='col-md-4 mb-3'>
+                                    <div className='form-floating'>
+                                        <select 
+                                            className='form-select'
+                                            id='patron_sex'
+                                            name='patron_sex'
+                                            value={patronData.patron_sex}
+                                            onChange={handleChange}
                                         >
-                                            <option value="">Select Course</option>
-                                            {filteredCourses.length>0&&filteredCourses.map(course => (
-                                                <option key={course.course_id} value={course.course_id}>
-                                                    {course.course_name}
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                        </select>
+                                        <label htmlFor="patron_sex">Sex</label>
+                                    </div>
+                                </div>
+
+                                <div className='col-md-8 mb-3'>
+                                    <div className='form-floating'>
+                                        <input 
+                                            type="text"
+                                            className={`form-control ${errors.patron_mobile ? 'is-invalid' : ''}`}
+                                            id="patron_mobile"
+                                            placeholder=''
+                                            name='patron_mobile'
+                                            value={patronData.patron_mobile}
+                                            onChange={handleChange}
+                                        />
+                                        <label htmlFor="patron_mobile">
+                                            <i className="bi bi-phone me-2"></i>
+                                            Phone Number (09XXXXXXXXX)
+                                        </label>
+                                        {errors.patron_mobile && (
+                                            <div className='invalid-feedback'>
+                                                {errors.patron_mobile}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className='col-12 mb-3'>
+                                    <div className='form-floating'>
+                                        <input 
+                                            type="email"
+                                            className={`form-control ${errors.patron_email ? 'is-invalid' : ''}`}
+                                            id="patron_email"
+                                            placeholder=''
+                                            name='patron_email'
+                                            value={patronData.patron_email}
+                                            onChange={handleChange}
+                                        />
+                                        <label htmlFor="patron_email">
+                                            <i className="bi bi-envelope me-2"></i>
+                                            Email Address
+                                        </label>
+                                        {errors.patron_email && (
+                                            <div className='invalid-feedback'>
+                                                {errors.patron_email}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Academic Information */}
+                            <div className='row mb-4'>
+                                <div className='col-12'>
+                                    <h3 className='h6 text-muted mb-3'>
+                                        <i className="bi bi-mortarboard me-2"></i>
+                                        Academic Information
+                                    </h3>
+                                </div>
+                                
+                                <div className='col-md-4 mb-3'>
+                                    <div className='form-floating'>
+                                        <select
+                                            className='form-select'
+                                            id='category'
+                                            name='category'
+                                            value={patronData.category}
+                                            onChange={handleChange}
+                                        >
+                                            <option value="Student">Student</option>
+                                            <option value="Faculty">Faculty</option>
+                                        </select>
+                                        <label htmlFor="category">Category</label>
+                                    </div>
+                                </div>
+
+                                <div className='col-md-8 mb-3'>
+                                    <div className='form-floating'>
+                                        <select
+                                            className={`form-select ${errors.college ? 'is-invalid' : ''}`}
+                                            id='college'
+                                            name='college' 
+                                            value={patronData.college} 
+                                            onChange={handleChange}
+                                        >
+                                            <option value="">Select College</option>
+                                            {colleges.map(college => (
+                                                <option key={college.college_id} value={college.college_id}>
+                                                    {college.college_name}
                                                 </option>
                                             ))}
                                         </select>
-                                        <p className='patron-error'></p>
+                                        <label htmlFor="college">College</label>
+                                        {errors.college && (
+                                            <div className='invalid-feedback'>
+                                                {errors.college}
+                                            </div>
+                                        )}
                                     </div>
+                                </div>
+
+                                {patronData.category == 'Student' && (
+                                    <div className='col-12'>
+                                        <div className='form-floating'>
+                                            <select
+                                                className='form-select'
+                                                id='program'
+                                                name='program'
+                                                value={patronData.program || ''}
+                                                onChange={handleChange}
+                                                disabled={!patronData.college}
+                                            >
+                                                <option value="">Select Program</option>
+                                                {filteredCourses.length > 0 && filteredCourses.map(course => (
+                                                    <option key={course.course_id} value={course.course_id}>
+                                                        {course.course_name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <label htmlFor="program">Program</label>
+                                        </div>
+                                        {!patronData.college && (
+                                            <small className="text-muted">Select a college first to view available programs</small>
+                                        )}
+                                    </div>
+                                )}
                             </div>
-                            }
-                            
-                            <div className='row'>
-                                {/* Save Button */}
-                                <div className='col-16'>
-                                    <button 
-                                        type='button' 
-                                        className='save-button' 
-                                        onClick={handleSave}
-                                        disabled={editMode?JSON.stringify(patronData)==JSON.stringify(originalPatronData)||Object.keys(errors).length>0:Object.keys(errors).length>0}
-                                    >
-                                        Save
-                                    </button>
+
+                            {/* Status */}
+                            <div className='row mb-4'>
+                                <div className='col-12'>
+                                    <h3 className='h6 text-muted mb-3'>
+                                        <i className="bi bi-mortarboard me-2"></i>
+                                        Status
+                                    </h3>
+                                </div>
+                                
+                                <div className='col-md-4 mb-3'>
+                                    <div className='form-floating'>
+                                        <select
+                                            className='form-select'
+                                            id='patron_status'
+                                            name='patron_status'
+                                            value={patronData.patron_status}
+                                            onChange={handleChange}
+                                        >
+                                            <option selected disabled>Select Status</option>
+                                            <option value="active">Active</option>
+                                            <option value="inactive">Inactive</option>
+                                        </select>
+                                        <label htmlFor="patron_status">Status</label>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+
+                            
+
+                            {/* Action Buttons */}
+                            <div className='d-flex justify-content-between mt-4'>
+                                <Link to='/patron' className='btn btn-outline-secondary px-4'>
+                                    Cancel
+                                </Link>
+                                <button 
+                                    type='button' 
+                                    className='btn btn-primary px-5'
+                                    onClick={handleSave}
+                                    disabled={
+                                        editMode
+                                            ? JSON.stringify(patronData) === JSON.stringify(originalPatronData) || Object.keys(errors).length > 0
+                                            : Object.keys(errors).length > 0
+                                    }
+                                >
+                                    <i className="bi bi-check2 me-2"></i>
+                                    {editMode ? 'Update Patron' : 'Save Patron'}
+                                </button>
+                            </div>
+                        </form>
+                    )}
                 </div>
             </div>
         </div>

@@ -1,34 +1,4 @@
-@font-face {
-    font-family: 'Inter';
-    font-weight: 400;
-    src: url('../../assets/Fonts/Inter_24pt-Regular.ttf') format('ttf');
-}
-
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Inter';
-    text-decoration: none;
-}
-
-:root{
-    --black:#1F1F1F;
-    --tup-color: #94152B;
-    /* --tup-color: #ff869c; */
-    --white: #fff;
-    --button:  #97170E;
-    --button-hover:  #75110a;
-    --shadow: #31313128;
-    --yellow: #EDDF13;
-    --yellow-filter: brightness(0) saturate(10%) invert(90%) sepia(41%) saturate(1000%) hue-rotate(332deg) brightness(103%) contrast(103%);
-    --white-filter:  brightness(100%) saturate(0) invert(100%) sepia(0) saturate(0) hue-rotate(0) brightness(1000%) contrast(100%);
-    --green: #54CB58;
-    --light-gray: #F7F7F7;
-    --blue: #5499CB;
-    --table-header: #d4d4d4;
-    --table-border-bottom:#D9D9D9;
-}
+@import '../../assets/styles/globals.css';
 
 .dashboard-table{
     /* background-color: #97170E; */
@@ -57,15 +27,12 @@
     border-bottom:1px solid var(--table-border-bottom);
 }
 
-.dashboard-table .no-data{
-    color: var(--tup-color);
-}
 
 
 .skeleton {
-    background: linear-gradient(to right, #e0e0e0 25%, #f5f5f5 50%, #e0e0e0 75%);
+    background: #E0E0E0 25%;
     background-size: 200% 100%;
-    animation: shimmer 1.5s infinite linear;
+    animation: pulse 1.5s infinite linear;
     height: 20px;
     width: 80%;
     border-radius: 4px;
@@ -76,12 +43,15 @@
     width: 60%;
   }
   
-  @keyframes shimmer {
+  @keyframes pulse {
     0% {
-      background-position: -200% 0;
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
     }
     100% {
-      background-position: 200% 0;
+        opacity: 0.6;
     }
-  }
+}
   

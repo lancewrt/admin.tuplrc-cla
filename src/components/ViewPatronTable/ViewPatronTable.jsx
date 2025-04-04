@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import './ViewPatronTable.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faArrowLeft, faArrowRight, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import {faArrowLeft, faArrowRight, faDownload, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 import ViewPatronFilter from '../ViewPatronFilter/ViewPatronFilter';
 
 const ViewPatronTable = ({header, title, data, exportXLSX}) => {
@@ -142,7 +142,7 @@ const ViewPatronTable = ({header, title, data, exportXLSX}) => {
  
   return (
     <div className='view-patron-table-container d-flex flex-column gap-3'>
-        <h1 className='m-0'>{title}</h1>
+        <h4 className='m-0 fw-semibold'>{title}</h4>
         {/* search filter */}
         <div className='d-flex justify-content-between'>
           <div className='search-filter d-flex align-items-center gap-2'>
@@ -150,9 +150,12 @@ const ViewPatronTable = ({header, title, data, exportXLSX}) => {
             <span className='m-0'>to</span>
             <input type="date" name="end_date" id="" onChange={handleChange}/>
             <button className='btn search' onClick={search}>Search</button> */}
-            <button className='btn search fw-semibold' onClick={reset}>Clear filter </button>
+            <button className='btn search btn-warning shadow-sm' onClick={reset}>Clear filter </button>
           </div>
-          <button className="btn export fw-semibold" onClick={exportXLSX}>Export</button>
+          <button className="btn export d-flex align-items-center gap-2 btn-success shadow-sm" onClick={exportXLSX}>
+            <FontAwesomeIcon icon={faDownload}/>
+            Export to Excel
+          </button>
         </div>
         {/* table */}
         <table>
@@ -184,7 +187,7 @@ const ViewPatronTable = ({header, title, data, exportXLSX}) => {
                 <td colSpan="2" className='no-data-box text-center'>
                   <div className='d-flex flex-column align-items-center gap-2 my-3'>
                     <FontAwesomeIcon icon={faExclamationCircle} className="fs-2 no-data" />
-                    <span>No resources available.<br/>Please try a different filter.</span>
+                    <span className='fw-semibold'>No resources available.</span>
                     {/* <button className='btn btn-secondary' onClick={reset}>Clear Filter</button> */}
                   </div>
                 </td>
@@ -205,7 +208,7 @@ const ViewPatronTable = ({header, title, data, exportXLSX}) => {
             <td colSpan="5" className='no-data-box text-center'>
               <div className='d-flex flex-column align-items-center gap-2 my-3'>
                 <FontAwesomeIcon icon={faExclamationCircle} className="fs-2 no-data" />
-                <span>No resources available.<br/>Please try a different filter.</span>
+                <span className='fw-semibold'>No resources available.</span>
                 {/* <button className='btn btn-secondary' onClick={reset}>Clear Filter</button> */}
               </div>
             </td>
@@ -219,8 +222,8 @@ const ViewPatronTable = ({header, title, data, exportXLSX}) => {
           <span>Page {currentPage} of {totalPages}</span>
           {/* buttons */}
           <div className='d-flex gap-1'>
-            <button className="btn" onClick={prevPage} disabled={currentPage==1}><FontAwesomeIcon icon={faArrowLeft} className='icon'/></button>
-            <button className="btn" onClick={nextPage}disabled={currentPage==totalPages}><FontAwesomeIcon icon={faArrowRight} className='icon'/></button>
+            <button className="btn" onClick={prevPage} disabled={currentPage==1}><FontAwesomeIcon icon={faArrowLeft}/></button>
+            <button className="btn" onClick={nextPage}disabled={currentPage==totalPages}><FontAwesomeIcon icon={faArrowRight}/></button>
           </div>
         </div>
     </div>

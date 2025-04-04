@@ -20,7 +20,6 @@ ChartJS.register(
   Legend
 );
 
-
 export function VerticalBarChart() {
   const {borrowedStats} = useSelector((state)=>state.chart);
   const {visitorStats} = useSelector((state)=>state.chart)

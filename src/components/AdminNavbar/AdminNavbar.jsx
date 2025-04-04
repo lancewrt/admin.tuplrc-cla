@@ -3,11 +3,10 @@ import './AdminNavbar.css';
 import tuplogo from '../../assets/tuplogo.png';
 import clalogo from '../../assets/clalogo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFile, faChartSimple, faFileLines, faCartShopping, faUser, faList, faFileExcel, faUsersGear, faUserPlus, faBookOpenReader, faLayerGroup, faBook, faArrowDown, faChevronDown, faBarcode, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import { faFile, faChartSimple, faFileLines, faCartShopping, faUser, faList, faFileExcel, faUsersGear, faUserPlus, faBookOpenReader, faLayerGroup, faBook, faArrowDown, faChevronDown, faBarcode, faPenToSquare, faQrcode } from '@fortawesome/free-solid-svg-icons';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Loading from '../Loading/Loading';
 import axios from 'axios';
-
 
 const AdminNavbar = () => {
     const [role, setRole] = useState(null);
@@ -15,11 +14,15 @@ const AdminNavbar = () => {
     const [isCatalogingOpen, setIsCatalogingOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
-    const currentPathname = '/' + location.pathname.split('/')[1];
-
-    console.log(currentPathname)
+    const currentPathname = location.pathname;
+    const basePath = '/' + location.pathname.split('/')[1];
 
     useEffect(() => {
+        // Check if the current path is under cataloging to set dropdown state
+        if (currentPathname.startsWith('/catalog')) {
+            setIsCatalogingOpen(true);
+        }
+        
         const fetchUserRole = async () => {
             try {
                 const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
@@ -27,28 +30,35 @@ const AdminNavbar = () => {
                     setRole(response.data.userRole);
                 } else {
                     setRole(null);
+                    // Redirect to login if not logged in
+                    navigate('/login');
                 }
             } catch (error) {
                 console.error('Error verifying session:', error);
                 setRole(null);
+                navigate('/login');
             } finally {
                 setLoading(false);
             }
         };
         fetchUserRole();
-    }, [navigate]);
+    }, [navigate, currentPathname]);
+
+    const toggleCataloging = () => {
+        setIsCatalogingOpen(!isCatalogingOpen);
+    };
 
     if (loading) {
         return <Loading />;
     }
 
     return (
-        <div className='admin-navbar-container'>
+        <div className='admin-navbar-container shadow'>
             {/* Logo and Heading */}
             <div className="navbar-logo-heading">
                 <div className="navbar-logos">
-                    <img src={tuplogo} alt="tup-logo" />
-                    <img src={clalogo} alt="cla-logo" />
+                    <img src={tuplogo} alt="tup-logo" className="logo-image" />
+                    <img src={clalogo} alt="cla-logo" className="logo-image" />
                 </div>
                 <div className="navbar-heading">
                     <p className='navbar-heading-text navbar-heading-cla'>College of Liberal Arts</p>
@@ -58,92 +68,139 @@ const AdminNavbar = () => {
 
             {/* Menu */}
             <div className="navbar-menu">
-                <ul>
+                <ul className="menu-list">
                     {/* Dashboard */}
-                    <li className={currentPathname=='/dashboard'?'selected':''}>
+                    <li className={`menu-item ${basePath === '/dashboard' ? 'selected' : ''}`}>
                         <Link to='/dashboard' className='menu'>
-                            <div><FontAwesomeIcon icon={faChartSimple} className='menu-icon'/></div>
-                            <div><p>Dashboard</p></div>
+                            <div className="menu-icon-container">
+                                <FontAwesomeIcon icon={faChartSimple} className='menu-icon'/>
+                            </div>
+                            <div className="menu-text">
+                                <p>Dashboard</p>
+                            </div>
                         </Link>
                     </li>
 
                     {/* Logbook */}
-                    <li className={currentPathname=='/logbook'?'selected':''}>
+                    <li className={`menu-item ${basePath === '/logbook' ? 'selected' : ''}`}>
                         <Link to='/logbook' className="menu">
-                            <div><FontAwesomeIcon icon={faFileLines} className='menu-icon'/></div>
-                            <div><p>Logbook</p></div>
+                            <div className="menu-icon-container">
+                                <FontAwesomeIcon icon={faFileLines} className='menu-icon'/>
+                            </div>
+                            <div className="menu-text">
+                                <p>Logbook</p>
+                            </div>
                         </Link>
                     </li>
 
                     {/* Circulation */}
-                    <li className={currentPathname=='/circulation'?'selected':''}>
+                    <li className={`menu-item ${basePath === '/circulation' ? 'selected' : ''}`}>
                         <Link to='/circulation' className="menu">
-                            <div><FontAwesomeIcon icon={faCartShopping} className='menu-icon'/></div>
-                            <div><p>Circulation</p></div>
+                            <div className="menu-icon-container">
+                                <FontAwesomeIcon icon={faCartShopping} className='menu-icon'/>
+                            </div>
+                            <div className="menu-text">
+                                <p>Book Circulation</p>
+                            </div>
                         </Link>
                     </li>
 
                     {/* Patrons */}
-                    <li className={currentPathname=='/patron'?'selected':''}>
+                    <li className={`menu-item ${basePath === '/patron' ? 'selected' : ''}`}>
                         <Link to='/patron' className="menu">
-                            <div><FontAwesomeIcon icon={faUser} className='menu-icon' /></div>
-                            <div><p>Patrons</p></div>
-                        </Link>
-                    </li>
-
-                    {/* Cataloging */}
-                    <li className={currentPathname=='/catalog'?'selected':''}>
-                        <Link to='/catalog'className='d-flex align-items-center gap-3'>
-                            <div className='menu'>
-                               <div><FontAwesomeIcon icon={faList} className='menu-icon'/></div>
-                                <div><p>Cataloging</p></div>
+                            <div className="menu-icon-container">
+                                <FontAwesomeIcon icon={faUser} className='menu-icon' />
+                            </div>
+                            <div className="menu-text">
+                                <p>Patrons</p>
                             </div>
                         </Link>
                     </li>
 
-                    {/* generate barcode */}
-                    <li className={currentPathname=='/catalog'?'selected-sub':''}>
-                        <Link to='/catalog/generate-barcode'className='d-flex align-items-center gap-3 ps-4'>
-                            <div className='menu'>
-                               <div><FontAwesomeIcon icon={faBarcode} className='menu-icon'/></div>
-                                <div><p>Generate Barcode</p></div>
+                    {/* Cataloging - Parent Menu */}
+                    <li className={`menu-item ${basePath === '/catalog' ? 'selected' : ''}`}>
+                        <Link to='/catalog' className='text-decoration-none'>
+                            <div className='menu' onClick={toggleCataloging} style={{ cursor: 'pointer' }}>
+                                <div className="menu-icon-container">
+                                    <FontAwesomeIcon icon={faBook} className='menu-icon'/>
+                                </div>
+                                <div className="menu-text">
+                                    <p>Cataloging</p>
+                                </div>
+                            </div> 
+                        </Link>
+                        
+                        {/* Cataloging Submenu */}
+                        {isCatalogingOpen && (
+                            <ul className="submenu">
+                                <li className="submenu-list-item">
+                                    <Link to='/catalog/generate-barcode' className="submenu-item">
+                                        <div className="menu-icon-container">
+                                            <FontAwesomeIcon icon={faQrcode} className='menu-icon'/>
+                                        </div>
+                                        <div className="menu-text">
+                                            <p>Generate QR Code</p>
+                                        </div>
+                                    </Link>
+                                </li>
+                                <li className="submenu-list-item">
+                                    <Link to='/catalog/manage-catalog' className="submenu-item">
+                                        <div className="menu-icon-container">
+                                            <FontAwesomeIcon icon={faPenToSquare} className='menu-icon'/>
+                                        </div>
+                                        <div className="menu-text">
+                                            <p>Manage Catalog</p>
+                                        </div>
+                                    </Link>
+                                </li>
+                            </ul>
+                        )}
+                    </li>
+
+                    <li className={`menu-item ${basePath === '/reports' ? 'selected' : ''}`}>
+                        <Link to='/reports' className="menu">
+                            <div className="menu-icon-container">
+                                <FontAwesomeIcon icon={faFileExcel} className='menu-icon'/>
+                            </div>
+                            <div className="menu-text">
+                                <p>Reports</p>
                             </div>
                         </Link>
                     </li>
-
-                    {/* manage catalog */}
-                    <li className={currentPathname=='/catalog'?'selected-sub':''}>
-                        <Link to='/catalog/manage-catalog'className='d-flex align-items-center gap-3 ps-4'>
-                            <div className='menu'>
-                               <div><FontAwesomeIcon icon={faPenToSquare} className='menu-icon'/></div>
-                                <div><p>Manage Catalog</p></div>
-                            </div>
-                        </Link>
-                    </li>
-
-                    
 
                     {/* Conditionally Render Menu Items Based on Role */}
                     {role !== 'staff' && (
                         <>
-                            <li className={currentPathname=='/reports'?'selected':''}>
+                            {/* <li className={`menu-item ${basePath === '/reports' ? 'selected' : ''}`}>
                                 <Link to='/reports' className="menu">
-                                    <div><FontAwesomeIcon icon={faFileExcel} className='menu-icon'/></div>
-                                    <div><p>Reports</p></div>
+                                    <div className="menu-icon-container">
+                                        <FontAwesomeIcon icon={faFileExcel} className='menu-icon'/>
+                                    </div>
+                                    <div className="menu-text">
+                                        <p>Reports</p>
+                                    </div>
                                 </Link>
-                            </li>
+                            </li> */}
 
-                            <li className={currentPathname=='/audit'?'selected':''}>
+                            <li className={`menu-item ${basePath === '/audit' ? 'selected' : ''}`}>
                                 <Link to='/audit' className="menu">
-                                    <div><FontAwesomeIcon icon={faFile} className='menu-icon'/></div>
-                                    <div><p>Audit Logs</p></div>
+                                    <div className="menu-icon-container">
+                                        <FontAwesomeIcon icon={faFile} className='menu-icon'/>
+                                    </div>
+                                    <div className="menu-text">
+                                        <p>Audit Logs</p>
+                                    </div>
                                 </Link>
                             </li>
 
-                            <li className={currentPathname=='/accounts'?'selected':''}>
+                            <li className={`menu-item ${basePath === '/accounts' ? 'selected' : ''}`}>
                                 <Link to='/accounts' className="menu">
-                                    <div><FontAwesomeIcon icon={faUsersGear} className='menu-icon'/></div>
-                                    <div><p>Accounts</p></div>
+                                    <div className="menu-icon-container">
+                                        <FontAwesomeIcon icon={faUsersGear} className='menu-icon'/>
+                                    </div>
+                                    <div className="menu-text">
+                                        <p>Accounts</p>
+                                    </div>
                                 </Link>
                             </li>
                         </>

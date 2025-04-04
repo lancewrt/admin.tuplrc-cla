@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react'
 import ReactDom from 'react-dom'
 import './AuthorModal.css'
 import Select from 'react-select'
+import { useSelector } from 'react-redux'
 
-const AuthorModal = ({open,close,handleChange,bookData,addAuthor,authorList}) => {
-
+const AuthorModal = ({open,close,bookData,addAuthor}) => {
+    const authorList = useSelector(state=>state.author.author);
+    
     // usestates for manual input
     const [fname,setFname] = useState('')
     const [lname,setLname] = useState('')

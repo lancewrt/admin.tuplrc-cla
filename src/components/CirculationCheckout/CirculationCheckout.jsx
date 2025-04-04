@@ -22,6 +22,7 @@ const CirculationCheckout = () => {
   currentDate.setDate(currentDate.getDate() + 7); // Add 7 days
   const dueDate = currentDate.toLocaleDateString("en-CA", { timeZone: "Asia/Manila" });
   const [loading, setLoading] = useState(false)
+  const [preview, setPreview] = useState(null)
   
 
   const getPatron = async () => {
@@ -194,10 +195,26 @@ const CirculationCheckout = () => {
     }
   };
 
+  // Handle cover image preview
+    useEffect(() => {
+      if (selectedItems.length === 0 || !selectedItems[0].cover) return;
+      
+      try {
+        if (typeof selectedItems[0].cover === 'object') {
+          setPreview(URL.createObjectURL(selectedItems[0].cover));
+        } else {
+          setPreview(`https://api.tuplrc-cla.com/${selectedItems[0].cover}`);
+        }
+      } catch (error) {
+        console.error('Error creating preview URL:', error);
+        setPreview(null);
+      }
+    }, [selectedItems]);
+
   const patronName = patron.length > 0 ? `${patron[0].patron_fname} ${patron[0].patron_lname}` : '';
 
   return (
-    <div className='circ-checkout-container'>
+    <div className='circ-checkout-container bg-light'>
       <h1>Circulation</h1>
 
       {/* path and back */}
@@ -207,7 +224,7 @@ const CirculationCheckout = () => {
       </div>
 
       {/* info */}
-      <div className="checkout-details row">
+      <div className="checkout-details row shadow-sm">
         {/* items to be issued */}
         <div className="items col-5">
           <div>
@@ -215,17 +232,24 @@ const CirculationCheckout = () => {
             {/* Selected items */}
             <div className='inner overflow-y-auto overflow-x-hidden '>
               {selectedItems.map((item) => (
-                <div className="item row mt-2 w-100 m-auto" key={item.resource_id}>
-                  {/* Cover */}
-                  <div className="col-3 cover">
-                    <img src={`data:image/jpeg;base64,${item.cover}` || 'https://via.placeholder.com/100'} alt={item.title} />
+                <div className="rounded row mt-2 position-relative" key={item.resource_id}>
+                  <div className="col-4">
+                    <img 
+                      src={preview} 
+                      alt={`Cover of ${item.resource_title}`}
+                      className="w-100 h-100 object-fit-cover rounded shadow"
+                    />
                   </div>
-                  {/* Item info */}
-                  <div className="col-9 info">
-                    <p className='title'>{item.resource_title}</p>
-                    <p className='qnty'>Quantity: <span>1</span></p>
+                  <div className="col">
+                    <div className="d-flex justify-content-between align-items-start mb-2">
+                      <p className="m-0 fs-5 fw-semibold">{item.resource_title}</p>
+                    </div>
+                    <p className="m-0 text-secondary">ISBN: {item.book_isbn || "Unknown"}</p>
+                    <p className="m-0 text-secondary">Author/s: {item.authors || "Unknown"}</p>
+                    <p className="m-0 text-secondary">Publisher: {item.publisher || "Unknown"}</p>
+                    <p className="m-0 text-secondary">Quantity: <span>1</span></p>
                   </div>
-                </div>
+              </div> 
               ))}
             </div>
           </div>
@@ -242,7 +266,7 @@ const CirculationCheckout = () => {
         </div>
 
         {/* checkout summary */}
-        <div className="checkout-sum col">
+        <div className="checkout-sum col shadow-sm">
           {/* header */}
           <div className="header">
             {clickedAction === 'Check In' ? 'Return summary' : 'Check out summary'}

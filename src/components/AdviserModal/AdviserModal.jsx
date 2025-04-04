@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react'
 import ReactDom from 'react-dom'
 import './AdviserModal.css'
 import Select from 'react-select'
+import { useSelector } from 'react-redux'
 
-const AdviserModal = ({open,close,handleChange,bookData,addAdviser,adviserList}) => {
+const AdviserModal = ({open,close,bookData,addAdviser}) => {
 
+    const adviserList = useSelector(state=>state.adviser.adviser)
     // usestates for manual input
     const [fname,setFname] = useState('')
     const [lname,setLname] = useState('')

@@ -1,88 +1,70 @@
-import React, { useEffect, useState } from 'react'
-import axios from 'axios'
-import './Logbook.css'
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import './Logbook.css';
 import { useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faArrowLeft, faArrowRight, faExclamationCircle} from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faArrowLeft, faArrowRight, faExclamationCircle, faSmile } from '@fortawesome/free-solid-svg-icons';
 import * as XLSX from 'xlsx'; // Import xlsx for Excel export
+import { io } from 'socket.io-client';
 
 const Logbook = () => {
     const [patron, setPatron] = useState([]);
     const [searchInput, setSearchInput] = useState('');
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
     const [entriesPerPage, setEntriesPerPage] = useState(5);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalEntries, setTotalEntries] = useState(0); // Total number of entries
     const [loading, setLoading] = useState(false);
     const location = useLocation();
-
-    /* useEffect(() => {
-        getPatron();
-    }, [currentPage, entriesPerPage]); */
+    const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const filterToday = params.get('filter') === 'today';
-    
-        if (filterToday) {
-            fetchTodayEntries();
-        } else {
-            if (searchInput !== '') {
-                getPatron(); // Fetch once if searchInput is not empty
-            } else {
-                const interval = setInterval(getPatron, 1000); // Start polling if searchInput is empty
-    
-                return () => clearInterval(interval); // Cleanup on unmount or re-run
-            }
-        }
-    }, [location.search, currentPage, entriesPerPage, searchInput]); // Add searchInput to dependency array
-    
+        // Initialize socket connection
+        const newSocket = io('http://localhost:3001');
+        setSocket(newSocket);
 
-    function backupData() {
-        const backup = localStorage.getItem("backupData");
-        const parsedData = backup ? JSON.parse(backup) : [];
-        setPatron(parsedData)
-        if (backup) {
-            console.log("Using backup data:", JSON.parse(backup));
-        } else {
-            console.log("No backup data available.");
-        }
-    }
+        // Clean up socket connection on unmount
+        return () => {
+            newSocket.disconnect();
+        };
+    }, []);
 
-    const getPatron = async () => {
-        setLoading(true)
-        if (navigator.onLine) {
-            try {
-                const params = {
-                    search: searchInput,
-                    startDate,
-                    endDate,
-                    limit: entriesPerPage,
-                    page: currentPage, // Include current page in the request
-                };
-                const query = new URLSearchParams(params).toString();
-                const response = await axios.get(`https://api.tuplrc-cla.com/api/patron/sort?${query}`);
-                setPatron(response.data.results); // Expect results array in response
-                setTotalEntries(response.data.total); // Set total entries for pagination
-                localStorage.setItem("backupData", JSON.stringify(response.data.results));
-            } catch (err) {
-                console.log(err.message);
-            }finally{
-                setLoading(false)
-            }
-        } else {
-            backupData();
+    useEffect(() => {
+        if (socket) {
+            // Listen for attendance updates
+            socket.on('attendanceUpdated', () => {
+                console.log('Attendance updated, refreshing data...');
+                fetchTodayEntries();
+            });
+
+            // Clean up event listener
+            return () => {
+                socket.off('attendanceUpdated');
+            };
         }
+    }, [socket, currentPage, entriesPerPage, searchInput]);
+
+    useEffect(() => {
+        fetchTodayEntries();
+    }, [location.search, currentPage, entriesPerPage]);
+    
+    // This function handles the search when either the button is clicked or Enter key is pressed
+    const handleSearch = () => {
+        setCurrentPage(1); // Reset to first page when searching
+        fetchTodayEntries();
     };
-
-    
 
     const fetchTodayEntries = async () => {
         setLoading(true);
         try {
             const today = new Date().toISOString().split('T')[0]; // Get today's date
-            const response = await axios.get(`https://api.tuplrc-cla.com/api/patron/sort?startDate=${today}&endDate=${today}&limit=${entriesPerPage}&page=${currentPage}`);
+            let url = `https://api.tuplrc-cla.com/api/patron/sort?startDate=${today}&endDate=${today}&limit=${entriesPerPage}&page=${currentPage}`;
+            
+            // Add search parameter if searchInput is not empty
+            if (searchInput.trim() !== '') {
+                url += `&search=${encodeURIComponent(searchInput.trim())}`;
+            }
+            
+            const response = await axios.get(url);
             setPatron(response.data.results);
             setTotalEntries(response.data.total);
         } catch (err) {
@@ -92,52 +74,32 @@ const Logbook = () => {
         }
     };
 
-    const handleClear = () => {
+    const clearFilters = () => {
+        // First update all states
         setSearchInput('');
-        setStartDate('');
-        setEndDate('');
-        setEntriesPerPage('5')
-        setCurrentPage(1); // Reset to first page
-        getPatron();
+        setCurrentPage(1);
+        setEntriesPerPage(5);
+        
+        // Then use the actual values directly in the fetch call
+        fetchClearEntries();
     };
-
-    const exportToExcel = () => {
-        const headers = [
-            'Number',
-            'TUP ID',
-            'First Name',
-            'Last Name',
-            'Gender',
-            'Phone No.',
-            'Email',
-            'Course',
-            'College',
-            'Date',
-            'Time in',
-        ];
-
-        // Format data for Excel
-        const data = patron.map((item, index) => ({
-            'Number': index + 1 + (currentPage - 1) * entriesPerPage,
-            'TUP ID': item.tup_id,
-            'First Name': item.patron_fname,
-            'Last Name': item.patron_lname,
-            'Gender': item.patron_sex,
-            'Phone No.': item.patron_mobile,
-            'Email': item.patron_email,
-            'Course': item.course,
-            'College': item.college,
-            'Date': new Date(item.att_date).toLocaleDateString('en-CA'),
-            'Time in': item.att_log_in_time,
-        }));
-
-        // Create a worksheet and a workbook
-        const worksheet = XLSX.utils.json_to_sheet(data, { header: headers });
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Logbook');
-
-        // Export to Excel file
-        XLSX.writeFile(workbook, 'Logbook.xlsx');
+    
+    // Create a new function that doesn't depend on the state values that are being updated
+    const fetchClearEntries = async () => {
+        setLoading(true);
+        try {
+            const today = new Date().toISOString().split('T')[0];
+            // Use hard-coded values instead of state variables that were just updated
+            let url = `https://api.tuplrc-cla.com/api/patron/sort?startDate=${today}&endDate=${today}&limit=5&page=1`;
+            
+            const response = await axios.get(url);
+            setPatron(response.data.results);
+            setTotalEntries(response.data.total);
+        } catch (err) {
+            console.log(err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const totalPages = Math.ceil(totalEntries / entriesPerPage);
@@ -148,57 +110,72 @@ const Logbook = () => {
         }
     };
 
-    console.log(patron)
+    console.log(patron);
     return (
-        <div className='logbook-container'>
+        <div className='logbook-container bg-light'>
             <h1>Logbook</h1>
 
-            {/* search bar and export button */}
-            <div className="search-export">
-                <div className="d-flex" role="search">
-                    <input
-                        className="form-control me-2 log-search-bar"
-                        type="search"
-                        placeholder="Enter Student ID or Student Name"
-                        aria-label="Search"
-                        value={searchInput}
-                        onChange={(e) => setSearchInput(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                               
-                              getPatron();
-                            }
-                          }}
-                    />
-                    <button className="btn log-search-button" onClick={getPatron}>
-                        <FontAwesomeIcon icon={faSearch} className='icon'/> 
-                    </button>
-                </div>
-                
-            </div>
+            <div className='d-flex justify-content-between align-items-center'> 
+                {/* search bar and export button */}
+                <div className="search-export">
+                    <div className="input-group z-0" role="search">
+                        <input
+                            className="log-search-bar form-control shadow-sm"
+                            type="search"
+                            placeholder="Enter Student ID or Student Name"
+                            aria-label="Search"
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    handleSearch();
+                                }
+                            }}
+                        />
+                        <button 
+                            className="btn log-search-button" 
+                            onClick={handleSearch}
+                        >
+                            <FontAwesomeIcon icon={faSearch}/> 
+                        </button>
 
-            {/* filters */}
-            <div className="logbook-filters">
-                    <label htmlFor="entries">Entries per page</label>
-                    <select
-                        className="form-select"
-                        value={entriesPerPage}
-                        onChange={(e) => setEntriesPerPage(e.target.value === "All" ? "All" : Number(e.target.value))}
-                    >
-                        <option value={5}>5</option>
-                        <option value={10}>10</option>
-                        <option value={20}>20</option>
-                        <option value="All">All</option>
-                    </select>
-                
+                        <button className='btn btn-warning ms-2 d-flex align-items-center' 
+                            onClick={clearFilters}>
+                            Clear Filters
+                        </button>
+                    </div>
+
+                </div>
+
+
+
+                {/* filters */}
+                <div className="logbook-filters">
+                        <label htmlFor="entries">Entries per page</label>
+                        <select
+                            className="form-select"
+                            value={entriesPerPage}
+                            onChange={(e) => setEntriesPerPage(e.target.value === "All" ? "All" : Number(e.target.value))}
+                        >
+                            <option value={5}>5</option>
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value="All">All</option>
+                        </select>
+                    
+                </div>
             </div>
+            
 
             {/* table */}
-      
-                <table className='logbook-table'>
+            <div>
+                <p className="logbook-table-entries m-0">
+                    Showing {patron ? patron.length : 0} of {totalEntries} Entries
+                </p>
+                <table className='logbook-table mt-2'>
                     <thead>
                         <tr>
-                            <td>No.</td>
+                            {/* <td>No.</td> */}
                             <td>TUP ID</td>
                             <td>First Name</td>
                             <td>Last Name</td>
@@ -211,12 +188,12 @@ const Logbook = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {Array.isArray(patron)?patron.length > 0 ? (
+                        {Array.isArray(patron) ? patron.length > 0 ? (
                             patron.map((item, index) => (
                                 <tr key={index}>
-                                    <td>{entriesPerPage === "All"
+                                    {/* <td>{entriesPerPage === "All"
                         ? index + 1 
-                        : index + 1 + (currentPage - 1) * entriesPerPage}</td>
+                        : index + 1 + (currentPage - 1) * entriesPerPage}</td> */}
                                     <td>{item.tup_id}</td>
                                     <td>{item.patron_fname}</td>
                                     <td>{item.patron_lname}</td>
@@ -228,18 +205,18 @@ const Logbook = () => {
                                     <td>{item.att_log_in_time}</td>
                                 </tr>
                             ))
-                        ) : patron.length==0 && !loading?(
+                        ) : patron.length === 0 && !loading ? (
                             <tr>
-                                <td colSpan="10" className='no-data-box text-center'>
+                                <td colSpan="9" className='no-data-box text-center'>
                                     <div className='d-flex flex-column align-items-center gap-2 '>
-                                        <FontAwesomeIcon icon={faExclamationCircle} className="fs-2 no-data" />
-                                        <span>No logbook data available.<br/></span>
+                                        <FontAwesomeIcon icon={faSmile} className="fs-2 no-data" />
+                                        <span>No logbook data available<br/>for today.</span>
                                     </div>
                                 </td>
                             </tr>
-                        ):(
+                        ) : (
                             <tr>
-                                <td colSpan="10" style={{ textAlign: 'center', padding: '20px' }}>
+                                <td colSpan="9" style={{ textAlign: 'center', padding: '20px' }}>
                                 <div className="spinner-box">
                                     <div className="spinner-grow text-danger" role="status">
                                     <span className="sr-only">Loading...</span>
@@ -247,49 +224,29 @@ const Logbook = () => {
                                 </div>
                                 </td>
                             </tr>
-                        ):''}
+                        ) : ''}
                     </tbody>
                     
                 </table>
-          
-
+            </div>
+                
             {/* pagination */}
-            <div className="logbook-table-pagination">
-                <p className="logbook-table-entries m-0">
-                    Showing {patron?patron.length:0} of {totalEntries}   Entries
-                </p>
                 {entriesPerPage !== "All" && (
-                    <div className="logbook-table-button-pagination">
-                        <button onClick={() => handlePageChange(currentPage - 1)} className="btn ">
-                            <FontAwesomeIcon icon={faArrowLeft} className='icon'/>
-                        </button>
+                    <div className="logbook-table-button-pagination d-flex align-items-center justify-content-between">
                         <div className="logbook-pages">
                             Page {currentPage} of {totalPages}
                         </div>
-                        <button onClick={() => handlePageChange(currentPage + 1)} className="btn ">
-                            <FontAwesomeIcon icon={faArrowRight} className='icon'/>
-                        </button>
+                        <div>
+                            <button onClick={() => handlePageChange(currentPage - 1)} className="btn ">
+                                <FontAwesomeIcon icon={faArrowLeft}/>
+                            </button>
+                            <button onClick={() => handlePageChange(currentPage + 1)} className="btn ">
+                                <FontAwesomeIcon icon={faArrowRight}/>
+                            </button>
+                        </div>
+                        
                     </div>
                 )}
-            </div>
-
-
-            {/* <div className="logbook-table-pagination">
-                <div className="logbook-table-entries">
-                    Showing {patron.length} of {totalEntries} Entries
-                </div>
-                <div className="logbook-table-button-pagination">
-                    <button onClick={() => handlePageChange(currentPage - 1)} class="btn btn-outline-danger">
-                        <img src={left} alt="" />
-                    </button>
-                    <div className='logbook-pages'>
-                        Page {currentPage} of {totalPages}
-                    </div>
-                    <button onClick={() => handlePageChange(currentPage + 1)} class="btn btn-outline-danger">
-                        <img src={right} alt="" />
-                    </button>
-                </div>
-            </div> */}
         </div>
     );
 };
