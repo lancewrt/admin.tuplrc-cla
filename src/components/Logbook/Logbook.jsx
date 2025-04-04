@@ -19,7 +19,10 @@ const Logbook = () => {
 
     useEffect(() => {
         // Initialize socket connection
-        const newSocket = io('https://api.tuplrc-cla.com');
+        const newSocket = io('https://api.tuplrc-cla.com', {
+            transports: ['websocket'],
+            withCredentials: true,  // Pass credentials with the WebSocket connection
+        });
         setSocket(newSocket);
 
         // Clean up socket connection on unmount
