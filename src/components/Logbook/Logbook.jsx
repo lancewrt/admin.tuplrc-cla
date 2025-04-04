@@ -20,9 +20,9 @@ const Logbook = () => {
     useEffect(() => {
         // Initialize socket connection
         const newSocket = io('https://api.tuplrc-cla.com', {
-            transports: ['websocket'],
-            secure: true
-          });
+              transports: ['polling'],  // Force long-polling only
+              upgrade: false  // Prevent transport upgrade attempts
+            });
         setSocket(newSocket);
         
         // Clean up socket connection on unmount
