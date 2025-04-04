@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 
-const socket = io('http://localhost:3001'); // Connect to the Socket.IO server
+const socket = io('https://api.tuplrc-cla.com'); // Connect to the Socket.IO server
 
 const Catalog = () => {
   const [catalog, setCatalog] = useState([])

@@ -19,7 +19,7 @@ const Logbook = () => {
 
     useEffect(() => {
         // Initialize socket connection
-        const newSocket = io('http://localhost:3001');
+        const newSocket = io('https://api.tuplrc-cla.com');
         setSocket(newSocket);
 
         // Clean up socket connection on unmount

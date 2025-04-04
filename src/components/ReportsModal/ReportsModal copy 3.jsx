@@ -9,7 +9,7 @@ import dayjs from 'dayjs';
 import Swal from 'sweetalert2'
 
 // Use environment variables for API endpoints
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://api.tuplrc-cla.com';
 
 const ReportsModal = ({ open, close}) => {
   const [generatedReport, setGeneratedReport] = useState([]);
