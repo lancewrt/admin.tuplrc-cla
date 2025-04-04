@@ -54,9 +54,8 @@ const Dashboard = () => {
   useEffect(() => {
     // Initialize socket connection
     const newSocket = io('https://api.tuplrc-cla.com', {
-      transports: ['websocket', 'polling'],
-      secure: true,
-      debug: true  // Enable debugging
+      transports: ['polling'],  // Force long-polling only
+      upgrade: false  // Prevent transport upgrade attempts
     });
     setSocket(newSocket);
 
