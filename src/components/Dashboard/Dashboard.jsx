@@ -54,10 +54,18 @@ const Dashboard = () => {
   useEffect(() => {
     // Initialize socket connection
     const newSocket = io('https://api.tuplrc-cla.com', {
-      transports: ['websocket'],
-      withCredentials: true,  // Pass credentials with the WebSocket connection
+      transports: ['websocket'], // Match server configuration
+      withCredentials: true,
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000
     });
     setSocket(newSocket);
+
+    // Add error handling
+    newSocket.on('connect_error', (error) => {
+      console.error('Connection error:', error);
+    });
 
     getTotalVisitors();
     getTotalBorrowed();
@@ -69,6 +77,8 @@ const Dashboard = () => {
     getPopularChoices();
     getBookTrends();
     getVisitorStats();
+
+    
 
     // Clean up socket connection on unmount
     return () => {
