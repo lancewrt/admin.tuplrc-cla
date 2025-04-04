@@ -102,12 +102,12 @@ const AttendancePage = () => {
     }
   };
 
-  useEffect(()=>{
-    const regex = /^TUPM-\d{2}-\d{4}$/i;
-    if(regex.test(studentId)){
-      handleSubmit()
-    }
-  }, [studentId])
+  // useEffect(()=>{
+  //   const regex = /^TUPM-\d{2}-\d{4}$/i;
+  //   if(regex.test(studentId)){
+  //     handleSubmit()
+  //   }
+  // }, [studentId])
 
   return (
     <div className="attendance-container">

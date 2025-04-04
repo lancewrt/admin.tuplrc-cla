@@ -97,7 +97,9 @@ const App = () => {
             </ProtectedRoute>
           } />
           <Route path='/attendance' element={
+            <ProtectedRoute allowedRoles={['admin','staff']}>
               <AttendancePage/>
+            </ProtectedRoute>
           } />
           <Route path='/circulation/patron/item/checkin' element={
             <ProtectedRoute allowedRoles={['staff', 'admin']}>

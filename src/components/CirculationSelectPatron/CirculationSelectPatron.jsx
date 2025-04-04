@@ -180,7 +180,7 @@ const CirculationSelectPatron = () => {
           </div>
         ) : (
           currentItems
-            .filter(patron => patron.status === 'active') // Filter only active patrons
+            .filter(patron => clickedAction !== 'Check Out' || patron.status === 'active') // Filter only active patrons
             .map((patron, index) => {
               const isCheckIn = localStorage.getItem('clickedAction') === 'Check In';
               return isCheckIn || patron.total_checkouts < 1 ? (
