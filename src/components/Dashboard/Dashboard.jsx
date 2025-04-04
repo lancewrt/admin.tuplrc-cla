@@ -53,7 +53,7 @@ const Dashboard = () => {
   
   useEffect(() => {
     // Initialize socket connection
-    const newSocket = io('wss://api.tuplrc-cla.com');
+    const newSocket = io('https://api.tuplrc-cla.com');
     setSocket(newSocket);
 
     getTotalVisitors();
