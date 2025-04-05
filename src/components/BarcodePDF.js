@@ -105,7 +105,7 @@ const BarcodePDF = ({ selectedResources }) => {
 
                 {/* Subtitle */}
                 <Text style={[styles.resourceTitle, { textAlign: "center", marginBottom: 10 }]}>
-                    Resource QR Code Report
+                    Resource Barcode Report
                 </Text>
                 
                 {/* Table */}
@@ -113,7 +113,7 @@ const BarcodePDF = ({ selectedResources }) => {
                     {/* Table Header */}
                     <View style={[styles.tableRow, styles.tableHeader]}>
                         <Text style={[styles.tableColHeader, styles.tableHeader]}>Resource Title</Text>
-                        <Text style={[styles.tableColHeader, styles.tableHeader]}>QR Code</Text>
+                        <Text style={[styles.tableColHeader, styles.tableHeader]}>Barcode</Text>
                     </View>
 
                     {/* Table Data */}
@@ -126,8 +126,8 @@ const BarcodePDF = ({ selectedResources }) => {
                                 <Image
                                     style={styles.image}
                                     src={item.isbn&&item.isbn.length>0 
-                                        ? `https://barcodeapi.org/api/qr/${item.isbn}` 
-                                        : `https://barcodeapi.org/api/qr/${item.resource_title}`
+                                        ? `https://barcodeapi.org/api/128/${item.isbn}` 
+                                        : `https://barcodeapi.org/api/128/${item.resource_id}`
                                     }
                                 />
                             </View>

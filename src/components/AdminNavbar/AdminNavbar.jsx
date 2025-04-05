@@ -136,10 +136,10 @@ const AdminNavbar = () => {
                                 <li className="submenu-list-item">
                                     <Link to='/catalog/generate-barcode' className="submenu-item">
                                         <div className="menu-icon-container">
-                                            <FontAwesomeIcon icon={faQrcode} className='menu-icon'/>
+                                            <FontAwesomeIcon icon={faBarcode} className='menu-icon'/>
                                         </div>
                                         <div className="menu-text">
-                                            <p>Generate QR Code</p>
+                                            <p>Generate Barcode</p>
                                         </div>
                                     </Link>
                                 </li>

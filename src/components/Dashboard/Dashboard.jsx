@@ -89,7 +89,6 @@ const Dashboard = () => {
     getPopularChoices();
     getBookTrends();
     getVisitorStats();
-    testOverdue()
 
     // Clean up socket connection on unmount
     return () => {
@@ -299,15 +298,6 @@ const Dashboard = () => {
         setPopularChoicesLoading(false);
       },3000)
       
-    }
-  }
-
-  const testOverdue = async()=>{
-    setPopularChoicesLoading(true);
-    try {
-      const response = await axios.get(`https://api.tuplrc-cla.com/api/data/overdue`).then(res=>res.data)
-    } catch (err) {
-        console.log(err.message);
     }
   }
 

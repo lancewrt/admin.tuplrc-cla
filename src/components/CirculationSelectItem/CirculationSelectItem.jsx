@@ -142,10 +142,10 @@ const CirculationSelectItem = () => {
         {/* Scan or manual */}
         <div className="col scan-manual shadow-sm">
           <div className="barcode">
-            <FontAwesomeIcon icon={faQrcode} className='barcode-icon' />
+            <FontAwesomeIcon icon={faBarcode} className='barcode-icon' />
             <p>Scan items in the scanner <br />to be {actionLabel.toLowerCase()}.</p>
           </div>
-          <p>No QR code available? Input manually instead</p>
+          <p>No barcode available? Input manually instead</p>
 
           <div className='circ-info'>
             <label htmlFor="item-search">ISBN / Title</label>
