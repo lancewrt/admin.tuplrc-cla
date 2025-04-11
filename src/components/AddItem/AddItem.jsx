@@ -1,24 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import './AddItem.css';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import CatalogInfo from '../CatalogInfo/CatalogInfo';
 import Cataloging from '../Cataloging/Cataloging';
 import axios from 'axios';
 import Loading from '../Loading/Loading';
-import { initDB } from '../../indexedDb/initializeIndexedDb';
-import { getAllFromStore } from '../../indexedDb/getDataOffline';
 import { saveResourceOffline } from '../../indexedDb/saveResourcesOffline';
 import { viewResourcesOffline } from '../../indexedDb/viewResourcesOffline';
 import { editResourceOffline } from '../../indexedDb/editResourcesOffline';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
-import { useRef } from 'react';
 import { fetchTypeOffline, fetchTypeOnline } from '../../features/typeSlice';
 import { fetchStatusOffline, fetchStatusOnline } from '../../features/statusSlice';
 import { fetchPublisherOffline, fetchPublisherOnline } from '../../features/publisherSlice';
 import { fetchAuthorOffline, fetchAuthorOnline } from '../../features/authorSlice';
 import { fetchAdviserOnline } from '../../features/adviserSlice';
+import Swal from 'sweetalert2'
 
 const AddItem = () => {
     //pag may id, nagiging view ung purpose ng add item component
@@ -328,7 +326,18 @@ const AddItem = () => {
     // save resource online
     const handleSaveResourceOnline = async () => {
         if (formValidation() === true) {
-            setLoading(true)
+            const result = await Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#54CB58",
+                cancelButtonColor: "#94152b",
+                confirmButtonText: "Yes, save!"
+          });
+    
+          if (!result.isConfirmed) return; // Exit if user cancels
+          setLoading(true)
             try{
                 const formData = new FormData();
                 formData.append('username', username);
@@ -370,7 +379,19 @@ const AddItem = () => {
     //save resource offline
     const handleSaveResourceOffline = async ()=>{
         if (formValidation() === true) {
-            setLoading(true)
+            const result = await Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#54CB58",
+                cancelButtonColor: "#94152b",
+                confirmButtonText: "Yes, save!"
+          });
+    
+          if (!result.isConfirmed) return; // Exit if user cancels
+
+          setLoading(true)
             
             try{
                 const updatedBookData = {
@@ -392,6 +413,18 @@ const AddItem = () => {
 /*-------------------EDIT RESOURCE---------------------- */
     // Handle resource save online
     const handleEditResourceOnline = async () => {
+        const result = await Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#54CB58",
+            cancelButtonColor: "#94152b",
+            confirmButtonText: "Yes, edit!"
+      });
+
+      if (!result.isConfirmed) return; // Exit if user cancels
+
         console.log('edit resource online')
             try{
                 setLoading(true)
@@ -413,7 +446,18 @@ const AddItem = () => {
 
     //handle resource save offline
     const handleEditResourceOffline = async () => {
-        console.log('edit resource offline')
+        const result = await Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#54CB58",
+            cancelButtonColor: "#94152b",
+            confirmButtonText: "Yes, edit!"
+      });
+      
+      if (!result.isConfirmed) return; // Exit if user cancels
+
             try{
                 setLoading(true)
                 const response = await editResourceOffline(bookData,parseInt(id))
@@ -423,6 +467,38 @@ const AddItem = () => {
                 window.toast.fire({icon:"error", title:"Cannot edit resource offline"})
             }
     };
+
+    //handle cancel
+    const handleCancelButton = async ()=>{
+        console.log('handle cancel')
+        const result = await Swal.fire({
+              title: "Are you sure?",
+              text: "You won't be able to revert this!",
+              icon: "question",
+              showCancelButton: true,
+              confirmButtonColor: "#54CB58",
+              cancelButtonColor: "#94152b",
+              confirmButtonText: "Yes, cancel!"
+        });
+
+        if (!result.isConfirmed) return; // Exit if user cancels
+
+        if(editMode){
+            setDisabled(true);
+            setEditMode(false);
+            viewResourceOnline()
+        }else{
+            setBookData({
+                mediaType: '1',
+                authors: [],
+                genre: [],
+                isCirculation: 1,
+                publisher_id: 0,
+                publisher: '',
+                status:''
+            })
+        }
+    }
 
     console.log(bookData)
     return (
@@ -469,37 +545,47 @@ const AddItem = () => {
                 />
             </div>
 
-            {disabled?<div className='edit-btn-cont'><button className="btn edit-item" onClick={()=>{
-                setDisabled(false);
-                setEditMode(true);
-                setIsOfflineView(false);
-                }}>
+            {disabled?
+                <div className='edit-btn-cont'>
+                    <button 
+                        className="btn edit-item" 
+                        onClick={()=>{
+                        setDisabled(false);
+                        setEditMode(true);
+                        setIsOfflineView(false);
+                    }}>
                     Edit
-                </button></div>:<div className="cancel-save">
-                <button className="btn add-item-cancel">
-                    Cancel
-                </button>
-                <button className="btn add-item-save" onClick={()=>{
-                    //if not in edit mode, save resource
-                    if(!editMode){
-                        if(isOnline){
-                            handleSaveResourceOnline()
+                    </button>
+                </div>:
+                <div className="cancel-save">
+                    <button 
+                        onClick={handleCancelButton}
+                        className="btn add-item-cancel"
+                    >
+                        Cancel
+                    </button>
+                    <button className="btn add-item-save" onClick={()=>{
+                        //if not in edit mode, save resource
+                        if(!editMode){
+                            if(isOnline){
+                                handleSaveResourceOnline()
+                            }else{
+                                handleSaveResourceOffline()
+                            }           
                         }else{
-                            handleSaveResourceOffline()
-                        }           
-                    }else{
-                        if(isOnline){
-                            handleEditResourceOnline()
-                        }else{
-                            handleEditResourceOffline()
+                            if(isOnline){
+                                handleEditResourceOnline()
+                            }else{
+                                handleEditResourceOffline()
+                            }
+                            
                         }
-                        
-                    }
-                }} disabled={Object.values(error).length>=1&&!editMode}>
-                    <FontAwesomeIcon icon={faFloppyDisk}/>
-                    <span>Save</span>
-                </button>
-            </div>}
+                    }} disabled={Object.values(error).length>=1&&!editMode}>
+                        <FontAwesomeIcon icon={faFloppyDisk}/>
+                        <span>Save</span>
+                    </button>
+                </div>
+            }
             
             <Loading loading={loading}/>
         </div>
