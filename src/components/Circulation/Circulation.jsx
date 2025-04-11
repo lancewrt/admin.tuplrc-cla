@@ -34,7 +34,13 @@ const Circulation = () => {
 
   useEffect(() => {
     search();
-  }, [searchTerm, startDate, endDate]);
+  }, [startDate, endDate]);
+
+  useEffect(()=>{
+    if(searchTerm==''){
+      search();
+    }
+  },[searchTerm])
 
   const getBorrowers = async () => {
     setLoading(true);
