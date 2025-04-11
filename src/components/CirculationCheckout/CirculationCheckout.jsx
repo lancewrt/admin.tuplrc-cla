@@ -41,11 +41,11 @@ const CirculationCheckout = () => {
   const getUsername = async()=>{
     try {
       // Request server to verify the JWT token
-      const response = await axios.get(`https://api.tuplrc-cla.com/api/user/check-session`, { withCredentials: true });
-      console.log(response.data)
+      const storedCreds = JSON.parse(localStorage.getItem('token'));
+      console.log('Logged in: ',storedCreds.user)
       // If session is valid, set the role
-      if (response.data.loggedIn) {
-        setUname(response.data.username);
+      if (storedCreds.message === "Login successful") {
+        setUname(storedCreds.user.username);
       } else {
         setUname(null); // If not logged in, clear the role
       }

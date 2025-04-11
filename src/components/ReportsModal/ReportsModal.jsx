@@ -93,10 +93,11 @@ const ReportsModal = ({ open, close}) => {
 
   const getUsername = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/user/check-session`, { withCredentials: true });
-      if (response.data.loggedIn) {
-        setStaffId(response.data.userID);
-        setStaffUname(response.data.username);
+      const storedCreds = JSON.parse(localStorage.getItem('token'));
+
+      if (storedCreds.message === "Login successful") {
+        setStaffId(storedCreds.user.id);
+        setStaffUname(storedCreds.user.username);
       } else {
         setStaffId('');
         setStaffUname('');

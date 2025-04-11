@@ -14,10 +14,9 @@ const LoginPage = () => {
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
-                const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
-                
-                if (response.data.loggedIn) {
-                    // If the user is logged in, redirect to the dashboard
+                const storedCreds = JSON.parse(localStorage.getItem('token'));
+
+                if (storedCreds.message === "Login successful") { 
                     navigate('/dashboard');
                 }
             } catch (error) {
@@ -41,12 +40,14 @@ const LoginPage = () => {
             const response = await axios.post(
                 'https://api.tuplrc-cla.com/api/user/login',
                 { username, password },
+                
                 { withCredentials: true } // Include credentials for secure cookie handling
             );
 
             if (response.status === 200) {
                 console.log("Login successful:", response.data);
                 // Redirect to dashboard
+                localStorage.setItem('token', JSON.stringify(response.data)); 
                 navigate('/dashboard');
             }
         } catch (err) {
