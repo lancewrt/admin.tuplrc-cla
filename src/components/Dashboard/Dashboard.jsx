@@ -11,11 +11,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
 import { setBorrowedStats, setVisitorStats } from '../../features/chartSlice.js';
 import { io } from 'socket.io-client';
-import { setTypeArr } from '../../features/typeSlice.js';
-import { fetchDepartmentOnline, setDepartmentArr } from '../../features/departmentSlice.js';
-import { setTopicArr } from '../../features/topicSlice.js';
-import { fetchPublisherOnline, setPublisherArr } from '../../features/publisherSlice.js';
-import { setStatusArr } from '../../features/statusSlice.js';
 
 const Dashboard = () => {
   const [dateTime,setDateTime] = useState(new Date());
