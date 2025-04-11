@@ -15,40 +15,64 @@ const Logbook = () => {
     const location = useLocation();
 
     useEffect(() => {
-        const ws = new WebSocket('wss://api.tuplrc-cla.com'); // Connect to your WebSocket server
-    
-        ws.onopen = () => {
-            console.log('Connected to WebSocket server');
-        };
-    
-        ws.onmessage = (event) => {
-            try {
-                const message = JSON.parse(event.data); // Try parsing as JSON
-                if (message.event === 'attendanceUpdated') {
-                    console.log('Received attendance update:', message.data);
-                    fetchTodayEntries(); // Refresh the data
+        console.log('Setting up new WebSocket connection');
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+        let ws = null;
+        
+        const connectWebSocket = () => {
+            ws = new WebSocket('wss://api.tuplrc-cla.com');
+            
+            ws.onopen = () => {
+                console.log('Connected to WebSocket server');
+                reconnectAttempts = 0; // Reset on successful connection
+            };
+            
+            ws.onmessage = (event) => {
+                try {
+                    const message = JSON.parse(event.data);
+                    if (message.event === 'attendanceUpdated') {
+                        console.log('Received attendance update:', message.data);
+                        fetchTodayEntries();
+                    }
+                } catch (error) {
+                    console.log('Received non-JSON message:', event.data);
+                    if (event.data === 'Welcome from WebSocket server!') {
+                        console.log('WebSocket connection established');
+                    }
                 }
-            } catch (error) {
-                console.log('Received non-JSON message:', event.data);
-                if (event.data === 'Welcome from WebSocket server!') {
-                    console.log('WebSocket connection established');
+            };
+            
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                // Log more details if available
+                if (error.message) console.error('Error message:', error.message);
+                if (error.target) console.error('Error target readyState:', error.target.readyState);
+            };
+            
+            ws.onclose = (event) => {
+                console.log(`WebSocket connection closed with code ${event.code}, reason: ${event.reason}`);
+                
+                // Attempt to reconnect if closure was unexpected
+                if (event.code !== 1000 && reconnectAttempts < maxReconnectAttempts) {
+                    reconnectAttempts++;
+                    const timeout = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
+                    console.log(`Attempting reconnect ${reconnectAttempts} in ${timeout}ms`);
+                    setTimeout(connectWebSocket, timeout);
                 }
-            }
-        };        
-    
-        ws.onerror = (error) => {
-            console.error('WebSocket error:', error);
+            };
         };
-    
-        ws.onclose = () => {
-            console.log('WebSocket connection closed');
-        };
-    
-        // Cleanup on unmount
+        
+        connectWebSocket();
+        
+        // Cleanup on unmount or deps change
         return () => {
-            ws.close();
+            if (ws) {
+                console.log('Closing WebSocket connection due to cleanup');
+                ws.close(1000, 'Component unmounting');
+            }
         };
-    }, [currentPage, entriesPerPage, searchInput]);
+    }, []); // Remove dependencies to avoid repeatedly creating connections
     
 
     useEffect(() => {
