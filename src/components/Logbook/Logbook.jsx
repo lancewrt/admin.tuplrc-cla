@@ -4,8 +4,6 @@ import './Logbook.css';
 import { useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faArrowLeft, faArrowRight, faExclamationCircle, faSmile } from '@fortawesome/free-solid-svg-icons';
-import * as XLSX from 'xlsx'; // Import xlsx for Excel export
-import { io } from 'socket.io-client';
 
 const Logbook = () => {
     const [patron, setPatron] = useState([]);
@@ -15,36 +13,43 @@ const Logbook = () => {
     const [totalEntries, setTotalEntries] = useState(0); // Total number of entries
     const [loading, setLoading] = useState(false);
     const location = useLocation();
-    const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        // Initialize socket connection
-        const newSocket = io('https://api.tuplrc-cla.com', {
-              transports: ['polling'],  // Force long-polling only
-              upgrade: false  // Prevent transport upgrade attempts
-            });
-        setSocket(newSocket);
-        
-        // Clean up socket connection on unmount
-        return () => {
-            newSocket.disconnect();
+        const ws = new WebSocket('wss://api.tuplrc-cla.com'); // Connect to your WebSocket server
+    
+        ws.onopen = () => {
+            console.log('Connected to WebSocket server');
         };
-    }, []);
-
-    useEffect(() => {
-        if (socket) {
-            // Listen for attendance updates
-            socket.on('attendanceUpdated', () => {
-                console.log('Attendance updated, refreshing data...');
-                fetchTodayEntries();
-            });
-
-            // Clean up event listener
-            return () => {
-                socket.off('attendanceUpdated');
-            };
-        }
-    }, [socket, currentPage, entriesPerPage, searchInput]);
+    
+        ws.onmessage = (event) => {
+            try {
+                const message = JSON.parse(event.data); // Try parsing as JSON
+                if (message.event === 'attendanceUpdated') {
+                    console.log('Received attendance update:', message.data);
+                    fetchTodayEntries(); // Refresh the data
+                }
+            } catch (error) {
+                console.log('Received non-JSON message:', event.data);
+                if (event.data === 'Welcome from WebSocket server!') {
+                    console.log('WebSocket connection established');
+                }
+            }
+        };        
+    
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+    
+        ws.onclose = () => {
+            console.log('WebSocket connection closed');
+        };
+    
+        // Cleanup on unmount
+        return () => {
+            ws.close();
+        };
+    }, [currentPage, entriesPerPage, searchInput]);
+    
 
     useEffect(() => {
         fetchTodayEntries();

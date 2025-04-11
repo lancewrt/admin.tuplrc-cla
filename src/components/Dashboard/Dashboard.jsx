@@ -10,12 +10,6 @@ import DashBox from '../DashBox/DashBox';
 import { Link, useNavigate } from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
 import { setBorrowedStats, setVisitorStats } from '../../features/chartSlice.js';
-import { io } from 'socket.io-client';
-import { setTypeArr } from '../../features/typeSlice.js';
-import { fetchDepartmentOnline, setDepartmentArr } from '../../features/departmentSlice.js';
-import { setTopicArr } from '../../features/topicSlice.js';
-import { fetchPublisherOnline, setPublisherArr } from '../../features/publisherSlice.js';
-import { setStatusArr } from '../../features/statusSlice.js';
 
 const Dashboard = () => {
   const [dateTime,setDateTime] = useState(new Date());
@@ -49,36 +43,9 @@ const Dashboard = () => {
   const bookListHeader = ["Book ID","Title","Author","Copies Available"];
   const bookIssuedHeader = ["Tup ID","Title","Return Date"];
   const dispatch = useDispatch()
-  const [socket, setSocket] = useState(null);
   
+  // Establish WebSocket connection
   useEffect(() => {
-    // Initialize socket connection
-    const newSocket = io('https://api.tuplrc-cla.com', {
-      transports: ['polling'],  // Force long-polling only
-      upgrade: false  // Prevent transport upgrade attempts
-    });
-    setSocket(newSocket);
-
-    console.log('Attempting to connect to socket.io server...');
-
-  newSocket.on('connect', () => {
-    console.log('Socket connected successfully with ID:', newSocket.id);
-  });
-
-  newSocket.on('connect_error', (error) => {
-    console.error('Socket connection error:', error);
-  });
-
-  newSocket.on('error', (error) => {
-    console.error('Socket error:', error);
-  });
-
-  newSocket.on('disconnect', (reason) => {
-    console.log('Socket disconnected:', reason);
-  });
-
-    
-
     getTotalVisitors();
     getTotalBorrowed();
     getTotalReturned();
@@ -90,50 +57,50 @@ const Dashboard = () => {
     getBookTrends();
     getVisitorStats();
 
-    // Clean up socket connection on unmount
+    const ws = new WebSocket('wss://api.tuplrc-cla.com');
+   // Use wss:// for secure WebSocket connection
+
+    ws.onopen = () => {
+      console.log('Connected to WebSocket server');
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const message = JSON.parse(event.data); // Try parsing as JSON
+        if (message.event == 'attendanceUpdated') {
+          console.log('Received attendance update:', message.data);
+          getTotalVisitors();
+          getVisitorStats();
+        } else if (message.event == 'checkinUpdated') {
+          console.log('Received checkin update:', message.data);
+          getTotalReturned();
+          getBookTrends();
+        } else if (message.event == 'checkoutUpdated') {
+          console.log('Received checkout update:', message.data);
+          getTotalBorrowed();
+          getBookTrends();
+        } else if (message.event == 'overdueUpdated') {
+          console.log('Received overdue update:', message.data);
+          getTotalOverdue();
+        }
+      } catch (error) {
+        console.log('Error parsing message:', error);
+      }
+    };
+
+    ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+
+    ws.onclose = () => {
+      console.log('WebSocket connection closed');
+    };
+
+    // Cleanup WebSocket on unmount
     return () => {
-      newSocket.disconnect();
+      ws.close();
     };
   }, []);
-
-  useEffect(() => {
-    if (socket) {
-      // Listen for attendance updates
-      socket.on('attendanceUpdated', () => {
-        console.log('Attendance updated, refreshing data...');
-        getTotalVisitors();
-        getVisitorStats();
-      });
-
-      // Listen for checkin updates
-      socket.on('checkinUpdated', () => {
-        console.log('checkin updated, refreshing data...');
-        getTotalReturned();
-        getBookTrends();
-      });
-
-      // Listen for checkout updates
-      socket.on('checkoutUpdated', () => {
-        console.log('checkout updated, refreshing data...');
-        getTotalBorrowed();
-        getBookTrends();
-      });
-
-      // Listen for checkout updates
-      socket.on('overdueUpdated', () => {
-        console.log('overdue updated, refreshing data...');
-        getTotalOverdue();
-      });
-
-      // Clean up event listener
-      return () => {
-        socket.off('attendanceUpdated');
-        socket.off('checkinUpdated');
-        socket.off('checkoutUpdated');
-        socket.off('overdueUpdated');
-      };
-    }
-    }, [socket]);
 
   //total visitors
   const getTotalVisitors = async () => {
