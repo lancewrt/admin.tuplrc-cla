@@ -25,7 +25,7 @@ const AdminNavbar = () => {
         
         const fetchUserRole = async () => {
             try {
-                const response = await axios.get('http://localhost:3001/api/user/check-session', { withCredentials: true });
+                const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
                 if (response.data.loggedIn) {
                     setRole(response.data.userRole);
                 } else {

@@ -47,7 +47,7 @@ const Logbook = () => {
         setLoading(true);
         try {
             const today = new Date().toISOString().split('T')[0]; // Get today's date
-            let url = `http://localhost:3001/api/patron/sort?startDate=${today}&endDate=${today}&limit=${entriesPerPage}&page=${currentPage}`;
+            let url = `https://api.tuplrc-cla.com/api/patron/sort?startDate=${today}&endDate=${today}&limit=${entriesPerPage}&page=${currentPage}`;
             
             // Add search parameter if searchInput is not empty
             if (searchInput.trim() !== '') {
@@ -80,7 +80,7 @@ const Logbook = () => {
         try {
             const today = new Date().toISOString().split('T')[0];
             // Use hard-coded values instead of state variables that were just updated
-            let url = `http://localhost:3001/api/patron/sort?startDate=${today}&endDate=${today}&limit=5&page=1`;
+            let url = `https://api.tuplrc-cla.com/api/patron/sort?startDate=${today}&endDate=${today}&limit=5&page=1`;
             
             const response = await axios.get(url);
             setPatron(response.data.results);

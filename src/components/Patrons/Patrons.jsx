@@ -52,7 +52,7 @@ const Patrons = () => {
 
     const getPatron = async () => {
         setLoading(true);
-        axios.get('http://localhost:3001/api/patron')
+        axios.get('https://api.tuplrc-cla.com/api/patron')
             .then((response) => {
                 setPatrons(response.data);
                 setFilteredPatrons(response.data);

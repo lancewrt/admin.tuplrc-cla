@@ -9,7 +9,7 @@ import dayjs from 'dayjs';
 import Swal from 'sweetalert2'
 
 // Use environment variables for API endpoints
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://api.tuplrc-cla.com';
 
 const ReportsModal = ({ open, close}) => {
   const [generatedReport, setGeneratedReport] = useState([]);
@@ -111,7 +111,7 @@ const ReportsModal = ({ open, close}) => {
 
   const getCategories = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/reports/categories`);
+      const response = await axios.get(`https://api.tuplrc-cla.com/api/reports/categories`);
       setCategories(response.data);
     } catch (error) {
       console.error('Cannot fetch categories:', error);
@@ -120,7 +120,7 @@ const ReportsModal = ({ open, close}) => {
 
   const getDetails = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/reports/details`);
+      const response = await axios.get(`https://api.tuplrc-cla.com/api/reports/details`);
       setDetails(response.data);
     } catch (error) {
       console.error('Cannot fetch details:', error);
@@ -129,7 +129,7 @@ const ReportsModal = ({ open, close}) => {
 
   const getCollege = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/data/college`);
+      const response = await axios.get(`https://api.tuplrc-cla.com/api/data/college`);
       setColleges(response.data);
     } catch (error) {
       console.error('Cannot fetch categories:', error);
@@ -138,7 +138,7 @@ const ReportsModal = ({ open, close}) => {
 
   const getCourse = async () => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/data/course`);
+      const response = await axios.get(`https://api.tuplrc-cla.com/api/data/course`);
       setCourses(response.data);
     } catch (error) {
       console.error('Cannot fetch categories:', error);
@@ -376,7 +376,7 @@ const ReportsModal = ({ open, close}) => {
       console.log("Sending request with params:", params);
 
       
-      const response = await axios.get(`http://localhost:3001/api/reports/generate-report`, {
+      const response = await axios.get(`https://api.tuplrc-cla.com/api/reports/generate-report`, {
         params: params,
       });
 
