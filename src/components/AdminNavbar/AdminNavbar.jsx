@@ -25,9 +25,9 @@ const AdminNavbar = () => {
         
         const fetchUserRole = async () => {
             try {
-                const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
-                if (response.data.loggedIn) {
-                    setRole(response.data.userRole);
+                const storedCreds = JSON.parse(localStorage.getItem('token'));
+                if (storedCreds && storedCreds.message === "Login successful") {
+                    setRole(storedCreds.user.role);
                 } else {
                     setRole(null);
                     // Redirect to login if not logged in

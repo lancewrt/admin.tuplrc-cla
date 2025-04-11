@@ -27,9 +27,10 @@ const Patrons = () => {
     useEffect(() => {
         const fetchUserRole = async () => {
             try {
-                const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
-                if (response.data.loggedIn) {
-                    setUserRole(response.data.userRole);
+                const storedCreds = JSON.parse(localStorage.getItem('token'));
+                if (storedCreds.message === "Login successful") {
+          
+                    setUserRole(storedCreds.user.role);
                 } else {
                     setUserRole(null);
                 }

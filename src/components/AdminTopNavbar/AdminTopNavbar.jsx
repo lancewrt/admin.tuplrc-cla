@@ -44,12 +44,12 @@ const AdminTopNavbar = () => {
     useEffect(() => {
         const getUsername = async () => {
             try {
-                const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
-                console.log(response.data);
-                if (response.data.loggedIn) {
-                    setUname(response.data.username);
-                    dispatch(setUsername(response.data.username))
-                    dispatch(setUserId(response.data.userID))
+                const storedCreds = JSON.parse(localStorage.getItem('token'));
+                if (storedCreds.message === "Login successful") {
+                    console.log('Logged in: ',storedCreds.user)
+                    setUname(storedCreds.user.username);
+                    dispatch(setUsername(storedCreds.user.username))
+                    dispatch(setUserId(storedCreds.user.id))
                 } else {
                     setUname(null);
                 }

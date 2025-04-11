@@ -14,10 +14,9 @@ const LoginPage = () => {
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
-                const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
-                
-                if (response.data.loggedIn) {
-                    // If the user is logged in, redirect to the dashboard
+                const storedCreds = JSON.parse(localStorage.getItem('token'));
+
+                if (storedCreds.message === "Login successful") { 
                     navigate('/dashboard');
                 }
             } catch (error) {
