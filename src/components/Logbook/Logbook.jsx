@@ -4,6 +4,8 @@ import './Logbook.css';
 import { useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faArrowLeft, faArrowRight, faExclamationCircle, faSmile } from '@fortawesome/free-solid-svg-icons';
+import * as XLSX from 'xlsx'; // Import xlsx for Excel export
+import { io } from 'socket.io-client';
 
 const Logbook = () => {
     const [patron, setPatron] = useState([]);
@@ -13,71 +15,36 @@ const Logbook = () => {
     const [totalEntries, setTotalEntries] = useState(0); // Total number of entries
     const [loading, setLoading] = useState(false);
     const location = useLocation();
+    const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        console.log('Setting up new WebSocket connection');
-        let reconnectAttempts = 0;
-        const maxReconnectAttempts = 5;
-        let ws = null;
+        // Initialize socket connection
+        const newSocket = io('https://api.tuplrc-cla.com', {
+              transports: ['polling'],  // Force long-polling only
+              upgrade: false  // Prevent transport upgrade attempts
+            });
+        setSocket(newSocket);
         
-        const connectWebSocket = () => {
-            // Try adding a specific path that matches your server configuration
-            ws = new WebSocket('wss://api.tuplrc-cla.com/ws');
-            
-            ws.onopen = () => {
-                console.log('Connected to WebSocket server');
-                reconnectAttempts = 0; // Reset on successful connection
-            };
-            
-            ws.onmessage = (event) => {
-                try {
-                    const message = JSON.parse(event.data);
-                    if (message.event === 'attendanceUpdated') {
-                        console.log('Received attendance update:', message.data);
-                        fetchTodayEntries();
-                    }
-                } catch (error) {
-                    console.log('Received non-JSON message:', event.data);
-                }
-            };
-            
-            ws.onerror = (event) => {
-                console.error('WebSocket error:', event);
-                // Log the full event object for better debugging
-                console.error('WebSocket error details:', {
-                    isTrusted: event.isTrusted,
-                    type: event.type,
-                    target: event.target,
-                    eventPhase: event.eventPhase
-                });
-            };
-            
-            ws.onclose = (event) => {
-                console.log(`WebSocket connection closed with code ${event.code}, reason: ${event.reason || 'No reason provided'}`);
-                
-                // Attempt to reconnect if closure was unexpected
-                if (event.code !== 1000 && reconnectAttempts < maxReconnectAttempts) {
-                    reconnectAttempts++;
-                    const timeout = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
-                    console.log(`Attempting reconnect ${reconnectAttempts} in ${timeout}ms`);
-                    setTimeout(connectWebSocket, timeout);
-                } else if (reconnectAttempts >= maxReconnectAttempts) {
-                    console.error('Maximum reconnection attempts reached. Please refresh the page.');
-                }
-            };
-        };
-        
-        connectWebSocket();
-        
-        // Cleanup on unmount or deps change
+        // Clean up socket connection on unmount
         return () => {
-            if (ws) {
-                console.log('Closing WebSocket connection due to cleanup');
-                ws.close(1000, 'Component unmounting');
-            }
+            newSocket.disconnect();
         };
-    }, []); // Remove dependencies to avoid repeatedly creating connections
-    
+    }, []);
+
+    useEffect(() => {
+        if (socket) {
+            // Listen for attendance updates
+            socket.on('attendanceUpdated', () => {
+                console.log('Attendance updated, refreshing data...');
+                fetchTodayEntries();
+            });
+
+            // Clean up event listener
+            return () => {
+                socket.off('attendanceUpdated');
+            };
+        }
+    }, [socket, currentPage, entriesPerPage, searchInput]);
 
     useEffect(() => {
         fetchTodayEntries();
