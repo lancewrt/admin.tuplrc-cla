@@ -7,32 +7,26 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const [loading, setLoading] = useState(true);  // Loading state to handle async behavior
 
   useEffect(() => {
+    // Fetch user role from the server via cookies (JWT stored in HttpOnly cookie)
     const fetchUserRole = async () => {
       try {
-        const storedCredsString = localStorage.getItem('token');
-        
-        // Check if token exists in localStorage before parsing
-        if (storedCredsString) {
-          const storedCreds = JSON.parse(storedCredsString);
-          
-          // Now safely check properties
-          if (storedCreds && storedCreds.message === "Login successful") {
-            setUserRole(storedCreds.user.role);
-          } else {
-            setUserRole(null);
-          }
+        // Request server to verify the JWT token
+        const storedCreds = JSON.parse(localStorage.getItem('token'));
+
+        // If session is valid, set the role
+        if (storedCreds.message === "Login successful") {
+          setUserRole(storedCreds.user.role);
         } else {
-          // No token found in localStorage
-          setUserRole(null);
+          setUserRole(null); // If not logged in, clear the role
         }
       } catch (error) {
         console.error('Error verifying session:', error);
-        setUserRole(null);
+        setUserRole(null); // Set null if there's an error
       } finally {
-        setLoading(false);
+        setLoading(false);  // Stop loading once the request completes
       }
     };
-    
+
     fetchUserRole();
   }, []);
 

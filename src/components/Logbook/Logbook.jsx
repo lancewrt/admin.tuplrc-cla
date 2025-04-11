@@ -5,7 +5,8 @@ import { useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faArrowLeft, faArrowRight, faExclamationCircle, faSmile } from '@fortawesome/free-solid-svg-icons';
 import * as XLSX from 'xlsx'; // Import xlsx for Excel export
-import { io } from 'socket.io-client';
+//import { io } from 'socket.io-client';
+import socket from '../socket.js';
 
 const Logbook = () => {
     const [patron, setPatron] = useState([]);
@@ -15,36 +16,22 @@ const Logbook = () => {
     const [totalEntries, setTotalEntries] = useState(0); // Total number of entries
     const [loading, setLoading] = useState(false);
     const location = useLocation();
-    const [socket, setSocket] = useState(null);
+    //const [socket, setSocket] = useState(null);
 
     useEffect(() => {
         // Initialize socket connection
-        const newSocket = io('https://api.tuplrc-cla.com', {
-              transports: ['polling'],  // Force long-polling only
-              upgrade: false  // Prevent transport upgrade attempts
-            });
-        setSocket(newSocket);
-        
-        // Clean up socket connection on unmount
+        socket.connect();
+
+        socket.on('attendanceUpdated', () => {
+            console.log('Attendance updated, refreshing data...');
+            fetchTodayEntries();
+        });
+
+        // Clean up event listener
         return () => {
-            newSocket.disconnect();
+            socket.off('attendanceUpdated');
         };
     }, []);
-
-    useEffect(() => {
-        if (socket) {
-            // Listen for attendance updates
-            socket.on('attendanceUpdated', () => {
-                console.log('Attendance updated, refreshing data...');
-                fetchTodayEntries();
-            });
-
-            // Clean up event listener
-            return () => {
-                socket.off('attendanceUpdated');
-            };
-        }
-    }, [socket, currentPage, entriesPerPage, searchInput]);
 
     useEffect(() => {
         fetchTodayEntries();
@@ -60,7 +47,7 @@ const Logbook = () => {
         setLoading(true);
         try {
             const today = new Date().toISOString().split('T')[0]; // Get today's date
-            let url = `https://api.tuplrc-cla.com/api/patron/sort?startDate=${today}&endDate=${today}&limit=${entriesPerPage}&page=${currentPage}`;
+            let url = `http://localhost:3001/api/patron/sort?startDate=${today}&endDate=${today}&limit=${entriesPerPage}&page=${currentPage}`;
             
             // Add search parameter if searchInput is not empty
             if (searchInput.trim() !== '') {
@@ -93,7 +80,7 @@ const Logbook = () => {
         try {
             const today = new Date().toISOString().split('T')[0];
             // Use hard-coded values instead of state variables that were just updated
-            let url = `https://api.tuplrc-cla.com/api/patron/sort?startDate=${today}&endDate=${today}&limit=5&page=1`;
+            let url = `http://localhost:3001/api/patron/sort?startDate=${today}&endDate=${today}&limit=5&page=1`;
             
             const response = await axios.get(url);
             setPatron(response.data.results);

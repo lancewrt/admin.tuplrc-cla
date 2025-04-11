@@ -114,7 +114,7 @@ const AddItem = () => {
     const viewResourceOnline = async()=>{
         console.log('view resource')
         try{
-            const response = await axios.get(`https://api.tuplrc-cla.com/api/resources/${id}`);
+            const response = await axios.get(`http://localhost:3001/api/resources/${id}`);
            
             const data = response.data[0]
             const mediaType = data.type_id.toString();
@@ -346,7 +346,7 @@ const AddItem = () => {
                 }
             );
                 console.log(formData)
-                const response = await axios.post('https://api.tuplrc-cla.com/api/resources', formData);
+                const response = await axios.post('http://localhost:3001/api/resources', formData);
                 console.log(response)
                  // close loading
                  setLoading(false)
@@ -433,7 +433,7 @@ const AddItem = () => {
                 Object.entries(bookData).forEach(([key, value]) => {
                     formData.append(key, value);  
                 });
-                const response = await axios.put(`https://api.tuplrc-cla.com/api/resources/${id}`, formData);
+                const response = await axios.put(`http://localhost:3001/api/resources/${id}`, formData);
                 setLoading(false)
                 if(response.data.status==201){
                     navigate('/catalog')
@@ -455,7 +455,7 @@ const AddItem = () => {
             cancelButtonColor: "#94152b",
             confirmButtonText: "Yes, edit!"
       });
-      
+
       if (!result.isConfirmed) return; // Exit if user cancels
 
             try{

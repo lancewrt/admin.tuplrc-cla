@@ -10,7 +10,13 @@ import DashBox from '../DashBox/DashBox';
 import { Link, useNavigate } from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
 import { setBorrowedStats, setVisitorStats } from '../../features/chartSlice.js';
-import { io } from 'socket.io-client';
+//import { io } from 'socket.io-client';
+import socket from '../socket.js';
+import { setTypeArr } from '../../features/typeSlice.js';
+import { fetchDepartmentOnline, setDepartmentArr } from '../../features/departmentSlice.js';
+import { setTopicArr } from '../../features/topicSlice.js';
+import { fetchPublisherOnline, setPublisherArr } from '../../features/publisherSlice.js';
+import { setStatusArr } from '../../features/statusSlice.js';
 
 const Dashboard = () => {
   const [dateTime,setDateTime] = useState(new Date());
@@ -44,35 +50,11 @@ const Dashboard = () => {
   const bookListHeader = ["Book ID","Title","Author","Copies Available"];
   const bookIssuedHeader = ["Tup ID","Title","Return Date"];
   const dispatch = useDispatch()
-  const [socket, setSocket] = useState(null);
+  //const [socket, setSocket] = useState(null);
   
   useEffect(() => {
     // Initialize socket connection
-    const newSocket = io('https://api.tuplrc-cla.com', {
-      transports: ['polling'],  // Force long-polling only
-      upgrade: false  // Prevent transport upgrade attempts
-    });
-    setSocket(newSocket);
-
-    console.log('Attempting to connect to socket.io server...');
-
-  newSocket.on('connect', () => {
-    console.log('Socket connected successfully with ID:', newSocket.id);
-  });
-
-  newSocket.on('connect_error', (error) => {
-    console.error('Socket connection error:', error);
-  });
-
-  newSocket.on('error', (error) => {
-    console.error('Socket error:', error);
-  });
-
-  newSocket.on('disconnect', (reason) => {
-    console.log('Socket disconnected:', reason);
-  });
-
-    
+    socket.connect();
 
     getTotalVisitors();
     getTotalBorrowed();
@@ -86,47 +68,46 @@ const Dashboard = () => {
     getVisitorStats();
 
     // Clean up socket connection on unmount
+    socket.on('attendanceUpdated', () => {
+      console.log('Attendance updated, refreshing data...');
+      getTotalVisitors();
+      getVisitorStats();
+    });
+
+    // Listen for checkin updates
+    socket.on('checkinUpdated', () => {
+      console.log('checkin updated, refreshing data...');
+      getTotalReturned();
+      getBookTrends();
+    });
+
+    // Listen for checkout updates
+    socket.on('checkoutUpdated', () => {
+      console.log('checkout updated, refreshing data...');
+      getTotalBorrowed();
+      getBookTrends();
+    });
+
+    // Listen for checkout updates
+    socket.on('overdueUpdated', () => {
+      console.log('overdue updated, refreshing data...');
+      getTotalOverdue();
+    });
+
+    // Clean up event listener
     return () => {
-      newSocket.disconnect();
+      socket.off('attendanceUpdated');
+      socket.off('checkinUpdated');
+      socket.off('checkoutUpdated');
+      socket.off('overdueUpdated');
     };
   }, []);
+
 
   useEffect(() => {
     if (socket) {
       // Listen for attendance updates
-      socket.on('attendanceUpdated', () => {
-        console.log('Attendance updated, refreshing data...');
-        getTotalVisitors();
-        getVisitorStats();
-      });
-
-      // Listen for checkin updates
-      socket.on('checkinUpdated', () => {
-        console.log('checkin updated, refreshing data...');
-        getTotalReturned();
-        getBookTrends();
-      });
-
-      // Listen for checkout updates
-      socket.on('checkoutUpdated', () => {
-        console.log('checkout updated, refreshing data...');
-        getTotalBorrowed();
-        getBookTrends();
-      });
-
-      // Listen for checkout updates
-      socket.on('overdueUpdated', () => {
-        console.log('overdue updated, refreshing data...');
-        getTotalOverdue();
-      });
-
-      // Clean up event listener
-      return () => {
-        socket.off('attendanceUpdated');
-        socket.off('checkinUpdated');
-        socket.off('checkoutUpdated');
-        socket.off('overdueUpdated');
-      };
+      
     }
     }, [socket]);
 
@@ -134,7 +115,7 @@ const Dashboard = () => {
   const getTotalVisitors = async () => {
     setTotalVisitorsLoading(true)
     try {
-      const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/total-visitors`);
+      const response = await axios.get(`http://localhost:3001/api/dashboard/total-visitors`);
       setTotalVisitors(response.data.total_attendance); // Adjust based on your backend response
       console.log(response.data);
     } catch (err) {
@@ -151,7 +132,7 @@ const Dashboard = () => {
   const getTotalBorrowed = async () => {
     setTotalBorrowedLoading(true)
     try {
-      const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/total-borrowed`);
+      const response = await axios.get(`http://localhost:3001/api/dashboard/total-borrowed`);
       setTotalBorrowed(response.data.total_borrowed); // Adjust based on your backend response
       console.log(response.data);
     } catch (err) {
@@ -168,7 +149,7 @@ const Dashboard = () => {
   const getTotalReturned = async () => {
     setTotalReturnedLoading(true)
     try {
-      const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/total-returned`);
+      const response = await axios.get(`http://localhost:3001/api/dashboard/total-returned`);
       setTotalReturned(response.data.total_returned); // Adjust based on your backend response
       console.log(response.data);
     } catch (err) {
@@ -185,7 +166,7 @@ const Dashboard = () => {
   const getTotalOverdue = async () => {
     setTotalOverdueLoading(true)
     try {
-      const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/total-overdue`);
+      const response = await axios.get(`http://localhost:3001/api/dashboard/total-overdue`);
       setTotalOverdue(response.data.total_overdue); // Adjust based on your backend response
       console.log(response.data);
     } catch (err) {
@@ -202,7 +183,7 @@ const Dashboard = () => {
   const getOverdueBooks = async () => {
     setOverdueBooksLoading(true)
     try {
-        await axios.get(`https://api.tuplrc-cla.com/api/dashboard/overdue-books`)
+        await axios.get(`http://localhost:3001/api/dashboard/overdue-books`)
         .then(response=>{
           console.log(response.data)
           setOverdueBooks(response.data);
@@ -219,7 +200,7 @@ const Dashboard = () => {
   //get book trends
   const getBookTrends = async()=>{
     try{
-      const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/book-statistics`)
+      const response = await axios.get(`http://localhost:3001/api/dashboard/book-statistics`)
       const books = response.data;
       console.log(books)
       const borrowingTrends = books.map(item=>
@@ -233,7 +214,7 @@ const Dashboard = () => {
 
   const getVisitorStats = async()=>{
     try{
-      const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/visitor-statistics`)
+      const response = await axios.get(`http://localhost:3001/api/dashboard/visitor-statistics`)
       const visitors = response.data;
       console.log(visitors)
 
@@ -251,7 +232,7 @@ const Dashboard = () => {
   const getBookList = async()=>{
     setBookListLoading(true);
     try {
-      const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/book-list`).then(res=>res.data);
+      const response = await axios.get(`http://localhost:3001/api/dashboard/book-list`).then(res=>res.data);
       setBookList(response)
       console.log(response)
     } catch (err) {
@@ -267,7 +248,7 @@ const Dashboard = () => {
    const getIssued = async()=>{
     setIssuedBooksLoading(true)
     try {
-      const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/issued-books`).then(res=>res.data);
+      const response = await axios.get(`http://localhost:3001/api/dashboard/issued-books`).then(res=>res.data);
       setIssuedBooks(response)
       console.log(response)
     } catch (err) {
@@ -283,7 +264,7 @@ const Dashboard = () => {
   const getPopularChoices = async()=>{
     setPopularChoicesLoading(true);
     try {
-      const response = await axios.get(`https://api.tuplrc-cla.com/api/dashboard/popular-choices`).then(res=>res.data);
+      const response = await axios.get(`http://localhost:3001/api/dashboard/popular-choices`).then(res=>res.data);
       setPopularChoices(response)
       console.log(response)
     } catch (err) {

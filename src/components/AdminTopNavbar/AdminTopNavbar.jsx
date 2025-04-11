@@ -98,9 +98,10 @@ const AdminTopNavbar = () => {
     // Logout function remains the same
     const logout = async () => {
         try {
-            await axios.post('https://api.tuplrc-cla.com/api/user/logout', { username: uname }, { withCredentials: true });
+            await axios.post('http://localhost:3001/api/user/logout', { username: uname }, { withCredentials: true });
             localStorage.removeItem('role');
             localStorage.removeItem('username');
+            localStorage.removeItem('token');
             navigate('/');
         } catch (err) {
             console.error('Logout error:', err);
