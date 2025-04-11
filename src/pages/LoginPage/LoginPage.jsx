@@ -14,16 +14,17 @@ const LoginPage = () => {
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
-                const storedCreds = JSON.parse(localStorage.getItem('token'));
-
-                if (storedCreds.message === "Login successful") { 
-                    navigate('/dashboard');
+                const storedToken = localStorage.getItem('token');
+                if (storedToken) {
+                    const storedCreds = JSON.parse(storedToken);
+                    if (storedCreds.message === "Login successful") { 
+                        navigate('/dashboard');
+                    }
                 }
             } catch (error) {
                 console.error('Error checking session:', error);
             }
         };
-
         checkLoginStatus();
     }, [navigate]);
 
