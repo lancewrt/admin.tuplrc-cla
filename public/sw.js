@@ -61,9 +61,14 @@ self.addEventListener('install', event => {
 
 
 self.addEventListener('fetch', event => {
+  // Skip intercepting API requests
+  if (event.request.url.includes('api.tuplrc-cla.com')) {
+    return; // Let the browser handle API requests directly
+  }
+  
+  // Handle other requests with caching as before
   event.respondWith(
     caches.match(event.request).then(response => {
-      console.log("Fetch event", response)
       return response || fetch(event.request);
     })
   );
