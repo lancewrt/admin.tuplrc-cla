@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import './LoginPage.css'
+import './LoginPage.css';
 
 const LoginPage = () => {
     const [username, setUsername] = useState("");
@@ -9,20 +9,21 @@ const LoginPage = () => {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    
+
     // Check if the user is already logged in when the component mounts
     useEffect(() => {
-        const checkLoginStatus = async () => {
-            try {
-                const storedCreds = JSON.parse(localStorage.getItem('token'));
+        const checkLoginStatus = () => {
+            // Extract the token from the meta tag or any HTML element where it is stored
+            const tokenMetaTag = document.querySelector('meta[name="auth-token"]');
+            const token = tokenMetaTag ? tokenMetaTag.getAttribute('content') : null;
 
-                if (storedCreds.message&&storedCreds.message === "Login successful") { 
-                    navigate('/dashboard');
-                }else{
-                    navigate('/');
-                }
-            } catch (error) {
-                console.error('Error checking session:', error);
+            // Log the token for debugging purposes
+            console.log('Extracted token from HTML:', token);
+
+            // If token exists, store it in localStorage
+            if (token) {
+                localStorage.setItem('token', JSON.stringify({ token }));
+                navigate('/dashboard');  // Redirect to dashboard if token exists
             }
         };
 
@@ -47,7 +48,11 @@ const LoginPage = () => {
 
             if (response.status === 200) {
                 console.log("Login successful:", response.data);
-                localStorage.setItem('token', JSON.stringify(response.data)); 
+
+                // Assuming the response contains a 'token' field
+                localStorage.setItem('token', JSON.stringify({ token: response.data.token }));
+
+                // Redirect to the dashboard
                 navigate('/dashboard');
             }
         } catch (err) {
@@ -112,7 +117,6 @@ const LoginPage = () => {
                     <div className="d-grid gap-2">
                         {loading ? (
                             <button className="btn btn-dark btn-lg" type="button" disabled>
-                                {/* <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> */}
                                 Loading...
                             </button>
                         ) : (
