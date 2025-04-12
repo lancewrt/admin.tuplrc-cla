@@ -39,8 +39,7 @@ const LoginPage = () => {
 
             const response = await axios.post(
                 'https://api.tuplrc-cla.com/api/user/login',
-                { username, password },
-                { withCredentials: true } // Include credentials for secure cookie handling
+                { username, password }
             );
 
             if (response.status === 200) {
