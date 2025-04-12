@@ -58,11 +58,9 @@ self.addEventListener('install', event => {
 });
 
 
-
-
 self.addEventListener('fetch', event => {
   // Skip intercepting API requests
-  if (event.request.url.includes('api.tuplrc-cla.com')) {
+  if (event.request.url.includes('https://api.tuplrc-cla.com')) {
     return; // Let the browser handle API requests directly
   }
   
