@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faArrowLeft, faArrowRight, faExclamationCircle, faSmile } from '@fortawesome/free-solid-svg-icons';
 import * as XLSX from 'xlsx'; // Import xlsx for Excel export
 //import { io } from 'socket.io-client';
-import socket from '../socket.js';
+// import socket from '../socket.js';
 
 const Logbook = () => {
     const [patron, setPatron] = useState([]);
@@ -18,20 +18,20 @@ const Logbook = () => {
     const location = useLocation();
     //const [socket, setSocket] = useState(null);
 
-    useEffect(() => {
-        // Initialize socket connection
-        socket.connect();
+    // useEffect(() => {
+    //     // Initialize socket connection
+    //     socket.connect();
 
-        socket.on('attendanceUpdated', () => {
-            console.log('Attendance updated, refreshing data...');
-            fetchTodayEntries();
-        });
+    //     socket.on('attendanceUpdated', () => {
+    //         console.log('Attendance updated, refreshing data...');
+    //         fetchTodayEntries();
+    //     });
 
-        // Clean up event listener
-        return () => {
-            socket.off('attendanceUpdated');
-        };
-    }, []);
+    //     // Clean up event listener
+    //     return () => {
+    //         socket.off('attendanceUpdated');
+    //     };
+    // }, []);
 
     useEffect(() => {
         fetchTodayEntries();

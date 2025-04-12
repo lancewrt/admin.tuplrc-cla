@@ -52,64 +52,64 @@ const Dashboard = () => {
   const dispatch = useDispatch()
   //const [socket, setSocket] = useState(null);
   
-  useEffect(() => {
-    // Initialize socket connection
-    socket.connect();
+  // useEffect(() => {
+  //   // Initialize socket connection
+  //   socket.connect();
 
-    getTotalVisitors();
-    getTotalBorrowed();
-    getTotalReturned();
-    getTotalOverdue();
-    getOverdueBooks();
-    getBookList();
-    getIssued();
-    getPopularChoices();
-    getBookTrends();
-    getVisitorStats();
+  //   getTotalVisitors();
+  //   getTotalBorrowed();
+  //   getTotalReturned();
+  //   getTotalOverdue();
+  //   getOverdueBooks();
+  //   getBookList();
+  //   getIssued();
+  //   getPopularChoices();
+  //   getBookTrends();
+  //   getVisitorStats();
 
-    // Clean up socket connection on unmount
-    socket.on('attendanceUpdated', () => {
-      console.log('Attendance updated, refreshing data...');
-      getTotalVisitors();
-      getVisitorStats();
-    });
+  //   // Clean up socket connection on unmount
+  //   socket.on('attendanceUpdated', () => {
+  //     console.log('Attendance updated, refreshing data...');
+  //     getTotalVisitors();
+  //     getVisitorStats();
+  //   });
 
-    // Listen for checkin updates
-    socket.on('checkinUpdated', () => {
-      console.log('checkin updated, refreshing data...');
-      getTotalReturned();
-      getBookTrends();
-    });
+  //   // Listen for checkin updates
+  //   socket.on('checkinUpdated', () => {
+  //     console.log('checkin updated, refreshing data...');
+  //     getTotalReturned();
+  //     getBookTrends();
+  //   });
 
-    // Listen for checkout updates
-    socket.on('checkoutUpdated', () => {
-      console.log('checkout updated, refreshing data...');
-      getTotalBorrowed();
-      getBookTrends();
-    });
+  //   // Listen for checkout updates
+  //   socket.on('checkoutUpdated', () => {
+  //     console.log('checkout updated, refreshing data...');
+  //     getTotalBorrowed();
+  //     getBookTrends();
+  //   });
 
-    // Listen for checkout updates
-    socket.on('overdueUpdated', () => {
-      console.log('overdue updated, refreshing data...');
-      getTotalOverdue();
-    });
+  //   // Listen for checkout updates
+  //   socket.on('overdueUpdated', () => {
+  //     console.log('overdue updated, refreshing data...');
+  //     getTotalOverdue();
+  //   });
 
-    // Clean up event listener
-    return () => {
-      socket.off('attendanceUpdated');
-      socket.off('checkinUpdated');
-      socket.off('checkoutUpdated');
-      socket.off('overdueUpdated');
-    };
-  }, []);
+  //   // Clean up event listener
+  //   return () => {
+  //     socket.off('attendanceUpdated');
+  //     socket.off('checkinUpdated');
+  //     socket.off('checkoutUpdated');
+  //     socket.off('overdueUpdated');
+  //   };
+  // }, []);
 
 
-  useEffect(() => {
-    if (socket) {
-      // Listen for attendance updates
+  // useEffect(() => {
+  //   if (socket) {
+  //     // Listen for attendance updates
       
-    }
-    }, [socket]);
+  //   }
+  //   }, [socket]);
 
   //total visitors
   const getTotalVisitors = async () => {
