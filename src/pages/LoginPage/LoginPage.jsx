@@ -47,8 +47,7 @@
 
                 if (response.status === 200) {
                     console.log("Login successful:", response.data);
-                    console.log(response)
-                    localStorage.setItem('token', JSON.stringify(response.data.token)); 
+                    localStorage.setItem('token', JSON.stringify(response.data)); 
                     navigate('/dashboard');
                 }
             } catch (err) {
