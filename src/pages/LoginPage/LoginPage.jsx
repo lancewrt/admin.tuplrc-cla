@@ -1,142 +1,130 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import './LoginPage.css'
 
 const LoginPage = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [checkingSession, setCheckingSession] = useState(true);
-  const navigate = useNavigate();
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+    
+    // Check if the user is already logged in when the component mounts
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            try {
+                const storedCreds = JSON.parse(localStorage.getItem('token'));
 
-  // Check if user is already logged in
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const response = await axios.get(`https://api.tuplrc-cla.com/api/user/check-session`, {
-          withCredentials: true
-        });
-        
-        if (response.data && response.data.authenticated) {
-          navigate('/dashboard');
+                if (storedCreds.message&&storedCreds.message === "Login successful") { 
+                    navigate('/dashboard');
+                }else{
+                    navigate('/');
+                }
+            } catch (error) {
+                console.error('Error checking session:', error);
+            }
+        };
+
+        checkLoginStatus();
+    }, [navigate]);
+
+    // Function to handle login
+    const login = async () => {
+        if (!username || !password) {
+            setError("Both fields are required.");
+            return;
         }
-      } catch (error) {
-        // Safely handle the error without trying to access null properties
-        console.error("Error checking session:", error);
-        // Don't set any error state here as this is just a session check
-      } finally {
-        setCheckingSession(false);
-      }
+
+        try {
+            setLoading(true);
+
+            const response = await axios.post(
+                'https://api.tuplrc-cla.com/api/user/login',
+                { username, password },
+                { withCredentials: true } // Include credentials for secure cookie handling
+            );
+
+            if (response.status === 200) {
+                console.log("Login successful:", response.data);
+                localStorage.setItem('token', JSON.stringify(response.data)); 
+                navigate('/dashboard');
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || "An error occurred during login.");
+        } finally {
+            setLoading(false);
+        }
     };
 
-    checkSession();
-  }, [navigate]);
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await axios.post(
-        `https://api.tuplrc-cla.com/api/user/login`,
-        { username, password },
-        { 
-          withCredentials: true,
-          headers: {
-            'Content-Type': 'application/json'
-          }
+    // Handle "Enter" key press
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+            login();
         }
-      );
+    };
 
-      if (response.data && response.data.token) {
-        localStorage.setItem('userInfo', JSON.stringify(response.data.user));
-        navigate('/dashboard');
-      } else {
-        setError('Login failed. Please try again.');
-      }
-    } catch (error) {
-      // Safe error handling with optional chaining
-      const errorMessage = 
-        error?.response?.data?.message || 
-        'Login failed. Please check your credentials and try again.';
-      
-      setError(errorMessage);
-      console.error('Login error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (checkingSession) {
     return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
+        <div className="min-vh-100 d-flex align-items-center justify-content-center login-container">
+            <div className="card shadow-lg border-0" style={{ maxWidth: "400px" }}>
+                <div className="card-body p-5">
+                    <div className="text-center mb-4">
+                        <div className="d-flex justify-content-center gap-3 mb-3">
+                            <img src="/tuplogo.png" alt="TUP Logo" className="img-fluid" style={{ height: "60px" }} />
+                            <img src="/clalogo.png" alt="CLA Logo" className="img-fluid" style={{ height: "60px" }} />
+                        </div>
+                        <h1 className="h3 fw-bold text-dark">College of Liberal Arts</h1>
+                        <p className="fw-medium">Learning Resource Center</p>
+                    </div>
+                    
+                    <div className="mb-3 form-floating">
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="username"
+                            placeholder=""
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                        />
+                        <label htmlFor="username" className="form-label">Username</label>
+                    </div>
+                    
+                    <div className="mb-4 form-floating">
+                        <input
+                            type="password"
+                            className="form-control"
+                            id="password"
+                            placeholder=""
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                        />
+                        <label htmlFor="password" className="form-label">Password</label>
+                    </div>
+                    
+                    {error && (
+                        <div className="alert alert-danger py-2" role="alert">
+                            {error}
+                        </div>
+                    )}
+                    
+                    <div className="d-grid gap-2">
+                        {loading ? (
+                            <button className="btn btn-dark btn-lg" type="button" disabled>
+                                {/* <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> */}
+                                Loading...
+                            </button>
+                        ) : (
+                            <button className="btn btn-dark py-2" onClick={login}>
+                                Login
+                            </button>
+                        )}
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     );
-  }
-
-  return (
-    <div className="container-fluid bg-light d-flex justify-content-center align-items-center vh-100">
-      <div className="card shadow-sm" style={{ maxWidth: '400px', width: '100%' }}>
-        <div className="card-body p-4">
-          <h3 className="card-title text-center mb-4">TUP Library System Login</h3>
-          
-          {error && (
-            <div className="alert alert-danger" role="alert">
-              {error}
-            </div>
-          )}
-          
-          <form onSubmit={handleLogin}>
-            <div className="mb-3">
-              <label htmlFor="username" className="form-label">Username</label>
-              <input
-                type="text"
-                className="form-control"
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-            </div>
-            
-            <div className="mb-3">
-              <label htmlFor="password" className="form-label">Password</label>
-              <input
-                type="password"
-                className="form-control"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            
-            <div className="d-grid gap-2">
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                    Loading...
-                  </>
-                ) : (
-                  'Login'
-                )}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  );
 };
 
 export default LoginPage;
