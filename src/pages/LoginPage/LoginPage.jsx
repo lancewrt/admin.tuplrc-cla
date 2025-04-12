@@ -16,7 +16,7 @@ const LoginPage = () => {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/user/check-session`, {
+        const response = await axios.get(`https://api.tuplrc-cla.com/api/user/check-session`, {
           withCredentials: true
         });
         
@@ -42,7 +42,7 @@ const LoginPage = () => {
 
     try {
       const response = await axios.post(
-        `${API_URL}/api/user/login`,
+        `https://api.tuplrc-cla.com/api/user/login`,
         { username, password },
         { 
           withCredentials: true,
