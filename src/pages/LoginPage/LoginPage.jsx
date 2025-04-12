@@ -1,134 +1,131 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import './LoginPage.css';
+    import React, { useState, useEffect } from 'react';
+    import axios from 'axios';
+    import { useNavigate } from 'react-router-dom';
+    import './LoginPage.css'
 
-const LoginPage = () => {
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
+    const LoginPage = () => {
+        const [username, setUsername] = useState("");
+        const [password, setPassword] = useState("");
+        const [error, setError] = useState("");
+        const [loading, setLoading] = useState(false);
+        const navigate = useNavigate();
+        
+        // Check if the user is already logged in when the component mounts
+        useEffect(() => {
+            const checkLoginStatus = async () => {
+                try {
+                    const storedCreds = JSON.parse(localStorage.getItem('token'));
 
-    // Check if the user is already logged in when the component mounts
-    useEffect(() => {
-        const checkLoginStatus = () => {
-            // Extract the token from the meta tag or any HTML element where it is stored
-            const tokenMetaTag = document.querySelector('meta[name="auth-token"]');
-            const token = tokenMetaTag ? tokenMetaTag.getAttribute('content') : null;
+                    if (storedCreds.message&&storedCreds.message === "Login successful") { 
+                        navigate('/dashboard');
+                    }else{
+                        navigate('/');
+                    }
+                } catch (error) {
+                    console.error('Error checking session:', error);
+                }
+            };
 
-            // Log the token for debugging purposes
-            console.log('Extracted token from HTML:', token);
+            checkLoginStatus();
+        }, [navigate]);
 
-            // If token exists, store it in localStorage
-            if (token) {
-                localStorage.setItem('token', JSON.stringify({ token }));
-                navigate('/dashboard');  // Redirect to dashboard if token exists
+        // Function to handle login
+        const login = async () => {
+            if (!username || !password) {
+                setError("Both fields are required.");
+                return;
+            }
+
+            try {
+                setLoading(true);
+
+                const response = await axios.post(
+                    'https://api.tuplrc-cla.com/api/user/login',
+                    { username, password },
+                    { withCredentials: true } // Include credentials for secure cookie handling
+                );
+
+                if (response.status === 200) {
+                    console.log("Login successful:", response.data);
+                    console.log(response)
+                    localStorage.setItem('token', JSON.stringify(response.data.token)); 
+                    navigate('/dashboard');
+                }
+            } catch (err) {
+                setError(err.response?.data?.message || "An error occurred during login.");
+            } finally {
+                setLoading(false);
             }
         };
 
-        checkLoginStatus();
-    }, [navigate]);
-
-    // Function to handle login
-    const login = async () => {
-        if (!username || !password) {
-            setError("Both fields are required.");
-            return;
-        }
-
-        try {
-            setLoading(true);
-
-            const response = await axios.post(
-                'https://api.tuplrc-cla.com/api/user/login',
-                { username, password },
-                { withCredentials: true } // Include credentials for secure cookie handling
-            );
-
-            if (response.status === 200) {
-                console.log("Login successful:", response.data);
-
-                // Assuming the response contains a 'token' field
-                localStorage.setItem('token', JSON.stringify({ token: response.data.token }));
-
-                // Redirect to the dashboard
-                navigate('/dashboard');
+        // Handle "Enter" key press
+        const handleKeyDown = (e) => {
+            if (e.key === "Enter") {
+                login();
             }
-        } catch (err) {
-            setError(err.response?.data?.message || "An error occurred during login.");
-        } finally {
-            setLoading(false);
-        }
-    };
+        };
 
-    // Handle "Enter" key press
-    const handleKeyDown = (e) => {
-        if (e.key === "Enter") {
-            login();
-        }
-    };
-
-    return (
-        <div className="min-vh-100 d-flex align-items-center justify-content-center login-container">
-            <div className="card shadow-lg border-0" style={{ maxWidth: "400px" }}>
-                <div className="card-body p-5">
-                    <div className="text-center mb-4">
-                        <div className="d-flex justify-content-center gap-3 mb-3">
-                            <img src="/tuplogo.png" alt="TUP Logo" className="img-fluid" style={{ height: "60px" }} />
-                            <img src="/clalogo.png" alt="CLA Logo" className="img-fluid" style={{ height: "60px" }} />
+        return (
+            <div className="min-vh-100 d-flex align-items-center justify-content-center login-container">
+                <div className="card shadow-lg border-0" style={{ maxWidth: "400px" }}>
+                    <div className="card-body p-5">
+                        <div className="text-center mb-4">
+                            <div className="d-flex justify-content-center gap-3 mb-3">
+                                <img src="/tuplogo.png" alt="TUP Logo" className="img-fluid" style={{ height: "60px" }} />
+                                <img src="/clalogo.png" alt="CLA Logo" className="img-fluid" style={{ height: "60px" }} />
+                            </div>
+                            <h1 className="h3 fw-bold text-dark">College of Liberal Arts</h1>
+                            <p className="fw-medium">Learning Resource Center</p>
                         </div>
-                        <h1 className="h3 fw-bold text-dark">College of Liberal Arts</h1>
-                        <p className="fw-medium">Learning Resource Center</p>
-                    </div>
-                    
-                    <div className="mb-3 form-floating">
-                        <input
-                            type="text"
-                            className="form-control"
-                            id="username"
-                            placeholder=""
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                        />
-                        <label htmlFor="username" className="form-label">Username</label>
-                    </div>
-                    
-                    <div className="mb-4 form-floating">
-                        <input
-                            type="password"
-                            className="form-control"
-                            id="password"
-                            placeholder=""
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                        />
-                        <label htmlFor="password" className="form-label">Password</label>
-                    </div>
-                    
-                    {error && (
-                        <div className="alert alert-danger py-2" role="alert">
-                            {error}
+                        
+                        <div className="mb-3 form-floating">
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="username"
+                                placeholder=""
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                            />
+                            <label htmlFor="username" className="form-label">Username</label>
                         </div>
-                    )}
-                    
-                    <div className="d-grid gap-2">
-                        {loading ? (
-                            <button className="btn btn-dark btn-lg" type="button" disabled>
-                                Loading...
-                            </button>
-                        ) : (
-                            <button className="btn btn-dark py-2" onClick={login}>
-                                Login
-                            </button>
+                        
+                        <div className="mb-4 form-floating">
+                            <input
+                                type="password"
+                                className="form-control"
+                                id="password"
+                                placeholder=""
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                            />
+                            <label htmlFor="password" className="form-label">Password</label>
+                        </div>
+                        
+                        {error && (
+                            <div className="alert alert-danger py-2" role="alert">
+                                {error}
+                            </div>
                         )}
+                        
+                        <div className="d-grid gap-2">
+                            {loading ? (
+                                <button className="btn btn-dark btn-lg" type="button" disabled>
+                                    {/* <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> */}
+                                    Loading...
+                                </button>
+                            ) : (
+                                <button className="btn btn-dark py-2" onClick={login}>
+                                    Login
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    );
-};
+        );
+    };
 
-export default LoginPage;
+    export default LoginPage;
