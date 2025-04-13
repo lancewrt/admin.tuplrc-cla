@@ -37,6 +37,44 @@ const Reports = () => {
   }, [userId]);
 
   useEffect(() => {
+    handleSearch()
+  }, [reports, sortConfig, selectedFilter]);
+
+  const getReports = async() => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`http://api.tuplrc-cla.com/api/reports/${userId}`);
+      setReports(response.data);
+      setFilteredReports(response.data);
+    } catch (error) {
+      console.log('Cannot fetch details. ', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getCategories = async () => {
+    try {
+      const response = await axios.get(`http://api.tuplrc-cla.com/api/reports/categories`);
+      console.log(response.data)
+      setCategories(response.data);
+    } catch (error) {
+      console.error('Cannot fetch categories:', error);
+    }
+  };
+
+  // Clear all filters
+  const clearFilters = () => {
+    setSearchTerm('');
+    setSortConfig({ key: 'created_at', direction: 'desc' });
+    setCurrentPage(1);
+    setSelectedFilter({
+      category: 'any',
+      status: 'any'
+    })
+  };
+
+  const handleSearch = (e) => {
     const search = searchTerm?.toLowerCase() || "";
   
     const filtered = reports.filter(report => {
@@ -68,44 +106,6 @@ const Reports = () => {
   
     setFilteredReports(sortedReports);
     setCurrentPage(1); // Reset to first page when filtering or sorting
-  }, [searchTerm, reports, sortConfig, selectedFilter]);
-
-  const getReports = async() => {
-    setIsLoading(true);
-    try {
-      const response = await axios.get(`https://api.tuplrc-cla.com/api/reports/${userId}`);
-      setReports(response.data);
-      setFilteredReports(response.data);
-    } catch (error) {
-      console.log('Cannot fetch details. ', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const getCategories = async () => {
-    try {
-      const response = await axios.get(`https://api.tuplrc-cla.com/api/reports/categories`);
-      console.log(response.data)
-      setCategories(response.data);
-    } catch (error) {
-      console.error('Cannot fetch categories:', error);
-    }
-  };
-
-  // Clear all filters
-  const clearFilters = () => {
-    setSearchTerm('');
-    setSortConfig({ key: 'created_at', direction: 'desc' });
-    setCurrentPage(1);
-    setSelectedFilter({
-      category: 'any',
-      status: 'any'
-    })
-  };
-
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
   };
 
   const handleSort = (key) => {
@@ -161,7 +161,7 @@ const Reports = () => {
     if (!result.isConfirmed) return; // Exit if user cancels
 
     try {
-      await axios.put(`https://api.tuplrc-cla.com/api/reports/archive`,{id,reportState,username});
+      await axios.put(`http://api.tuplrc-cla.com/api/reports/archive`,{id,reportState,username});
       // Show toast first
       window.toast.fire({ 
         icon: "success", 
@@ -186,9 +186,11 @@ const Reports = () => {
     }))
   }
 
-  console.log(categories)
-
-  console.log(reports)
+  useEffect(()=>{
+    if(searchTerm==''){
+      handleSearch()
+    }
+  },[searchTerm])
 
   return (
     <div className="reports-container bg-light">
@@ -204,9 +206,10 @@ const Reports = () => {
               className='form-control' 
               placeholder='Search' 
               value={searchTerm}
-              onChange={handleSearch}
+              onChange={(e)=>setSearchTerm(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             />
-            <button className='btn search-btn'>
+            <button className='btn search-btn' onClick={handleSearch}>
               <FontAwesomeIcon icon={faSearch}/>
             </button>
           </div>

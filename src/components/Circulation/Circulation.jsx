@@ -34,12 +34,18 @@ const Circulation = () => {
 
   useEffect(() => {
     search();
-  }, [searchTerm, startDate, endDate]);
+  }, [startDate, endDate]);
+
+  useEffect(()=>{
+    if(searchTerm==''){
+      search();
+    }
+  },[searchTerm])
 
   const getBorrowers = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`https://api.tuplrc-cla.com/api/patron/borrowers`, {
+      const response = await axios.get(`http://api.tuplrc-cla.com/api/patron/borrowers`, {
         params: { page: currentPage, limit: itemsPerPage, query: query },
       });
 

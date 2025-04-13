@@ -23,7 +23,7 @@ const GenerateBarcodePage = () => {
     
     const getData = async () => {
         try {
-            const response = await axios.get('https://api.tuplrc-cla.com/api/catalog/generate-barcode');
+            const response = await axios.get('http://api.tuplrc-cla.com/api/catalog/generate-barcode');
             setDataToGenerate(response.data);
             setFilteredData(response.data)
         } catch (error) {
@@ -103,6 +103,15 @@ const GenerateBarcodePage = () => {
                 <div className='cat-container'>
                 <h1>Generate Barcode</h1>
                 <div className='barcode-path-box'>
+                    {/* <Link to={'/catalog'}>
+                        <button className='back'>
+                            <FontAwesomeIcon icon={faArrowLeft} />
+                            <p>Back</p>
+                        </button>
+                    </Link> */}
+                    {/* <div className='barcode-path'>
+                        <p>Cataloging / <span> Generate Barcode</span></p>
+                    </div> */}
                 </div>
                 <div className="search-filter input-group w-50 shadow-sm z-0">
                     <input type="search" className='form-control' placeholder="Search by title" onChange={(e)=>setSearchQuery(e.target.value)} onKeyDown={(e)=>e.key=='Enter'&&search()} value={searchQuery}/>
