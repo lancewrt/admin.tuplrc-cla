@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import './Dashboard.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,15 +7,10 @@ import { VerticalBarChart } from '../VerticalBarChart';
 import DashboardTable from '../DashboardTable/DashboardTable';
 import DashboardTopChoices from '../DashboardTopChoices/DashboardTopChoices';
 import DashBox from '../DashBox/DashBox';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
 import { setBorrowedStats, setVisitorStats } from '../../features/chartSlice.js';
-import { io } from 'socket.io-client';
-import { setTypeArr } from '../../features/typeSlice.js';
-import { fetchDepartmentOnline, setDepartmentArr } from '../../features/departmentSlice.js';
-import { setTopicArr } from '../../features/topicSlice.js';
-import { fetchPublisherOnline, setPublisherArr } from '../../features/publisherSlice.js';
-import { setStatusArr } from '../../features/statusSlice.js';
+import { SocketContext } from '../../store/socketContext.js';
 
 const Dashboard = () => {
   const [dateTime,setDateTime] = useState(new Date());
@@ -49,36 +44,9 @@ const Dashboard = () => {
   const bookListHeader = ["Book ID","Title","Author","Copies Available"];
   const bookIssuedHeader = ["Tup ID","Title","Return Date"];
   const dispatch = useDispatch()
-  const [socket, setSocket] = useState(null);
+  const socket = useContext(SocketContext)
   
   useEffect(() => {
-    // Initialize socket connection
-    const newSocket = io('https://api.tuplrc-cla.com', {
-      transports: ['polling'],  // Force long-polling only
-      upgrade: false  // Prevent transport upgrade attempts
-    });
-    setSocket(newSocket);
-
-    console.log('Attempting to connect to socket.io server...');
-
-  newSocket.on('connect', () => {
-    console.log('Socket connected successfully with ID:', newSocket.id);
-  });
-
-  newSocket.on('connect_error', (error) => {
-    console.error('Socket connection error:', error);
-  });
-
-  newSocket.on('error', (error) => {
-    console.error('Socket error:', error);
-  });
-
-  newSocket.on('disconnect', (reason) => {
-    console.log('Socket disconnected:', reason);
-  });
-
-    
-
     getTotalVisitors();
     getTotalBorrowed();
     getTotalReturned();
@@ -89,11 +57,6 @@ const Dashboard = () => {
     getPopularChoices();
     getBookTrends();
     getVisitorStats();
-
-    // Clean up socket connection on unmount
-    return () => {
-      newSocket.disconnect();
-    };
   }, []);
 
   useEffect(() => {

@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import './Logbook.css';
 import { useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faArrowLeft, faArrowRight, faExclamationCircle, faSmile } from '@fortawesome/free-solid-svg-icons';
-import * as XLSX from 'xlsx'; // Import xlsx for Excel export
-import { io } from 'socket.io-client';
+import { faSearch, faArrowLeft, faArrowRight, faSmile } from '@fortawesome/free-solid-svg-icons';
+import { SocketContext } from '../../store/socketContext';
 
 const Logbook = () => {
     const [patron, setPatron] = useState([]);
@@ -15,21 +14,7 @@ const Logbook = () => {
     const [totalEntries, setTotalEntries] = useState(0); // Total number of entries
     const [loading, setLoading] = useState(false);
     const location = useLocation();
-    const [socket, setSocket] = useState(null);
-
-    useEffect(() => {
-        // Initialize socket connection
-        const newSocket = io('https://api.tuplrc-cla.com', {
-              transports: ['polling'],  // Force long-polling only
-              upgrade: false  // Prevent transport upgrade attempts
-            });
-        setSocket(newSocket);
-        
-        // Clean up socket connection on unmount
-        return () => {
-            newSocket.disconnect();
-        };
-    }, []);
+    const socket = useContext(SocketContext);
 
     useEffect(() => {
         if (socket) {
