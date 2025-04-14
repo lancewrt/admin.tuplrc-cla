@@ -42,7 +42,7 @@ const AdminTopNavbar = () => {
     }, []);
 
     useEffect(() => {
-        const getUsername = async () => {
+        /* const getUsername = async () => {
             try {
                 const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
                 console.log(response.data);
@@ -57,7 +57,25 @@ const AdminTopNavbar = () => {
                 console.error('Error verifying session:', error);
                 setUname(null);
             }
+        }; */
+
+        const getUsername = async () => {
+            try {
+                const storedCreds = JSON.parse(localStorage.getItem('token'));
+                if (storedCreds.message === "Login successful") {
+                    console.log('Logged in: ',storedCreds.user)
+                    setUname(storedCreds.user.username);
+                    dispatch(setUsername(storedCreds.user.username))
+                    dispatch(setUserId(storedCreds.user.id))
+                } else {
+                    setUname(null);
+                }
+            } catch (error) {
+                console.error('Error verifying session:', error);
+                setUname(null);
+            }
         };
+
         getUsername();
     }, []);
 
@@ -101,6 +119,7 @@ const AdminTopNavbar = () => {
             await axios.post('https://api.tuplrc-cla.com/api/user/logout', { username: uname }, { withCredentials: true });
             localStorage.removeItem('role');
             localStorage.removeItem('username');
+            localStorage.removeItem('token');
             navigate('/');
         } catch (err) {
             console.error('Logout error:', err);

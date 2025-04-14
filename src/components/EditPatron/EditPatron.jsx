@@ -88,10 +88,16 @@ const EditPatron = () => {
                 tup_id: res.data.patronData.tup_id || '',
             };
     
-            const userResponse = await axios.get(`https://api.tuplrc-cla.com/api/user/check-session`, { withCredentials: true });
+            /* const userResponse = await axios.get(`https://api.tuplrc-cla.com/api/user/check-session`, { withCredentials: true });
             if (userResponse.data.loggedIn) {
                 fetchedData.username = userResponse.data.username;
                 setUserName(userResponse.data.username);
+            } */
+
+            const storedCreds = JSON.parse(localStorage.getItem('token'));
+            if (storedCreds.message === "Login successful") {
+                fetchedData.username = storedCreds.user.username;
+                setUserName(storedCreds.user.username);
             }
     
             setPatronData(fetchedData);
