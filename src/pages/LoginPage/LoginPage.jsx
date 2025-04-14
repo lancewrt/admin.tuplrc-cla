@@ -12,13 +12,24 @@ const LoginPage = () => {
     
     // Check if the user is already logged in when the component mounts
     useEffect(() => {
-        const checkLoginStatus = async () => {
-            const storedCreds = JSON.parse(localStorage.getItem('token'));
+        /* const checkLoginStatus = async () => {
             try {
                 const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
                 
-                if (response.data.loggedIn || storedCreds.message === "Login successful") {
+                if (response.data.loggedIn) {
                     // If the user is logged in, redirect to the dashboard
+                    navigate('/dashboard');
+                }
+            } catch (error) {
+                console.error('Error checking session:', error);
+            }
+        }; */
+
+        const checkLoginStatus = async () => {
+            try {
+                const storedCreds = JSON.parse(localStorage.getItem('token'));
+
+                if (storedCreds.message === "Login successful") { 
                     navigate('/dashboard');
                 }
             } catch (error) {
