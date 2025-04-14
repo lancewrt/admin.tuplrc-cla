@@ -119,6 +119,7 @@ const AdminTopNavbar = () => {
             await axios.post('https://api.tuplrc-cla.com/api/user/logout', { username: uname }, { withCredentials: true });
             localStorage.removeItem('role');
             localStorage.removeItem('username');
+            localStorage.removeItem('token');
             navigate('/');
         } catch (err) {
             console.error('Logout error:', err);
