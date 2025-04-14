@@ -38,7 +38,7 @@ const CirculationCheckout = () => {
   };
 
   const [uname, setUname] = useState(null);
-  const getUsername = async()=>{
+  /* const getUsername = async()=>{
     try {
       // Request server to verify the JWT token
       const response = await axios.get(`https://api.tuplrc-cla.com/api/user/check-session`, { withCredentials: true });
@@ -53,7 +53,24 @@ const CirculationCheckout = () => {
       console.error('Error verifying session:', error);
       setUname(null); // Set null if there's an error
     }
-  }
+  } */
+
+    const getUsername = async()=>{
+      try {
+        // Request server to verify the JWT token
+        const storedCreds = JSON.parse(localStorage.getItem('token'));
+        console.log('Logged in: ',storedCreds.user)
+        // If session is valid, set the role
+        if (storedCreds.message === "Login successful") {
+          setUname(storedCreds.user.username);
+        } else {
+          setUname(null); // If not logged in, clear the role
+        }
+      } catch (error) {
+        console.error('Error verifying session:', error);
+        setUname(null); // Set null if there's an error
+      }
+    }
 
   useEffect(() => {
     getPatron();

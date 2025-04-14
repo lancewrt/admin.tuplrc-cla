@@ -8,7 +8,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
 
   useEffect(() => {
     // Fetch user role from the server via cookies (JWT stored in HttpOnly cookie)
-    const fetchUserRole = async () => {
+    /* const fetchUserRole = async () => {
       try {
         // Request server to verify the JWT token
         const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
@@ -16,6 +16,25 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
         // If session is valid, set the role
         if (response.data.loggedIn) {
           setUserRole(response.data.userRole);
+        } else {
+          setUserRole(null); // If not logged in, clear the role
+        }
+      } catch (error) {
+        console.error('Error verifying session:', error);
+        setUserRole(null); // Set null if there's an error
+      } finally {
+        setLoading(false);  // Stop loading once the request completes
+      }
+    }; */
+
+    const fetchUserRole = async () => {
+      try {
+        // Request server to verify the JWT token
+        const storedCreds = JSON.parse(localStorage.getItem('token'));
+
+        // If session is valid, set the role
+        if (storedCreds.message === "Login successful") {
+          setUserRole(storedCreds.user.role);
         } else {
           setUserRole(null); // If not logged in, clear the role
         }

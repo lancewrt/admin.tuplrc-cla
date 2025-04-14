@@ -91,12 +91,30 @@ const ReportsModal = ({ open, close}) => {
 
   },[reportData.category, reportData.detail])
 
-  const getUsername = async () => {
+  /* const getUsername = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/api/user/check-session`, { withCredentials: true });
       if (response.data.loggedIn) {
         setStaffId(response.data.userID);
         setStaffUname(response.data.username);
+      } else {
+        setStaffId('');
+        setStaffUname('');
+      }
+    } catch (error) {
+      console.error('Error verifying session:', error);
+      setStaffId('');
+      setStaffUname('');
+    }
+  }; */
+
+  const getUsername = async () => {
+    try {
+      const storedCreds = JSON.parse(localStorage.getItem('token'));
+
+      if (storedCreds.message === "Login successful") {
+        setStaffId(storedCreds.user.id);
+        setStaffUname(storedCreds.user.username);
       } else {
         setStaffId('');
         setStaffUname('');
