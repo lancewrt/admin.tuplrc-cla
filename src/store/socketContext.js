@@ -29,9 +29,9 @@ export const SocketProvider = ({ children }) => {
     
     setSocket(newSocket);
     
-    return () => {
-      newSocket.disconnect();
-    };
+    // return () => {
+    //   newSocket.disconnect();
+    // };
   }, [isOnline]);
   return (
     <SocketContext.Provider value={socket}>
