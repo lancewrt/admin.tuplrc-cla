@@ -1,13 +1,17 @@
 // SocketContext.js
 import React, { createContext, useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { io } from 'socket.io-client';
 
 export const SocketContext = createContext();
 
 export const SocketProvider = ({ children }) => {
+  const {isOnline} = useSelector((state) => state.isOnline);
   const [socket, setSocket] = useState(null);
   
   useEffect(() => {
+    if (!isOnline) return;
+
     const newSocket = io('https://api.tuplrc-cla.com', {
         transports: ['polling'],  // Force long-polling only
         upgrade: false  // Prevent transport upgrade attempts
@@ -28,7 +32,7 @@ export const SocketProvider = ({ children }) => {
     return () => {
       newSocket.disconnect();
     };
-  }, []);
+  }, [isOnline]);
   return (
     <SocketContext.Provider value={socket}>
       {children}
