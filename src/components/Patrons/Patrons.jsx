@@ -25,11 +25,26 @@ const Patrons = () => {
     const [isOpen, setIsOpen] = useState(false)
 
     useEffect(() => {
-        const fetchUserRole = async () => {
+        /* const fetchUserRole = async () => {
             try {
                 const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
                 if (response.data.loggedIn) {
                     setUserRole(response.data.userRole);
+                } else {
+                    setUserRole(null);
+                }
+            } catch (error) {
+                console.error('Error verifying session:', error);
+                setUserRole(null);
+            }
+        }; */
+
+        const fetchUserRole = async () => {
+            try {
+                const storedCreds = JSON.parse(localStorage.getItem('token'));
+                if (storedCreds.message === "Login successful") {
+          
+                    setUserRole(storedCreds.user.role);
                 } else {
                     setUserRole(null);
                 }
