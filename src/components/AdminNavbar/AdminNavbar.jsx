@@ -230,20 +230,22 @@ const AdminNavbar = () => {
                                         )}
                                     </Link>
                                 </li>
-
-                                <li className={`menu-item ${basePath === '/accounts' ? 'selected' : ''}`}>
-                                    <Link to='/accounts' className="menu">
-                                        <div className="menu-icon-container">
-                                            <FontAwesomeIcon icon={faUsersGear} className='menu-icon'/>
-                                        </div>
-                                        {!isCollapsed && (
-                                            <div className="menu-text">
-                                                <p>Accounts</p>
-                                            </div>
-                                        )}
-                                    </Link>
-                                </li>
                             </>
+                        )}
+
+                        {role == 'superadmin' && (
+                            <li className={`menu-item ${basePath === '/accounts' ? 'selected' : ''}`}>
+                                <Link to='/accounts' className="menu">
+                                    <div className="menu-icon-container">
+                                        <FontAwesomeIcon icon={faUsersGear} className='menu-icon'/>
+                                    </div>
+                                    {!isCollapsed && (
+                                        <div className="menu-text">
+                                            <p>Accounts</p>
+                                        </div>
+                                    )}
+                                </Link>
+                            </li>
                         )}
                     </ul>
                 </div>
