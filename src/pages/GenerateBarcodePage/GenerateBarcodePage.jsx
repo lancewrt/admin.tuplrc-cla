@@ -23,7 +23,7 @@ const GenerateBarcodePage = () => {
     
     const getData = async () => {
         try {
-            const response = await axios.get('http://api.tuplrc-cla.com/api/catalog/generate-barcode');
+            const response = await axios.get('https://api.tuplrc-cla.com/api/catalog/generate-barcode');
             setDataToGenerate(response.data);
             setFilteredData(response.data)
         } catch (error) {
@@ -167,7 +167,7 @@ const GenerateBarcodePage = () => {
                         <FontAwesomeIcon icon={faExclamationCircle} className="fs-2 no-data" />
                         <p className='fw-semibold m-0'>Book not found.</p>
                         <p className='mb-2'>Please try another search.</p>
-                        <button className='btn btn-warning' onClick={clearFilters}>Clear filter</button>
+                        <button className='btn btn-outline-secondary' onClick={clearFilters}>Clear filter</button>
                     </div>}
                 </div>
                 {/* Pagination Controls */}
