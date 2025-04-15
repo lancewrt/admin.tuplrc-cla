@@ -40,7 +40,7 @@ export const SocketProvider = ({ children }) => {
       console.log('Cleaning up socket connection');
       socketRef.current?.disconnect();
     };
-  }, [isOnline]);
+  }, []);
 
   return (
     <SocketContext.Provider value={socketRef.current}>
