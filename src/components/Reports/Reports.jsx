@@ -43,7 +43,7 @@ const Reports = () => {
   const getReports = async() => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`http://api.tuplrc-cla.com/api/reports/${userId}`);
+      const response = await axios.get(`https://api.tuplrc-cla.com/api/reports/${userId}`);
       setReports(response.data);
       setFilteredReports(response.data);
     } catch (error) {
@@ -55,7 +55,7 @@ const Reports = () => {
 
   const getCategories = async () => {
     try {
-      const response = await axios.get(`http://api.tuplrc-cla.com/api/reports/categories`);
+      const response = await axios.get(`https://api.tuplrc-cla.com/api/reports/categories`);
       console.log(response.data)
       setCategories(response.data);
     } catch (error) {
@@ -161,7 +161,7 @@ const Reports = () => {
     if (!result.isConfirmed) return; // Exit if user cancels
 
     try {
-      await axios.put(`http://api.tuplrc-cla.com/api/reports/archive`,{id,reportState,username});
+      await axios.put(`https://api.tuplrc-cla.com/api/reports/archive`,{id,reportState,username});
       // Show toast first
       window.toast.fire({ 
         icon: "success", 
@@ -260,7 +260,7 @@ const Reports = () => {
 
         <div className='d-flex flex-column gap-3 data-box'>
           {/* header */}
-          <div className='header m-0 p-0 row d-flex align-items-center text-center justify-content-center rounded text-light shadow-sm'>
+          <div className='header m-0 p-3 row d-flex align-items-center text-center justify-content-center rounded text-light shadow-sm'>
             <div className='col-3 cursor-pointer' onClick={() => handleSort('report_name')}>
               Report Name
               <FontAwesomeIcon 
@@ -301,12 +301,12 @@ const Reports = () => {
               <FontAwesomeIcon icon={faExclamationCircle} className="fs-2 no-data" />
               <p className='fw-semibold m-0 mt-2'>Report not found.</p>
               <p className='text-secondary m-0'>Please try a different search.</p>
-              <button className='btn btn-warning mt-2' onClick={clearFilters}>Clear Filter</button>
+              <button className='btn btn-outline-secondary mt-2' onClick={clearFilters}>Clear Filter</button>
             </div>
           )
           : (
             currentReports.map(report => (
-              <div key={report.report_id} className='m-0 p-0 d-flex align-items-center text-center row rounded data shadow-sm'>
+              <div key={report.report_id} className='m-0 p-3 d-flex align-items-center text-center row rounded data shadow-sm'>
                 <div className='col-3'>{report.report_name}</div>
                 <div className='col-3'>{report.report_description}</div>
                 <div className='col-3'>{dayjs(report.created_at).format("YYYY-MM-DD HH:mm:ss")}</div>

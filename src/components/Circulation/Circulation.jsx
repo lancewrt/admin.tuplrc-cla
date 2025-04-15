@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './Circulation.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCartPlus, faCartShopping, faSearch, faArrowLeft, faArrowRight, faExclamationCircle, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCartPlus, faCartShopping, faSearch, faArrowLeft, faArrowRight, faExclamationCircle, faCalendarAlt, faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const Circulation = () => {
@@ -158,64 +158,68 @@ const Circulation = () => {
         </Link>
       </div>
 
-      {/* Search */}
-      <div className="search-container d-flex justify-content-between">
-        <div className="input-group w-50 z-0">
-          <input
-            type="text"
-            className="search-bar form-control shadow-sm"
-            placeholder="Search by ID, name, book, or course"
-            value={searchTerm}
-            onChange={handleSearch}
-            onKeyDown={(e) => e.key === 'Enter' && search()}
-          />
-          <button className="btn search-btn" onClick={search}>
-            <FontAwesomeIcon icon={faSearch} />
+      {/* filters */}
+      <div className='d-flex flex-column gap-2'>
+          {/* Search */}
+        <div className="search-container d-flex justify-content-between">
+          <div className="input-group w-50 z-0">
+            <input
+              type="text"
+              className="search-bar form-control shadow-sm"
+              placeholder="Search by ID, name, book, or course"
+              value={searchTerm}
+              onChange={handleSearch}
+              onKeyDown={(e) => e.key === 'Enter' && search()}
+            />
+            <button className="btn search-btn" onClick={search}>
+              <FontAwesomeIcon icon={faSearch} />
+            </button>
+          </div>
+          <select className="form-select dropdown" onChange={(e) => setQuery(e.target.value)}>
+            <option value="any">Any</option>
+            <option value="borrowed">Borrowed</option>
+            <option value="returned">Returned</option>
+            <option value="overdue">Overdue</option>
+          </select>
+        </div>
+        
+        {/* Date Range Row */}
+        <div className="date-filter d-flex align-items-center flex-wrap w-50">
+          <div className="d-flex align-items-center flex-grow-1 gap-2">
+            <div className="input-group">
+              <span className="input-group-text bg-white border-end-0">
+                <FontAwesomeIcon icon={faCalendarAlt} className="text-muted" />
+              </span>
+              <input
+                type="date"
+                className="form-control border-start-0"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+            </div>
+            <span className="text-muted">to</span>
+            <div className="input-group">
+              <span className="input-group-text bg-white border-end-0">
+                <FontAwesomeIcon icon={faCalendarAlt} className="text-muted" />
+              </span>
+              <input
+                type="date"
+                className="form-control border-start-0"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
+            </div>
+          </div>
+          <button 
+            className="btn btn-outline-secondary ms-2 d-flex gap-2 justify-content-center align-items-center" 
+            onClick={clearFilter}>
+            <FontAwesomeIcon icon={faXmarkCircle}/>
+            Clear filter
           </button>
         </div>
-        <select className="form-select dropdown" onChange={(e) => setQuery(e.target.value)}>
-          <option value="any">Any</option>
-          <option value="borrowed">Borrowed</option>
-          <option value="returned">Returned</option>
-          <option value="overdue">Overdue</option>
-        </select>
       </div>
+
       
-      {/* Date Range Row */}
-      <div className="date-filter d-flex align-items-center flex-wrap w-50">
-        <div className="d-flex align-items-center flex-grow-1 gap-2">
-          <div className="input-group">
-            <span className="input-group-text bg-white border-end-0">
-              <FontAwesomeIcon icon={faCalendarAlt} className="text-muted" />
-            </span>
-            <input
-              type="date"
-              className="form-control border-start-0"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-            />
-          </div>
-          <span className="text-muted">to</span>
-          <div className="input-group">
-            <span className="input-group-text bg-white border-end-0">
-              <FontAwesomeIcon icon={faCalendarAlt} className="text-muted" />
-            </span>
-            <input
-              type="date"
-              className="form-control border-start-0"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-            />
-          </div>
-        </div>
-        <button 
-          className="btn btn-warning ms-2 d-flex align-items-center" 
-          onClick={clearFilter}
-        >
-          {/* <FontAwesomeIcon icon={faTimes} className="me-2" /> */}
-          Clear Filters
-        </button>
-      </div>
 
       <div className="table-box">
         <h2>Recent transactions</h2>
@@ -288,7 +292,7 @@ const Circulation = () => {
                     <FontAwesomeIcon icon={faExclamationCircle} className="fs-2 no-data" />
                     <span className='fw-semibold mt-2 m-0'>No records found.</span>
                     <span className='m-0'>Please try a different search.</span>
-                    <button className='btn btn-warning mt-2' onClick={clearFilter}>Clear filter</button>
+                    <button className='btn btn-outline-secondary mt-2' onClick={clearFilter}>Clear filter</button>
                   </div>
                 </td>
               </tr>

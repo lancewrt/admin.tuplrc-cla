@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Audit.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileExport,faArrowRight, faArrowLeft, faDownload } from "@fortawesome/free-solid-svg-icons";
+import { faFileExport,faArrowRight, faArrowLeft, faDownload, faXmarkCircle, faSearch, faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 
 const Audit = () => {
   const [audit, setAudit] = useState([]); // Stores all audit data
@@ -130,74 +130,96 @@ const Audit = () => {
     <div className="audit-container bg-light">
       <h1>User Activity Log</h1>
 
-      <div>
+      <div className="mb-4">
         {/* Filter Section */}
-        <div className="w-50 mb-2">
-          <select
-            className="form-select shadow-sm"
-            value={selectedActivity}
-            onChange={(e) => setSelectedActivity(e.target.value)}
-          >
-            <option value="">Filter by activity</option>
-            <option value="Added a new user">Insert User</option>
-            <option value="Added a new resource">Insert Resource</option>
-            <option value="Edited a resource">Update Resource</option>
-            <option value="Added new patron">Insert Patron</option>
-            <option value="Edited a patron">Edited Patron</option>
-            <option value="borrowed a book">Borrowed Book</option>
-            <option value="returned a book">Returned Book</option>
-            <option value="Edited a user">Edited User</option>
-            <option value="Logged In">Login</option>
-            <option value="Logged Out">Logout</option>
-            
-          </select>
-        </div>
-
-        {/* Date Filters & Export */}
-        <div className="d-flex justify-content-between">
-          <div className="d-flex align-items-center gap-1">
-            <input type="date" className="shadow-sm form-control" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
-            <span>to</span>
-            <input type="date" className="shadow-sm form-control" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
-            <button className="btn btn-warning w-100" onClick={clearFilters}>Clear filter</button>
-          </div>
-          <button className="btn export-btn btn-success d-flex align-items-center gap-2" onClick={exportToCSV}>
-            <FontAwesomeIcon icon={faDownload}/>
-            Export to Excel
-          </button>
-        </div>
+        <div>
+                {/* Filter Section */}
+                <div className="w-50 mb-2">
+                  <select
+                    className="form-select shadow-sm"
+                    value={selectedActivity}
+                    onChange={(e) => setSelectedActivity(e.target.value)}
+                  >
+                    <option value="">Filter by activity</option>
+                    <option value="Added a new user">Insert User</option>
+                    <option value="Added a new resource">Insert Resource</option>
+                    <option value="Edited a resource">Update Resource</option>
+                    <option value="Added new patron">Insert Patron</option>
+                    <option value="Edited a patron">Edited Patron</option>
+                    <option value="borrowed a book">Borrowed Book</option>
+                    <option value="returned a book">Returned Book</option>
+                    <option value="Edited a user">Edited User</option>
+                    <option value="Logged In">Login</option>
+                    <option value="Logged Out">Logout</option>
+                    
+                  </select>
+                </div>
+        
+                {/* Date Filters & Export */}
+                <div className="d-flex justify-content-between">
+                  <div className="d-flex align-items-center gap-2">
+                    <input type="date" className="shadow-sm form-control" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+                    <span>to</span>
+                    <input type="date" className="shadow-sm form-control" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+                    <button 
+                      className="btn btn-outline-secondary w-100 d-flex gap-2 justify-content-center align-items-center" 
+                      onClick={clearFilters}>
+                      <FontAwesomeIcon icon={faXmarkCircle}/>
+                      Clear filter
+                    </button>
+                  </div>
+                  <button className="btn btn-success d-flex align-items-center gap-2" onClick={exportToCSV}>
+                    <FontAwesomeIcon icon={faDownload}/>
+                    Export to Excel
+                  </button>
+                </div>
+              </div>
       </div>
       
 
       {/* Table */}
-      <div className="audit-table-box">
-        <table className="audit-table">
-          <thead>
-            <tr>
-              <td>User</td>
-              <td>Action</td>
-              <td>Description</td>
-              <td>Timestamp</td>
-            </tr>
-          </thead>
-          <tbody>
-            {currentRecords.length > 0 ? (
-              currentRecords.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.user_id}</td>
-                  <td>{item.action_type}</td>
-                  <td>{item.new_value.replace(/[{}"]/g, "").replace(/,/g, "\n")}</td>
-                  <td>{item.formatted_timestamp}</td>
+      <div className="audit-table-box ">
+            <table className="audit-table ">
+              <thead className="">
+                <tr>
+                  <td>User</td>
+                  <td>Action</td>
+                  <td>Description</td>
+                  <td>Timestamp</td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="4" className="text-center">No records available</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody>
+                {currentRecords.length > 0 ? (
+                  currentRecords.map((item, index) => (
+                    <tr key={index}>
+                      <td>{item.user_id}</td>
+                      <td>
+                        <span className={`badge ${
+                          item.action_type === "INSERT" ? "bg-success" :
+                          item.action_type === "UPDATE" ? "bg-primary" :
+                          item.action_type === "LOGIN" ? "bg-info" : 
+                          item.action_type === "LOGOUT" ? "bg-secondary" : "bg-warning"
+                        }`}>
+                          {item.action_type}
+                        </span>
+                      </td>
+                      <td style={{ whiteSpace: "pre-line" }}>{item.new_value}</td>
+                      <td>{item.formatted_timestamp}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" className="text-center py-4 text-muted">
+                      <FontAwesomeIcon icon={faExclamationCircle} className="fs-2 no-data" />
+                      <p className='fw-semibold m-0 mt-2'>Audit not found.</p>
+                      <p className='text-secondary m-0'>Please try a different search.</p>
+                      <button className='btn btn-outline-secondary mt-2' onClick={clearFilters}>Clear Filter</button>    
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
 
       {/* Pagination */}
       <div className="pagination">

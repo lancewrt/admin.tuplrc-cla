@@ -4,7 +4,7 @@ import axios from 'axios'
 import { getAllFromStore, getAllResources, getCatalogDetailsOffline} from '../../indexedDb/getDataOffline'
 import { deleteResourceFromIndexedDB } from '../../indexedDb/syncData'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faArrowRight, faSearch, faPlus, faArrowsRotate, faArrowDown, faArrowUp, faArrowUpWideShort, faExclamationCircle, faArchive, faEye, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faArrowRight, faSearch, faPlus, faArrowsRotate, faArrowDown, faArrowUp, faArrowUpWideShort, faExclamationCircle, faArchive, faEye, faUpload, faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux'
 import CatalogFilterModal from '../CatalogFilterModal/CatalogFilterModal'
@@ -468,9 +468,11 @@ const Catalog = () => {
             onClick={handleSearch}>
             <FontAwesomeIcon icon={faSearch}/>
           </button>
-          <button
-            className="btn btn-warning clear-btn shadow-sm ms-2"
-            onClick={handleClear}>
+          <button 
+            className="btn btn-outline-secondary d-flex gap-2 justify-content-center align-items-center ms-2" 
+            onClick={handleClear}
+          >
+            <FontAwesomeIcon icon={faXmarkCircle}/>
             Clear filter
           </button>
         </div>
@@ -479,7 +481,7 @@ const Catalog = () => {
       </div>
 
       {/*filters and import  */}
-      <div className='d-flex justify-content-between mt-4'>
+      <div className='d-flex justify-content-between align-items-end'>
         <div className="filters d-flex gap-3">
           <div className="items-per-page">
             <label htmlFor="itemsPerPage">Items per page: </label>

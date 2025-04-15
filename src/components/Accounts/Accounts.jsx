@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './Accounts.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faUser, faPen, faUserSlash, faArrowLeft, faArrowRight, faSearch, faSort, faSortUp, faSortDown, faArrowUp, faArrowDown, faArrowUpWideShort, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faUser, faPen, faUserSlash, faArrowLeft, faArrowRight, faSearch, faSort, faSortUp, faSortDown, faArrowUp, faArrowDown, faArrowUpWideShort, faExclamationCircle, faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 import CreateUserModal from '../CreateUserModal/CreateUserModal';
 import EditUserModal from '../EditUserModal/EditUserModal';
 import DeactivateModal from '../DeactivateModal/DeactivateModal';
@@ -93,6 +93,22 @@ const Accounts = () => {
     }
   },[keyword])
 
+  // const getUsername = async()=>{
+  //   try {
+  //     // Request server to verify the JWT token
+  //     const response = await axios.get(`https://api.tuplrc-cla.com/api/user/check-session`, { withCredentials: true });
+  //     console.log(response.data)
+  //     // If session is valid, set the role
+  //     if (response.data.loggedIn) {
+  //       setStaffUname(response.data.username);
+  //     } else {
+  //       setStaffUname(null); // If not logged in, clear the role
+  //     }
+  //   } catch (error) {
+  //     console.error('Error verifying session:', error);
+  //     setStaffUname(null); // Set null if there's an error
+  //   }
+  // }
 
   // Fetch user accounts
   const userAccounts = async () => {
@@ -507,10 +523,11 @@ const Accounts = () => {
         <button className="btn search-btn px-3 shadow-sm" onClick={handleSearch} >
           <FontAwesomeIcon icon={faSearch} />
         </button>
-        <button
-          className="btn btn-warning clear-btn ms-2 shadow-sm"
+        <button 
+          className="btn btn-outline-secondary d-flex gap-2 justify-content-center align-items-center ms-2" 
           onClick={clearFilter}
         >
+          <FontAwesomeIcon icon={faXmarkCircle}/>
           Clear filter
         </button>
       </div>
@@ -606,10 +623,11 @@ const Accounts = () => {
         ) : !loading && currentAccounts.length === 0 ? (
           <tr>
             <td colSpan="6" className='no-data-box text-center'>
-              <div className='d-flex flex-column align-items-center gap-2 my-5'>
-                <FontAwesomeIcon icon={faExclamationCircle} className="fs-2 no-data" />
-                <span>No accounts available.<br/>Please try a different filter.</span>
-                <button className='btn btn-warning' onClick={clearFilter}>Clear Filter</button>
+              <div className='d-flex flex-column align-items-center my-5'>
+                <FontAwesomeIcon icon={faExclamationCircle} className="fs-2 no-data mb-2" />
+                <span className='m-0 fw-semibold'>No accounts available.</span>
+                <span className='m-0'>Please try a different filter.</span>
+                <button className='btn btn-outline-secondary mt-2' onClick={clearFilter}>Clear Filter</button>
               </div>
             </td>
           </tr>

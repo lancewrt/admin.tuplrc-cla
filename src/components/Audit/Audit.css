@@ -36,7 +36,7 @@
 
 .audit-container table thead  tr td {
     background-color: var(--tup-color);
-    font-size: 0.9rem !important;
+    font-size: 1rem !important;
 }
 
 
@@ -52,7 +52,7 @@
 }
 
 .audit-container table tbody tr td {
-    font-size: 0.8rem !important; /* Force smaller font size */
+    font-size: 0.9rem !important; /* Force smaller font size */
     padding: 10px;
     word-wrap: break-word;
     white-space: normal;
@@ -73,6 +73,6 @@
     color: var(--tup-color);
 }
 
-/* .audit-container input, .audit-container select, .audit-container button{
+.audit-container input, .audit-container select, .audit-container button{
     height: 50px;
-} */
+}

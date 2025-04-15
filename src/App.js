@@ -24,6 +24,7 @@ import ViewPatronPage from './pages/ViewPatron/ViewPatronPage';
 import AuthorsPage from './pages/AuthorsPage/AuthorsPage';
 import GenerateBarcodePage from './pages/GenerateBarcodePage/GenerateBarcodePage';
 import CatalogManagePage from './pages/CatalogManagePage/CatalogManagePage';
+import Profile from './pages/Profile/Profile';
 
 const App = () => {
   return (
@@ -131,6 +132,13 @@ const App = () => {
           <Route path='/patron/add' element={
             <ProtectedRoute allowedRoles={['staff', 'admin']}>
               <EditPatronPage/>
+            </ProtectedRoute>
+          }
+          />
+
+          <Route path='/profile' element={
+            <ProtectedRoute allowedRoles={['staff', 'admin','superadmin']}>
+              <Profile/>
             </ProtectedRoute>
           }
           />

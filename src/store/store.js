@@ -26,7 +26,6 @@ const store = configureStore({
         adviser: adviserReducer,
         author: authorReducer,
         publisherInfo: publisherInfoReducer
-
     }
 })
 

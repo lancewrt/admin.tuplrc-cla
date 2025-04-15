@@ -8,6 +8,10 @@
     overflow-x: hidden;   
 }
 
+.cat-container button{
+    height: 50px;
+}
+
 .cat-container .cat-button{
     height: 50px;
     background-color: var(--tup-color);
@@ -53,7 +57,7 @@
     border-collapse: collapse;
     width: 100%;
     outline: 1px solid var(--tup-color);
-    font-size: 0.8rem;
+    font-size: 1rem;
     min-height: 500px;
     table-layout: fixed;
 }
@@ -62,7 +66,7 @@
     background-color: var(--tup-color) !important;
     color: var(--white);
     width: 70px;
-    /* font-size: 1rem !important; */
+    font-size: 0.9rem !important;
     padding: 10px;
     text-transform: capitalize;
 }
@@ -70,7 +74,7 @@
 .cat-container .cat-table tbody tr td{
     vertical-align: middle;
     padding: 10px;
-    /* font-size: 1rem !important; */
+    font-size: 0.9rem !important;
     border-bottom: none;
     text-transform: capitalize;
 }
