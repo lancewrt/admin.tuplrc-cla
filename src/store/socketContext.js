@@ -1,16 +1,12 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { io } from 'socket.io-client';
 
 export const SocketContext = createContext();
 
 export const SocketProvider = ({ children }) => {
-  const { isOnline } = useSelector((state) => state.isOnline);
   const [socket, setSocket] = useState(null);
   
   useEffect(() => {
-    if (!isOnline) return;
-
     // Clean up previous socket if exists
     if (socket) {
       socket.disconnect();
