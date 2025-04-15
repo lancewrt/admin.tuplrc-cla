@@ -16,7 +16,7 @@ export const SocketProvider = ({ children }) => {
     }
   
     const newSocket = io('https://api.tuplrc-cla.com', {
-      transports: ['websocket'],
+      transports: ['polling'],
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000
