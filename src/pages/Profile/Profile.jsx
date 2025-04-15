@@ -31,6 +31,7 @@ const Profile = () => {
     const [originalUserData, setOriginalUserData] = useState(null);
     const [usernameValid, setUsernameValid] = useState(true);
     const [usernameChecking, setUsernameChecking] = useState(false);
+    const [isCurrentPasswordCorrect, setIsCurrentPasswordCorrect] = useState(false)
 
     useEffect(()=>{
         if(!userId) return
@@ -306,6 +307,7 @@ const Profile = () => {
                                             value={passwordData.newPassword} 
                                             onChange={handlePasswordChange} 
                                             className="form-control"
+                                            disabled={!isCurrentPasswordCorrect}
                                             required
                                         />
                                     </div>
@@ -319,6 +321,7 @@ const Profile = () => {
                                             value={passwordData.confirmPassword} 
                                             onChange={handlePasswordChange} 
                                             className="form-control"
+                                            disabled={!isCurrentPasswordCorrect}
                                             required
                                         />
                                     </div>

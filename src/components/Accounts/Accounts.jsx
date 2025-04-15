@@ -26,8 +26,7 @@ const Accounts = () => {
     lname: '',
     uname: '',
     role: '',
-    password: '',
-    confirmPassword: ''
+    email:''
   });
   const [originalAccount, setOriginalAccount] = useState({});
   const [loading, setLoading] = useState(false);
@@ -93,23 +92,6 @@ const Accounts = () => {
     }
   },[keyword])
 
-  // const getUsername = async()=>{
-  //   try {
-  //     // Request server to verify the JWT token
-  //     const response = await axios.get(`https://api.tuplrc-cla.com/api/user/check-session`, { withCredentials: true });
-  //     console.log(response.data)
-  //     // If session is valid, set the role
-  //     if (response.data.loggedIn) {
-  //       setStaffUname(response.data.username);
-  //     } else {
-  //       setStaffUname(null); // If not logged in, clear the role
-  //     }
-  //   } catch (error) {
-  //     console.error('Error verifying session:', error);
-  //     setStaffUname(null); // Set null if there's an error
-  //   }
-  // }
-
   // Fetch user accounts
   const userAccounts = async () => {
     try {
@@ -147,168 +129,123 @@ const Accounts = () => {
       }
   };
 
-  // Create user account
-  const createUserAccount = async (isChangePassword) => {
-    await appendToAccount('username', username);
-    const isValid = await formValidation();  // No need for await
-    const isPasswordValid = await passwordValidation(); // No need for await
 
-    if (!isValid || !isPasswordValid) { // Stop if errors exist
-        return;
-    }
-    const result = await Swal.fire({
-      title: "Are you sure",
-      text: "You want to create this user?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonColor: "#54CB58",
-      cancelButtonColor: "#94152b",
-      confirmButtonText: "Yes, create!"
-    });
-    
-    if (!result.isConfirmed) return; // Exit if user cancels
-
-  setLoading(true);
-  try {
-      const response = await axios.post('https://api.tuplrc-cla.com/api/account', account);
-      console.log(account);
-      setLoading(false);
-
-      if (response.data.status === 409) {
-        Swal.fire({
-          title: "User already exists!",
-          text: "User with the same username already exists. Please try again.",
-          icon: "warning",
-          confirmButtonColor: "#54CB58",
-        });
-      } else if (response.data.status === 201) {
-        const result2 = await Swal.fire({
-          title: "User created!",
-          text: "You successfully created an account.",
-          icon: "success",
-          confirmButtonColor: "#54CB58",
-        });
-
-        // Reset form after success
-        setAccount({
-          fname: '',
-          lname: '',
-          uname: '',
-          role: '',
-          password: '',
-          confirmPassword: ''
-        });
-
-        if (result2.isConfirmed) {
-          window.location.reload();
-        }
-      }
-    } catch (err) {
-        console.log('Cannot create account. An error occurred:', err.message);
-    } finally {
-        setLoading(false); // Ensure loading is reset even on error
-    }
-  };
-
-
-  const editUserAccount = async(isChangePassword)=>{
+  const saveInvitation = async () => {
     await appendToAccount('username', username);
     const isValid = await formValidation();
-    let isPasswordValid = true;
-
-    if(isChangePassword){
-      isPasswordValid = await passwordValidation();
-    }
-
-    if (!isValid || !isPasswordValid) { // Correct check
-      return;
-    }
-
-
-    const hasChanges = 
-      account.fname !== originalAccount.fname ||
-      account.lname !== originalAccount.lname ||
-      account.uname !== originalAccount.uname ||
-      account.role !== originalAccount.role ||
-      account.password !== '' || originalAccount.confirmPassword !== '';
-
-    // If no changes, show a message and return
-    if (!hasChanges) {
-      await Swal.fire({
-        title: "No Changes",
-        text: "No changes were made to the user account.",
-        icon: "info"
-      });
-      return;
-    }
-
+  
+    if (!isValid) return;
+  
     const result = await Swal.fire({
       title: "Are you sure",
-      text: `You want to edit this user?`,
+      text: "You want to send an activation link to this user?",
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#54CB58",
       cancelButtonColor: "#94152b",
-      confirmButtonText: "Yes, edit!"
+      confirmButtonText: "Yes, send!"
     });
-
-    if (!result.isConfirmed) return; // Exit if user cancels
-
-    if (Object.keys(error).length === 0) {
-          setLoading(true);
-          try {
-            console.log('Editing account with id: ', account.id);
-            const response = await axios.put(`https://api.tuplrc-cla.com/api/account/${account.id}`, account);
-            const result2 = await Swal.fire({
-              title: "Edited!",
-              text: `You edited the user successfully.`,
-              icon: "success",
-              confirmButtonColor: "#54CB58",
-            });
-    
-            if(result2.isConfirmed){
-              window.location.reload()
-            }
-          } catch (err) {
-            console.log('Cannot edit account. An error occurred: ', err.message);
-          } finally {
-            setLoading(false);
-          }
-        }
-  }
-
-  // Form validation for creating user account
-  const formValidation = () => {
-      const err = {}; // Fresh object to collect errors
   
-      if (!account.fname) err.fname = 'Enter first name';
-      if (!account.lname) err.lname = 'Enter last name';
-      if (!account.uname) err.uname = 'Enter username';
-      if (!account.role) err.role = 'Choose a role';
+    if (!result.isConfirmed) return;
   
-      setError(err); // Update error state
+    setLoading(true);
   
-      return Object.keys(err).length === 0; // Return true if no errors exist
+    try {
+      const response = await axios.post('https://api.tuplrc-cla.com/api/account/invite', account);
+      console.log("Invite sent:", response.data);
+  
+      setOpenCreateUser(false);
+      const result2 = await Swal.fire({
+        title: "Activation Link Sent!",
+        text: "You successfully sent an activation link.",
+        icon: "success",
+        confirmButtonColor: "#54CB58",
+      });
+  
+      // Reset form after success
+      setAccount({
+        fname: '',
+        lname: '',
+        uname: '',
+        role: '',
+        email: '',
+      });
+  
+      if (result2.isConfirmed) {
+        window.location.reload();
+      }
+    } catch (err) {
+      console.log('Cannot create account. An error occurred:', err.message);
+      await axios.delete('https://api.tuplrc-cla.com/api/account/delete-invite', {
+        params: { email: account.email }
+      });
+      await Swal.fire({
+        title: "Failed",
+        text: "Something went wrong. Try again.",
+        icon: "error",
+        confirmButtonColor: "#94152b"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
   
-  // Password validation function
-  const passwordValidation = () => {
+  // Form validation for creating user account
+  const formValidation = async () => {
     const err = {}; // Fresh object to collect errors
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
-
-    if (!account.password) err.password = 'Enter a password';
-    else if (!passwordRegex.test(account.password))
-        err.password = 'Password must have one uppercase, one lowercase, one digit, and one special character';
+  
+    if (!account.fname) err.fname = 'Enter first name';
+    if (!account.lname) err.lname = 'Enter last name';
+    if (!account.role) err.role = 'Choose a role';
+  
+    // Email validation
+    if (!account.email) {
+      err.email = 'Enter email address';
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(account.email)) {
+        err.email = 'Enter a valid email address';
+      } else {
+        // only call API if the format is correct
+        try {
+          const response = await axios.get('https://api.tuplrc-cla.com/api/account/check-email', {
+            params: { email: account.email }
+          });          
+          const error = response.data.error || '';
     
-    if (!account.confirmPassword) err.confirmPassword = 'Confirm your password';
-    else if (account.password !== account.confirmPassword)
-        err.confirmPassword = 'Passwords do not match';
+          if (error !== '') {
+            err.email = error;
+          }
+        } catch (error) {
+          console.log('Cannot check if email exists. An error occurred:', error);
+        }
+      }
+    }    
 
-    setError((prev) => ({ ...prev, ...err })); // Preserve existing errors
+    //verify username 
+    if (!account.uname){
+      err.uname = 'Enter username';
+    }else{
+      try {
+        const response = await axios.get('https://api.tuplrc-cla.com/api/account/check-uname', {
+          params: { uname: account.uname }
+        });
 
+        console.log(response)
+
+        if(response.data.length>0){
+          err.uname = 'Username already exist'
+        }
+      } catch (error) {
+        console.log('Cannot check if username exist. An error occurred: ', error)
+      }
+    }
+  
+    setError(err); // Update error state
+  
     return Object.keys(err).length === 0; // Return true if no errors exist
-};
-
+  };
+  
   // Deactivate user
   const deactivateUser = async (uname, id) => {
 
@@ -539,9 +476,8 @@ const Accounts = () => {
             fname: '',
             lname: '',
             uname: '',
+            email: '',
             role: '',
-            password: '',
-            confirmPassword: ''
           });
           setOpenCreateUser(true);
       }}>
@@ -682,9 +618,7 @@ const Accounts = () => {
             lname: '',
             uname: '',
             role: '',
-            password: '',
-            confirmPassword: '',
-            username: username
+            email:''
           });
           setError({});
         }}
@@ -692,17 +626,10 @@ const Accounts = () => {
         account={account}
         handleChange={handleChange}
         error={error}
-        save={(isChangePassword)=>createUserAccount(isChangePassword)}
+        save={saveInvitation}
+        loading={loading}
       />
-      <EditUserModal
-        open={openEditUser}
-        close={() => setEditUser(false)}
-        title={'Edit User Account'}
-        account={account}
-        handleChange={handleChange}
-        error={error}
-        save={(isChangePassword)=>editUserAccount(isChangePassword)}
-      />
+ 
       <DeactivateModal open={openDeactivate} close={() => setOpenDeactivate(false)} uname={selectedUname} deactivateUser={deactivateUser} />
       <ActivateModal open={openActivate} close={() => setOpenActivate(false)} uname={selectedUname} activateUser={activateUser} />
     </div>

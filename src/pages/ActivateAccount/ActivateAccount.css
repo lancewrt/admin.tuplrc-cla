@@ -1,0 +1,298 @@
+@import '../../assets/styles/globals.css';
+
+.activate{
+    background: url(../../assets/attendance-bg.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    width: 100%;
+    padding: 50px 0;
+}
+
+/* Main container */
+  .activate-container {
+    max-width: 500px;
+    margin: auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  /* Form styles */
+  .activate-container .activate-form-wrapper {
+    width: 100%;
+  }
+  
+  .activate-container .activate-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .activate-container .activate-form h2 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
+  }
+  
+  .activate-container .email-display {
+    background-color: #f8f9fa;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    color: #505a68;
+    font-size: 15px;
+    text-align: center;
+  }
+  
+  .activate-container .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+  }
+  
+  .activate-container .form-group label {
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #3a4551;
+    font-size: 14px;
+  }
+  
+  .activate-container .form-group input {
+    padding: 12px;
+    border: 1px solid #dce1e8;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  
+  .activate-container .form-group input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.25);
+  }
+  
+  .activate-container .input-error {
+    border-color: #e74c3c !important;
+    background-color: #fff8f8;
+  }
+  
+  /* Error messages */
+  .activate-container .error-message {
+    color: #e74c3c;
+    font-size: 13px;
+    margin-top: 5px;
+  }
+  
+  .activate-container .error-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin-top: 5px;
+    margin-bottom: 0;
+  }
+  
+  .activate-container .error-list li {
+    color: #e74c3c;
+    font-size: 13px;
+    margin-bottom: 4px;
+    padding-left: 16px;
+    position: relative;
+  }
+  
+  .activate-container .error-list li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #e74c3c;
+  }
+  
+  /* Password strength meter */
+  .activate-container .password-strength {
+    margin-top: 8px;
+  }
+  
+  .activate-container .strength-meter {
+    height: 4px;
+    background-color: #edf2f7;
+    border-radius: 2px;
+    margin-bottom: 4px;
+    overflow: hidden;
+  }
+  
+  .activate-container .strength-meter-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  
+  .activate-container .strength-weak {
+    background-color: #e74c3c;
+  }
+  
+  .activate-container .strength-moderate {
+    background-color: #f39c12;
+  }
+  
+  .activate-container .strength-strong {
+    background-color: #2ecc71;
+  }
+  
+  .activate-container .strength-text {
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  .activate-container .strength-text.strength-weak {
+    color: #e74c3c;
+    background-color: transparent;
+  }
+  
+  .activate-container .strength-text.strength-moderate {
+    color: #f39c12;
+    background-color: transparent;
+  }
+  
+  .activate-container .strength-text.strength-strong {
+    color: #2ecc71;
+    background-color: transparent;
+  }
+  
+  /* Password requirements */
+  .activate-container .password-requirements {
+    background-color: #f8f9fa;
+    padding: 12px 15px;
+    border-radius: 6px;
+    margin-top: 15px;
+  }
+  
+  .activate-container .password-requirements p {
+    font-weight: 500;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #4a5568;
+  }
+  
+  .activate-container .password-requirements ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+  }
+  
+  .activate-container .password-requirements li {
+    font-size: 13px;
+    color: #718096;
+    margin-bottom: 6px;
+    padding-left: 22px;
+    position: relative;
+  }
+  
+  .activate-container .password-requirements li::before {
+    content: "○";
+    position: absolute;
+    left: 0;
+    color: #a0aec0;
+  }
+  
+  .activate-container .password-requirements li.met {
+    color: #38a169;
+  }
+  
+  .activate-container .password-requirements li.met::before {
+    content: "✓";
+    color: #38a169;
+  }
+  
+  /* Button styles */
+  .activate-container .submit-button,
+  .activate-container .action-button {
+    background-color: var(--tup-color);
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+  }
+  
+  .activate-container .submit-button:hover,
+  .activate-container .action-button:hover {
+    background-color: var(--button);
+  }
+  
+  .activate-container .submit-button:focus,
+  .activate-container .action-button:focus {
+    outline: none;
+  }
+  
+  .activate-container .submit-button:disabled {
+    background-color: #a0aec0;
+    cursor: not-allowed;
+  }
+  
+  /* Error container styles */
+  .activate-container .error-container {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .activate-container .error-container h2 {
+    color: #e74c3c;
+    margin-bottom: 15px;
+  }
+  
+  /* Message container */
+  .activate-container .message-container {
+    background-color: #ebf8ff;
+    color: var(--tup-color);
+    padding: 12px;
+    border-radius: 6px;
+    margin-top: 20px;
+    text-align: center;
+    font-size: 14px;
+  }
+  
+  /* Loading spinner */
+  .activate-container .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #a0aec0;
+    border-radius: 50%;
+    border-top-color: var(--tup-color);
+    animation: spin 1s ease-in-out infinite;
+    margin: 0 auto 20px;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Responsive styles */
+  @media screen and (max-width: 600px) {
+    .activate-container .activate-container {
+      margin: 20px;
+      padding: 20px;
+    }
+    
+    .activate-container .activate-form h2 {
+      font-size: 20px;
+    }
+    
+    .activate-container .form-group input {
+      padding: 10px;
+    }
+    
+    .activate-container .submit-button,
+    .activate-container .action-button {
+      padding: 10px 16px;
+    }
+  }
