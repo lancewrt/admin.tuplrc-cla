@@ -17,7 +17,10 @@ const ActivateAccount = () => {
   });
   const [message, setMessage] = useState('');
   const location = useLocation();
+  const currentPathname = location.pathname;
   const navigate = useNavigate();
+
+  console.log(currentPathname)
 
   // Password validation criteria
   const passwordCriteria = {
@@ -44,12 +47,22 @@ const ActivateAccount = () => {
 
   const verifyToken = async () => {
     try {
-      const res = await axios.get(`https://api.tuplrc-cla.com/api/account/verify-token`, {
+      let res;
+      if(currentPathname!='/reset'){
+        res = await axios.get(`https://api.tuplrc-cla.com/api/account/verify-token`, {
         params: { token }
-      });
+        });
+      }else{
+        res = await axios.get(`https://api.tuplrc-cla.com/api/account/verify-reset-token`, {
+        params: { token }
+        });
+      }
+      
+      console.log(res)
       setValid(true);
       setEmail(res.data.email);
     } catch (err) {
+      console.log(err)
       setMessage(err.response?.data?.message || 'Invalid or expired token.');
       setValid(false);
     } finally {
@@ -118,10 +131,18 @@ const ActivateAccount = () => {
     setIsLoading(true);
     
     try {
-      const res = await axios.post(`https://api.tuplrc-cla.com/api/account/activate`, {
-        token,
-        password: data.password
-      });
+      let res;
+      if(currentPathname!='/reset'){
+        res = await axios.post(`https://api.tuplrc-cla.com/api/account/activate`, {
+          token,
+          password: data.password
+        });
+      }else{
+        res = await axios.post(`https://api.tuplrc-cla.com/api/account/recover`, {
+          token,
+          password: data.password
+        });
+      }
       
       setMessage(res.data.message || 'Account activated successfully!');
       
@@ -175,16 +196,23 @@ const ActivateAccount = () => {
 
   if (isLoading) {
     return (
-      <div className="activate-container">
-        <div className="loading-spinner"></div>
-        <p>Verifying your account...</p>
+      <div className='activate d-flex justify-content-center align-items-center'>
+        <div className="card shadow-sm border-0">
+          <div className="card-body text-center p-5">
+            <div class="spinner-grow text-danger" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <h3 className="fw-bold mb-2 mt-3">Verifying Your Email</h3>
+            <p className="text-muted">Please wait while we verify your email address...</p>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className='activate'>
-        <div className="activate-container">
+    <div className='activate d-flex justify-content-center align-items-center'>
+        <div className="activate-container shadow-sm">
         {valid ? (
             <div className="activate-form-wrapper">
             <form onSubmit={handleSubmit} className="activate-form">
@@ -273,12 +301,34 @@ const ActivateAccount = () => {
             </form>
             </div>
         ) : (
-            <div className="error-container">
-            <h2>Invalid or Expired Token</h2>
-            <button onClick={requestActivationLink} className="action-button">
-                Request New Activation Link
-            </button>
-            </div>
+          <div className="card shadow-sm border-0 overflow-hidden">
+                <div className="text-white text-center pt-4">
+                  <div className="bg-white rounded-circle d-inline-flex p-3 shadow">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-danger">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="15" y1="9" x2="9" y2="15"></line>
+                      <line x1="9" y1="9" x2="15" y2="15"></line>
+                    </svg>
+                  </div>
+                </div>
+                <div className="card-body p-4 text-center">
+                  <h3 className="fw-bold mb-2">Invalid or Expired Token</h3>
+                  {currentPathname!='/reset'?
+                  <button onClick={requestActivationLink} className="action-button">
+                    Request New Activation Link
+                  </button>
+                  :''}
+                </div>
+              </div>
+            // <div className="error-container">
+            // <h2>Invalid or Expired Token</h2>
+            // {currentPathname!='/reset'?
+            // <button onClick={requestActivationLink} className="action-button">
+            //     Request New Activation Link
+            // </button>
+            // :''}
+            // </div>
         )}
         
         {message && <div className="message-container">{message}</div>}

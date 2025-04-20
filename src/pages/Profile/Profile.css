@@ -143,6 +143,10 @@
     /* cursor: not-allowed; */
 }
 
+.profilepage .verify, .profilepage .verified{
+  font-size: 0.8rem;
+}
+
   
   /* Responsive styles */
   @media (max-width: 768px) {

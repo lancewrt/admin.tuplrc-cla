@@ -1,26 +1,27 @@
-import React, { useEffect, useId, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AdminNavbar from '../../components/AdminNavbar/AdminNavbar';
 import AdminTopNavbar from '../../components/AdminTopNavbar/AdminTopNavbar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faUser, 
   faLock, 
-  faQrcode,
   faChevronRight
 } from '@fortawesome/free-solid-svg-icons';
 import './Profile.css';
-import { useSelector } from 'react-redux';
-import axios from 'axios'
-import Swal from 'sweetalert2'
-import Loading from '../../components/Loading/Loading';
+import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+import { checkEmail, checkIfVerified, isEdited, updateAccount, validateEmail, validateUsername, verifyEmail } from '../../functions/profileFunctions';
 
 const Profile = () => {
-    const {userId} = useSelector(state=>state.username)
+    const { userId } = useSelector(state => state.username);
     const [userData, setUserData] = useState({
         username: '',
         firstName: '',
         lastName: '',
         role: '',
+        role_id:'',
+        email:''
     });
     const [passwordData, setPasswordData] = useState({
         currentPassword: '',
@@ -31,12 +32,21 @@ const Profile = () => {
     const [originalUserData, setOriginalUserData] = useState(null);
     const [usernameValid, setUsernameValid] = useState(true);
     const [usernameChecking, setUsernameChecking] = useState(false);
-    const [isCurrentPasswordCorrect, setIsCurrentPasswordCorrect] = useState(false)
+    const [isCurrentPasswordCorrect, setIsCurrentPasswordCorrect] = useState(false);
+    const [passwordError, setPasswordError] = useState('')
+    const [newPasswordError, setNewPasswordError] = useState('');
+    const [confirmPasswordError, setConfirmPasswordError] = useState('');
+    const [emailError, setEmailError] = useState('');
+    const [isEmailExist, setIsEmailExist] = useState(false);
+    const [isEmailValid, setIsEmailValid] = useState(false);
+    const [isEmailVerified,setIsEmailVerified] = useState(true);
+    const [token,setToken] = useState(null)
+    const [sendingLoading, setSendingLoading] = useState(false)
 
-    useEffect(()=>{
-        if(!userId) return
-        getUserProfile()
-    },[userId])
+    useEffect(() => {
+        if(!userId) return;
+        getUserProfile();
+    }, [userId]);
 
     useEffect(() => {
         if (!userData.username.trim() || userData.username === originalUserData?.username) {
@@ -45,48 +55,157 @@ const Profile = () => {
         }
     
         const delayDebounce = setTimeout(() => {
-            validateUsername(userData.username);
+            validateUsername(userData.username,userId,setUsernameChecking,setUsernameValid);
         }, 500); // debounce
     
         return () => clearTimeout(delayDebounce);
-    }, [userData.username]);    
+    }, [userData.username, originalUserData]);    
 
-    const getUserProfile = async()=>{
+    useEffect(() => {
+        if (!userData.email) return;
+        setEmailError('');
+        setIsEmailValid(false);
+        setIsEmailVerified(true);
+    
+        const delayDebounce = setTimeout(() => {
+            if (validateEmail(userData.email)) {
+                checkEmail(userData.email, userId, setIsEmailExist, setEmailError, setIsEmailValid, setIsEmailVerified, userData, originalUserData);
+            } else {
+                setEmailError('Invalid email format');
+            }
+        }, 500); // Wait 500ms after user stops typing
+    
+        return () => clearTimeout(delayDebounce); // Clean up on new keystroke
+    }, [userData.email]);
+
+    useEffect(() => {
+        if (!passwordData.currentPassword || passwordData.currentPassword.length < 3) {
+            setIsCurrentPasswordCorrect(false);
+            return;
+        }
+    
+        setPasswordError('');
+        const delayDebounce = setTimeout(() => {
+            verifyPassword(passwordData.currentPassword, userData.username);
+        }, 500);
+    
+        return () => clearTimeout(delayDebounce);
+    }, [passwordData.currentPassword]);
+    
+
+    const verifyPassword = async (password, uname) => {
         try {
-            console.log(userId)
-            const response = await axios.get(`https://api.tuplrc-cla.com/api/user/profile/${userId}`)
-            const data = response.data[0]
+            const response = await axios.get(`https://api.tuplrc-cla.com/api/user/verify-password`, {
+                params: {
+                    password,
+                    username: uname
+                }
+            });
+    
+            if (response.status === 200) {
+                setIsCurrentPasswordCorrect(true);
+            }
+        } catch (error) {
+            console.log('Cannot verify password: ', error);
+            setIsCurrentPasswordCorrect(false);
+    
+            // Get message from backend if available
+            if (error.response?.data?.error) {
+                setPasswordError(error.response.data.error);
+            } else {
+                setPasswordError('Unable to verify password.');
+            }
+        }
+    };
+
+    const validateNewPassword = () => {
+        setNewPasswordError('');
+        setConfirmPasswordError('');
+    
+        const { currentPassword, newPassword, confirmPassword } = passwordData;
+    
+        if (newPassword === currentPassword) {
+            setNewPasswordError('New password must be different from current password.');
+            return false;
+        }
+    
+        const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+        if (!strongRegex.test(newPassword)) {
+            setNewPasswordError('Password must be at least 8 characters, include upper & lower case, a number, and a special character.');
+            return false;
+        }
+    
+        if (newPassword !== confirmPassword) {
+            setConfirmPasswordError('Passwords do not match.');
+            return false;
+        }
+    
+        return true;
+    };
+    
+    const handlePasswordSubmit = async (e) => {
+        e.preventDefault();
+    
+        if (!validateNewPassword()) return;
+    
+        try {
+            await axios.put(`https://api.tuplrc-cla.com/api/user/change-password/${userId}`, {
+                currentPassword: passwordData.currentPassword,
+                newPassword: passwordData.newPassword
+            });
+    
+            Swal.fire({
+                title: "Password Updated!",
+                text: "Your password has been changed successfully.",
+                icon: "success",
+                confirmButtonColor: "#54CB58"
+            });
+    
+            // Reset fields
+            setPasswordData({
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: ''
+            });
+    
+        } catch (error) {
+            console.error('Password update failed:', error);
+            Swal.fire({
+                title: "Error!",
+                text: "There was a problem updating your password.",
+                icon: "error",
+                confirmButtonColor: "#94152b"
+            });
+        }
+    };
+
+    const getUserProfile = async() => {
+        try {
+            console.log(userId);
+            const response = await axios.get(`https://api.tuplrc-cla.com/api/user/profile/${userId}`);
+            const data = response.data[0];
             const fetchedData = {
                 username: data.staff_uname,
                 firstName: data.staff_fname,
                 lastName: data.staff_lname,
                 role: data.role_name,
+                role_id: data.role_id,
+                email: data.staff_email
             };
     
             setUserData(fetchedData);
             setOriginalUserData(fetchedData); // Save the original for comparison
         } catch (error) {
+            console.error("Error fetching user profile:", error);
         }
     }
 
-    const validateUsername = async (username) => {
-        setUsernameChecking(true);
-        try {
-            const response = await axios.get(
-                `https://api.tuplrc-cla.com/api/user/check-username/${username}?excludeId=${userId}`
-            );
-            setUsernameValid(!response.data.exists); // true if username is available
-        } catch (error) {
-            console.error('Username validation error:', error);
-            setUsernameValid(false);
-        } finally {
-            setUsernameChecking(false);
-        }
-    };
-
     const handleUserDataChange = (e) => {
         const { name, value } = e.target;
-        setUserData({...userData, [name]: value});
+        setUserData(prev => ({
+            ...prev, 
+            [name]: value
+        }));
     };
 
     const handlePasswordChange = (e) => {
@@ -101,76 +220,20 @@ const Profile = () => {
         // Add API call to update user data
     };
 
-    const handlePasswordSubmit = (e) => {
-        e.preventDefault();
-        // Handle password change submission
-        console.log('Password change request:', passwordData);
-        // Add API call to update password
+    useEffect(() => {
+        if (!token) return;
+
+        // Set up an interval to check periodically (every 5 seconds)
+        const intervalId = setInterval(() => {
+          checkIfVerified(token, userData.username, setIsEmailVerified);
+        }, 5000);
         
-        // Reset password fields after submission
-        setPasswordData({
-            currentPassword: '',
-            newPassword: '',
-            confirmPassword: ''
-        });
-    };
+        // Clean up interval on component unmount
+        return () => clearInterval(intervalId);
+      }, [token]);
 
-    const isEdited = () => {
-        if (!originalUserData) return false;
-    
-        const isChanged = (
-            userData.username !== originalUserData.username ||
-            userData.firstName !== originalUserData.firstName ||
-            userData.lastName !== originalUserData.lastName ||
-            userData.role !== originalUserData.role
-        );
-    
-        const hasEmptyField = (
-            !userData.username.trim() ||
-            !userData.firstName.trim() ||
-            !userData.lastName.trim() ||
-            !userData.role.trim()
-        );
-    
-        return isChanged && !hasEmptyField;
-    };
 
-    const updateAccount = async () => {
-        const result = await Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            icon: "question",
-            showCancelButton: true,
-            confirmButtonColor: "#54CB58",
-            cancelButtonColor: "#94152b",
-            confirmButtonText: "Yes, update!"
-        });
-    
-        if (!result.isConfirmed) return;
-    
-        try {
-            await axios.put(`https://api.tuplrc-cla.com/api/user/update/${userId}`, userData);
-    
-            await Swal.fire({
-                title: "Updated!",
-                text: "Your account has been updated.",
-                icon: "success",
-                confirmButtonColor: "#54CB58"
-            });
-    
-            window.location.reload();
-        } catch (error) {
-            console.error("Cannot update account:", error);
-            Swal.fire({
-                title: "Error!",
-                text: "There was a problem updating your account.",
-                icon: "error",
-                confirmButtonColor: "#94152b"
-            });
-        } 
-    };
-    
-    console.log(userData)
+      console.log(passwordData)
 
     return (
         <div className='profilepage bg-light'>
@@ -255,6 +318,38 @@ const Profile = () => {
                                             className="form-control text-capitalize"
                                         />
                                     </div>
+                                    <div className="form-group">
+                                        <label htmlFor="email">Email</label>
+                                        <div>
+                                            <input 
+                                                type="email" 
+                                                id="email" 
+                                                name="email" 
+                                                value={userData.email} 
+                                                onChange={handleUserDataChange} 
+                                                className={`form-control ${emailError ? 'is-invalid' : ''}`}
+                                            />
+                                            {!isEmailExist && isEmailValid && !isEmailVerified && (
+                                            <button 
+                                                type="button"
+                                                className="btn btn-success mt-1 verify"
+                                                onClick={()=>verifyEmail(setSendingLoading,userData,setToken)}
+                                            >
+                                                {sendingLoading?'Sending':'Verify now'}
+                                            </button>
+                                            )}
+                                            {isEmailValid && isEmailVerified && (
+                                                <div className="text-success mt-1 verified">
+                                                    Your email is verified
+                                                </div>
+                                            )}
+                                            {emailError && (
+                                            <div className="invalid-feedback">
+                                                {emailError}
+                                            </div>
+                                            )}
+                                        </div>
+                                    </div>
                                     
                                     <div className="form-group">
                                         <label htmlFor="role">Role</label>
@@ -270,11 +365,11 @@ const Profile = () => {
                                     
                                     <div className="form-actions">
                                         <button 
-                                            type="submit" 
+                                            type="button" 
                                             className="btn-save" 
-                                            disabled={!isEdited()}
-                                            onClick={updateAccount}
-                                            >
+                                            disabled={!isEdited(userData,originalUserData, isEmailVerified) || !usernameValid || !!emailError}
+                                            onClick={()=>updateAccount(userId,userData)}
+                                        >
                                             Save Changes
                                         </button>
                                     </div>
@@ -291,11 +386,17 @@ const Profile = () => {
                                             type="password" 
                                             id="currentPassword" 
                                             name="currentPassword" 
+                                            autoComplete="new-password" // <-- prevent autofill
                                             value={passwordData.currentPassword} 
                                             onChange={handlePasswordChange} 
-                                            className="form-control"
+                                            className={`form-control ${passwordError ? 'is-invalid' : ''}`}
                                             required
                                         />
+                                        {passwordError && (
+                                            <div className="invalid-feedback">
+                                                {passwordError}
+                                            </div>
+                                        )}
                                     </div>
                                     
                                     <div className="form-group">
@@ -306,12 +407,15 @@ const Profile = () => {
                                             name="newPassword" 
                                             value={passwordData.newPassword} 
                                             onChange={handlePasswordChange} 
-                                            className="form-control"
+                                            className={`form-control ${newPasswordError ? 'is-invalid' : ''}`}
                                             disabled={!isCurrentPasswordCorrect}
-                                            required
                                         />
+                                        {newPasswordError && (
+                                            <div className="invalid-feedback">
+                                                {newPasswordError}
+                                            </div>
+                                        )}
                                     </div>
-                                    
                                     <div className="form-group">
                                         <label htmlFor="confirmPassword">Confirm New Password</label>
                                         <input 
@@ -320,17 +424,19 @@ const Profile = () => {
                                             name="confirmPassword" 
                                             value={passwordData.confirmPassword} 
                                             onChange={handlePasswordChange} 
-                                            className="form-control"
+                                            className={`form-control ${confirmPasswordError ? 'is-invalid' : ''}`}
                                             disabled={!isCurrentPasswordCorrect}
-                                            required
                                         />
+                                        {confirmPasswordError && (
+                                            <div className="invalid-feedback">
+                                                {confirmPasswordError}
+                                            </div>
+                                        )}
                                     </div>
-                                    
                                     <div className="form-actions">
                                         <button 
                                             type="submit" 
                                             className="btn-save"
-                                            
                                         >
                                             Update Password
                                         </button>

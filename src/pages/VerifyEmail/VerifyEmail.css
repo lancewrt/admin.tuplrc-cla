@@ -1,0 +1,11 @@
+@import '../../assets/styles/globals.css';
+
+.verify-container{
+    background: url(../../assets/attendance-bg.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    width: 100%;
+    padding: 50px 0;
+}

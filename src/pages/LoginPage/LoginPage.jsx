@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css'
+import { Link } from 'react-router-dom';
 
 const LoginPage = () => {
     const [username, setUsername] = useState("");
@@ -12,24 +13,12 @@ const LoginPage = () => {
     
     // Check if the user is already logged in when the component mounts
     useEffect(() => {
-        /* const checkLoginStatus = async () => {
+        const checkLoginStatus = async () => {
             try {
                 const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
                 
                 if (response.data.loggedIn) {
                     // If the user is logged in, redirect to the dashboard
-                    navigate('/dashboard');
-                }
-            } catch (error) {
-                console.error('Error checking session:', error);
-            }
-        }; */
-
-        const checkLoginStatus = async () => {
-            try {
-                const storedCreds = JSON.parse(localStorage.getItem('token'));
-
-                if (storedCreds.message === "Login successful") { 
                     navigate('/dashboard');
                 }
             } catch (error) {
@@ -58,8 +47,6 @@ const LoginPage = () => {
 
             if (response.status === 200) {
                 console.log("Login successful:", response.data);
-                localStorage.setItem('token', JSON.stringify(response.data)); 
-
                 // Redirect to dashboard
                 navigate('/dashboard');
             }
@@ -103,7 +90,7 @@ const LoginPage = () => {
                         <label htmlFor="username" className="form-label">Username</label>
                     </div>
                     
-                    <div className="mb-4 form-floating">
+                    <div className="form-floating">
                         <input
                             type="password"
                             className="form-control"
@@ -114,6 +101,12 @@ const LoginPage = () => {
                             onKeyDown={handleKeyDown}
                         />
                         <label htmlFor="password" className="form-label">Password</label>
+                    </div>
+                    
+                    <div className='d-flex justify-content-center'>
+                        <Link to="/reset-password">
+                            <p className='mb-4 mt-2 fw-semibold m-auto forgot text-secondary'>Forgot password?</p>
+                        </Link>
                     </div>
                     
                     {error && (

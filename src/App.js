@@ -26,6 +26,8 @@ import GenerateBarcodePage from './pages/GenerateBarcodePage/GenerateBarcodePage
 import CatalogManagePage from './pages/CatalogManagePage/CatalogManagePage';
 import Profile from './pages/Profile/Profile';
 import ActivateAccount from './pages/ActivateAccount/ActivateAccount';
+import VerifyEmail from './pages/VerifyEmail/VerifyEmail';
+import ResetPassword from './pages/ResetPassword/ResetPassword';
 
 const App = () => {
   return (
@@ -33,99 +35,102 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<LoginPage />} />
+          <Route path="/reset-password" element={<ResetPassword/>} />
           <Route path="/activate" element={<ActivateAccount/>} />
+          <Route path="/reset" element={<ActivateAccount/>} />
+          <Route path="/verify" element={<VerifyEmail/>} />
           
           <Route path='/dashboard' element={
-            <ProtectedRoute allowedRoles={['superadmin','admin','staff']}>
+            <ProtectedRoute allowedRoles={['admin','staff']}>
               <DashboardPage/>
             </ProtectedRoute>}/>
           <Route path='/logbook' element={
-            <ProtectedRoute allowedRoles={['superadmin','admin','staff']}>
+            <ProtectedRoute allowedRoles={['admin','staff']}>
               <LogbookPage/>
             </ProtectedRoute>
           } />
           <Route path='/circulation' element={
-            <ProtectedRoute allowedRoles={['superadmin','admin','staff']}>
+            <ProtectedRoute allowedRoles={['admin','staff']}>
               <CirculationPage/>
             </ProtectedRoute>
           }/>
           <Route path='/circulation/patron' element={
-            <ProtectedRoute allowedRoles={['superadmin','admin','staff']}>
+            <ProtectedRoute allowedRoles={['admin','staff']}>
               <CirculationSelectPatronPage/>
             </ProtectedRoute>
           }/>
           <Route path='/circulation/patron/item/:id' element={
-            <ProtectedRoute allowedRoles={['superadmin','admin','staff']}>
+            <ProtectedRoute allowedRoles={['admin','staff']}>
               <CirculationSelectItemPage/>
             </ProtectedRoute>
           } />
           <Route path='/circulation/patron/item/checkout' element={
-            <ProtectedRoute allowedRoles={['superadmin','admin','staff']}>
+            <ProtectedRoute allowedRoles={['admin','staff']}>
               <CirculationCheckoutPage/>
             </ProtectedRoute>
           } />
           <Route path='/circulation/patron/item/checkin' element={
-            <ProtectedRoute allowedRoles={['superadmin','admin','staff']}>
+            <ProtectedRoute allowedRoles={['admin','staff']}>
               <CirculationCheckoutPage/>
             </ProtectedRoute>
           } />
           <Route path='/patron' element={
-            <ProtectedRoute allowedRoles={['superadmin','admin','staff']}>
+            <ProtectedRoute allowedRoles={['admin','staff']}>
               <PatronsPage/>
             </ProtectedRoute>
           } />
           <Route path='/catalog' element={
-            <ProtectedRoute allowedRoles={['superadmin','admin','staff']}>
+            <ProtectedRoute allowedRoles={['admin','staff']}>
               <CatalogPage/>
             </ProtectedRoute>
           } />
           <Route path='/catalog/manage-catalog' element={
-            <ProtectedRoute allowedRoles={['superadmin','admin','staff']}>
+            <ProtectedRoute allowedRoles={['admin','staff']}>
               <CatalogManagePage/>
             </ProtectedRoute>
           } />
           <Route path='/catalog/add' element={
-            <ProtectedRoute allowedRoles={['superadmin','admin','staff']}>
+            <ProtectedRoute allowedRoles={['admin','staff']}>
               <AddItemPage/>
             </ProtectedRoute>
           }/>
           <Route path='/catalog/view/:id' element={
-            <ProtectedRoute allowedRoles={['superadmin','admin','staff']}>
+            <ProtectedRoute allowedRoles={['admin','staff']}>
               <AddItemPage/>
             </ProtectedRoute>
           } />
           <Route path='/catalog/generate-barcode' element={
-            <ProtectedRoute allowedRoles={['superadmin','admin','staff']}>
+            <ProtectedRoute allowedRoles={['admin','staff']}>
               <GenerateBarcodePage/>
             </ProtectedRoute>
           } />
           <Route path='/attendance' element={
-            <ProtectedRoute allowedRoles={['superadmin','admin','staff']}>
+            <ProtectedRoute allowedRoles={['admin','staff']}>
               <AttendancePage/>
             </ProtectedRoute>
           } />
           <Route path='/circulation/patron/item/checkin' element={
-            <ProtectedRoute allowedRoles={['superadmin','staff', 'admin']}>
+            <ProtectedRoute allowedRoles={['staff', 'admin']}>
               <CirculationCheckoutPage />
               </ProtectedRoute>
           }/>
 
           <Route path='/patron/view/:id' element={
-            <ProtectedRoute allowedRoles={['superadmin','staff', 'admin']}>
+            <ProtectedRoute allowedRoles={['staff', 'admin']}>
               <ViewPatronPage/>
             </ProtectedRoute>
           }
           />
 
           <Route path='/authors' element={
-            <ProtectedRoute allowedRoles={['superadmin','staff', 'admin']}>
+            <ProtectedRoute allowedRoles={['staff', 'admin']}>
               <AuthorsPage/>
             </ProtectedRoute>
           }
           />
 
           <Route path='/profile' element={
-            <ProtectedRoute allowedRoles={['superadmin','staff', 'admin','superadmin']}>
+            <ProtectedRoute allowedRoles={['staff', 'admin','superadmin']}>
               <Profile/>
             </ProtectedRoute>
           }
@@ -134,31 +139,31 @@ const App = () => {
           {/* Restricted routes for staff */}
 
           <Route path='/patron/edit/:id' element={
-            <ProtectedRoute allowedRoles={['superadmin','admin']}>
+            <ProtectedRoute allowedRoles={['admin']}>
               <EditPatronPage/>
             </ProtectedRoute>
           }
           />
 
           <Route path='/patron/add' element={
-            <ProtectedRoute allowedRoles={['superadmin','admin']}>
+            <ProtectedRoute allowedRoles={['admin']}>
               <EditPatronPage/>
             </ProtectedRoute>
           }
           />
 
           <Route path='/audit' element={
-            <ProtectedRoute allowedRoles={['superadmin', 'admin' ]}>
+            <ProtectedRoute allowedRoles={[ 'admin' ]}>
               <AuditPage/>
             </ProtectedRoute>
           } />
           <Route path='/accounts' element={
-            <ProtectedRoute allowedRoles={['superadmin']}>
+            <ProtectedRoute allowedRoles={['admin']}>
               <AccountsPage/>
             </ProtectedRoute>
           } />
           <Route path='/reports' element={
-            <ProtectedRoute allowedRoles={['superadmin','admin','staff']}>
+            <ProtectedRoute allowedRoles={['admin','staff']}>
               <ReportsPage/>
             </ProtectedRoute>
           } />

@@ -35,3 +35,15 @@
     --light-red: rgba(148, 21, 43, 0.1);
     --white-shadow: #ffffff54;
 }
+
+.find-account .lrc-btn{
+    background-color: var(--tup-color) !important;
+    color: #fff;
+}
+
+.find-account .lrc-btn:hover,
+.find-account .lrc-btn:focus,
+.find-account .lrc-btn:active{
+    background-color: var(--tup-color) !important;
+    color: #fff;
+}
