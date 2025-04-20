@@ -11,6 +11,8 @@ import statusReducer from '../features/statusSlice.js'
 import adviserReducer from '../features/adviserSlice.js'
 import authorReducer from '../features/authorSlice.js'
 import publisherInfoReducer from '../features/publisherInfoSlice.js'
+import socketReducer from '../features/socketSlice.js'
+import isEmailVerifiedReducer from '../features/isEmailVerified.js'
 
 const store = configureStore({
     reducer:{
@@ -25,7 +27,9 @@ const store = configureStore({
         status: statusReducer,
         adviser: adviserReducer,
         author: authorReducer,
-        publisherInfo: publisherInfoReducer
+        publisherInfo: publisherInfoReducer,
+        socket: socketReducer,
+        isEmailVerified: isEmailVerifiedReducer,
     }
 })
 
