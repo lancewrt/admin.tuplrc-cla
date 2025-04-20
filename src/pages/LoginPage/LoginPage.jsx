@@ -46,6 +46,7 @@ const LoginPage = () => {
 
             if (response.status === 200) {
                 console.log("Login successful:", response.data);
+                localStorage.setItem('token', JSON.stringify(response.data)); 
                 // Redirect to dashboard
                 navigate('/dashboard');
             }
