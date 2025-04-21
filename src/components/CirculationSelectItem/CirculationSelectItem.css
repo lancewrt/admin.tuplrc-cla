@@ -190,10 +190,10 @@
     height: 50px;
 }
 
-.circ-select-item-container .checkout-btn:hover{
+/* .circ-select-item-container .checkout-btn:hover{
     background-color: var(--tup-color-hover);
     color: var(--white);
-}
+} */
 
 .suggestions {
     
