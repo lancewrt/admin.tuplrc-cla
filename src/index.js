@@ -28,9 +28,9 @@ root.render(
   //   <App />
   // </React.StrictMode>
   <Provider store={store}>
-    <SocketProvider>
+    {/* <SocketProvider> */}
       <App /> 
-    </SocketProvider>
+    {/* </SocketProvider> */}
   </Provider>
 );
 

@@ -50,9 +50,9 @@ const Dashboard = () => {
   const bookListHeader = ["Book ID","Title","Author","Copies Available"];
   const bookIssuedHeader = ["Tup ID","Title","Return Date"];
   const dispatch = useDispatch()
-  const socket = useContext(SocketContext)
+  // const socket = useContext(SocketContext)
 
-  console.log(socket)
+  // console.log(socket)
   
   useEffect(() => {
     getTotalVisitors();
@@ -67,45 +67,45 @@ const Dashboard = () => {
     getVisitorStats();
   }, []);
 
-  useEffect(() => {
-    if (!socket || !socket.connected) return;
+  // useEffect(() => {
+  //   if (!socket || !socket.connected) return;
   
-    const handleAttendance = () => {
-      console.log('Attendance updated, refreshing data...');
-      getTotalVisitors();
-      getVisitorStats();
-    };
+  //   const handleAttendance = () => {
+  //     console.log('Attendance updated, refreshing data...');
+  //     getTotalVisitors();
+  //     getVisitorStats();
+  //   };
   
-    const handleCheckin = () => {
-      console.log('checkin updated, refreshing data...');
-      getTotalReturned();
-      getBookTrends();
-    };
+  //   const handleCheckin = () => {
+  //     console.log('checkin updated, refreshing data...');
+  //     getTotalReturned();
+  //     getBookTrends();
+  //   };
   
-    const handleCheckout = () => {
-      console.log('checkout updated, refreshing data...');
-      getTotalBorrowed();
-      getBookTrends();
-    };
+  //   const handleCheckout = () => {
+  //     console.log('checkout updated, refreshing data...');
+  //     getTotalBorrowed();
+  //     getBookTrends();
+  //   };
   
-    const handleOverdue = () => {
-      console.log('overdue updated, refreshing data...');
-      getTotalOverdue();
-    };
+  //   const handleOverdue = () => {
+  //     console.log('overdue updated, refreshing data...');
+  //     getTotalOverdue();
+  //   };
   
-    socket.on('attendanceUpdated', handleAttendance);
-    socket.on('checkinUpdated', handleCheckin);
-    socket.on('checkoutUpdated', handleCheckout);
-    socket.on('overdueUpdated', handleOverdue);
+  //   socket.on('attendanceUpdated', handleAttendance);
+  //   socket.on('checkinUpdated', handleCheckin);
+  //   socket.on('checkoutUpdated', handleCheckout);
+  //   socket.on('overdueUpdated', handleOverdue);
   
-    return () => {
-      socket.off('attendanceUpdated', handleAttendance);
-      socket.off('checkinUpdated', handleCheckin);
-      socket.off('checkoutUpdated', handleCheckout);
-      socket.off('overdueUpdated', handleOverdue);
+  //   return () => {
+  //     socket.off('attendanceUpdated', handleAttendance);
+  //     socket.off('checkinUpdated', handleCheckin);
+  //     socket.off('checkoutUpdated', handleCheckout);
+  //     socket.off('overdueUpdated', handleOverdue);
       
-    };
-  }, [socket?.connected]);
+  //   };
+  // }, [socket?.connected]);
   
 
   //total visitors

@@ -8,6 +8,11 @@ import * as XLSX from 'xlsx'; // Import xlsx for Excel export
 import { io } from 'socket.io-client';
 import { SocketContext } from '../../store/socketContext';
 
+const socket = io(`https://api.tuplrc-cla.com`, {
+    withCredentials: true,
+    transports: ["websocket", "polling"],
+});
+
 const Logbook = () => {
     const [patron, setPatron] = useState([]);
     const [searchInput, setSearchInput] = useState('');
