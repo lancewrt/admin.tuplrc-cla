@@ -91,31 +91,32 @@ export const checkIfVerified = async (token,username, setIsEmailVerified) => {
     } 
   };
 
-export const isEdited = (userData, originalUserData, isEmailVerified) => {
+  export const isEdited = (userData, originalUserData) => {
     if (!userData || !originalUserData) return false;
 
     console.log('isEdited');
+    console.log('backend current: ', userData)
+    console.log('backend original: ', originalUserData)
   
 
     const isChanged = (
-        userData.username !== originalUserData.username ||
-        userData.firstName !== originalUserData.firstName ||
-        userData.lastName !== originalUserData.lastName ||
-        userData.email !== originalUserData.email ||
-        userData.role !== originalUserData.role
+        userData.username != originalUserData.username ||
+        userData.firstName != originalUserData.firstName ||
+        userData.lastName != originalUserData.lastName ||
+        userData.email != originalUserData.email ||
+        userData.role_id != originalUserData.role_id
     );
 
     const hasEmptyField = (
         !userData.username?.trim() ||
         !userData.firstName?.trim() ||
         !userData.lastName?.trim() ||
-        !userData.role?.trim()
+        !userData.role_id
     );
 
-    console.log(isChanged && !hasEmptyField && isEmailVerified)
+    console.log(isChanged && !hasEmptyField)
     return isChanged && !hasEmptyField;
 };
-
 
 export const updateAccount = async (userId, userData) => {
         const result = await Swal.fire({

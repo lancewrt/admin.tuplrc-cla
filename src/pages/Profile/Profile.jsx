@@ -369,7 +369,7 @@ const Profile = () => {
                                         <button 
                                             type="button" 
                                             className="btn-save" 
-                                            disabled={!isEdited(userData,originalUserData, isEmailVerified) || !usernameValid || !!emailError}
+                                            disabled={!isEdited(userData,originalUserData) || !usernameValid || emailError}
                                             onClick={()=>updateAccount(userId,userData)}
                                         >
                                             Save Changes

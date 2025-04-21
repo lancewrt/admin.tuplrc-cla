@@ -217,7 +217,7 @@ const EditUserModal = ({open, close, account, originalAccount, handleChange, err
                     type="button"
                     className="btn create-btn" 
                     onClick={save}
-                    disabled={!isCreate?!isEdited(account,originalAccount,isEmailVerified) || !usernameValid || !!emailError || !isEmailVerified:false}
+                    disabled={!isCreate?!isEdited(account,originalAccount) || !usernameValid || emailError || !isEmailVerified:false}
                 >
                     {!loading?'Confirm':'Loading...'}
                 </button>
