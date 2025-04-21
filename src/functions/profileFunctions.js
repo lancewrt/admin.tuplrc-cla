@@ -25,9 +25,12 @@ export const checkEmail = async (email, userId, setIsEmailExist, setEmailError, 
     console.log(userData)
     console.log(originalUserData)
     try {
-        const response = await axios.get(
-            `https://api.tuplrc-cla.com/api/user/check-email/${email}?excludeId=${userId}`
-    );
+        const response = await axios.get(`https://api.tuplrc-cla.com/api/user/check-email`,{
+            params:{
+                email:email,
+                excludedId: userId
+            }
+        });
       
         setIsEmailExist(response.data.exists);
         setEmailError(response.data.error || '');

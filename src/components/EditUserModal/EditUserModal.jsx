@@ -140,7 +140,7 @@ const EditUserModal = ({open, close, account, originalAccount, handleChange, err
                 <div className="col-12 form-floating">
                     <input 
                         type="text" 
-                        className={`form-control ${!usernameValid ? 'is-invalid' : ''}`}
+                        className={`form-control ${!usernameValid && !isCreate? 'is-invalid' : ''}`}
                         id='username' 
                         name='username' 
                         placeholder=''
