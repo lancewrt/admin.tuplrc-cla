@@ -17,7 +17,7 @@ const LoginPage = () => {
             try {
                 const storedCreds = JSON.parse(localStorage.getItem('token'));
 
-                if (storedCreds.message === "Login successful") { 
+                if (storedCreds?.message === "Login successful") { 
                     navigate('/dashboard');
                 }
             } catch (error) {
