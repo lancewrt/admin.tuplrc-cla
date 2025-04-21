@@ -66,6 +66,8 @@ const Profile = () => {
         setEmailError('');
         setIsEmailValid(false);
         setIsEmailVerified(true);
+
+        if(account.email==originalAccount.email) return
     
         const delayDebounce = setTimeout(() => {
             if (validateEmail(userData.email)) {
@@ -73,7 +75,7 @@ const Profile = () => {
             } else {
                 setEmailError('Invalid email format');
             }
-        }, 500); // Wait 500ms after user stops typing
+        }, 500); // Wait 500ms after user stops typing 
     
         return () => clearTimeout(delayDebounce); // Clean up on new keystroke
     }, [userData.email]);

@@ -16,6 +16,7 @@ const Logbook = () => {
     const [loading, setLoading] = useState(false);
     const location = useLocation();
 
+    
     useEffect(() => {
         const socket = io("https://api.tuplrc-cla.com", {
             withCredentials: true,
