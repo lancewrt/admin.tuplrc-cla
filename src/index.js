@@ -7,7 +7,6 @@ import Swal from 'sweetalert2';
 import {Provider} from 'react-redux'
 import store from './store/store.js';
 import { register } from './serviceWorkerRegistration'; // Import the register function
-import { SocketProvider } from './store/socketContext.js';
 
 // Define global SweetAlert2
 window.Swal = Swal;
@@ -28,9 +27,7 @@ root.render(
   //   <App />
   // </React.StrictMode>
   <Provider store={store}>
-    {/* <SocketProvider> */}
       <App /> 
-    {/* </SocketProvider> */}
   </Provider>
 );
 

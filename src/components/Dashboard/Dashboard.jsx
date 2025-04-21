@@ -16,7 +16,6 @@ import { fetchDepartmentOnline, setDepartmentArr } from '../../features/departme
 import { setTopicArr } from '../../features/topicSlice.js';
 import { fetchPublisherOnline, setPublisherArr } from '../../features/publisherSlice.js';
 import { setStatusArr } from '../../features/statusSlice.js';
-import { SocketContext } from '../../store/socketContext.js';
 
 const Dashboard = () => {
   const [dateTime,setDateTime] = useState(new Date());
@@ -50,7 +49,7 @@ const Dashboard = () => {
   const bookListHeader = ["Book ID","Title","Author","Copies Available"];
   const bookIssuedHeader = ["Tup ID","Title","Return Date"];
   const dispatch = useDispatch()
-  // const socket = useContext(SocketContext)
+
 
   // console.log(socket)
   

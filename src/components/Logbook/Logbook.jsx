@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faArrowLeft, faArrowRight, faExclamationCircle, faSmile, faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 import * as XLSX from 'xlsx'; // Import xlsx for Excel export
 import { io } from 'socket.io-client';
-import { SocketContext } from '../../store/socketContext';
 
 const socket = io(`https://api.tuplrc-cla.com`, {
     withCredentials: true,
@@ -21,7 +20,6 @@ const Logbook = () => {
     const [totalEntries, setTotalEntries] = useState(0); // Total number of entries
     const [loading, setLoading] = useState(false);
     const location = useLocation();
-    // const socket = useContext(SocketContext);
 
     useEffect(() => {
         if (socket) {
