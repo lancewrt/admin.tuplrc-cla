@@ -33,7 +33,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
         const storedCreds = JSON.parse(localStorage.getItem('token'));
 
         // If session is valid, set the role
-        if (storedCreds.message === "Login successful") {
+        if (storedCreds?.message === "Login successful") {
           setUserRole(storedCreds.user.role);
         } else {
           setUserRole(null); // If not logged in, clear the role
