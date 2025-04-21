@@ -181,89 +181,89 @@ const Accounts = () => {
           </tr>
         </thead>
         <tbody>
-  {currentAccounts ? currentAccounts.length > 0 ? (
-    currentAccounts.map((item) => {
-      // Check if buttons should be disabled
-      const isRoleTwo = item.role_id === 1;
-      const loggedInUserRole = JSON.parse(localStorage.getItem('token'));
-      const isSameUser = isRoleTwo && item.username === loggedInUserRole.user.username;
-      const disableButtons = isRoleTwo && !isSameUser;
-      
-      return (
-        <tr key={item.userId}>
-          <td>{item.firstName}</td>
-          <td>{item.lastName}</td>
-          <td>{item.username}</td>
-          <td>{item.role} {item.role_id}</td>
+          {currentAccounts ? currentAccounts.length > 0 ? (
+            currentAccounts.map((item) => {
+              // Check if buttons should be disabled
+              const isRoleTwo = item.role_id === 1;
+              const loggedInUserRole = JSON.parse(localStorage.getItem('token'));
+              const isSameUser = isRoleTwo && item.username === loggedInUserRole.user.username;
+              const disableButtons = isRoleTwo && !isSameUser;
+              
+              return (
+                <tr key={item.userId}>
+                  <td>{item.firstName}</td>
+                  <td>{item.lastName}</td>
+                  <td>{item.username}</td>
+                  <td>{item.role} {item.role_id}</td>
 
-          <td>
-            <span className={item.status=='active'?'bg-success text-light p-2 rounded fw-semibold':'bg-danger text-light p-2 rounded fw-semibold'}>{item.status}</span>
-          </td>
-          <td className="action">
-            {/* Edit user */}
-            <button 
-              className="btn edit-btn border-0" 
-              onClick={() => {
-                setEditUser(true);
-                getToEdit(item.userId, setAccount, setOriginalAccount, uname)
-              }} 
-              title='Edit user'
-              disabled={disableButtons}
-            >
-              <FontAwesomeIcon icon={faPen} />
-            </button>
-            {/* Deactivate / Activate */}
-            {item.status === 'active' ? (
-              <button 
-                className="btn deac-acc-btn border-0" 
-                onClick={() => deactivateUser(item.username, item.userId, setLoading, uname)} 
-                title='Deactivate user'
-                disabled={disableButtons}
-              >
-                <FontAwesomeIcon icon={faUserSlash} />
-              </button>
-            ) : (
-              <button 
-                className="btn deac-acc-btn" 
-                onClick={() => activateUser(item.username, item.userId, setLoading, uname)} 
-                title='Activate user'
-                disabled={disableButtons}
-              >
-                <FontAwesomeIcon icon={faUser} />
-              </button>
-            )}
-          </td>
-        </tr>
-      );
-    })
-  ) : !loading && currentAccounts.length === 0 ? (
-    <tr>
-      <td colSpan="6" className='no-data-box text-center'>
-        <div className='d-flex flex-column align-items-center my-5'>
-          <FontAwesomeIcon icon={faExclamationCircle} className="fs-2 no-data mb-2" />
-          <span className='m-0 fw-semibold'>No accounts available.</span>
-          <span className='m-0'>Please try a different filter.</span>
-          <button 
-            className='btn btn-outline-secondary mt-2' 
-            onClick={() => clearFilter(setSortStates, setKeyword, setFilteredAccounts, accounts)}
-          >
-            Clear Filter
-          </button>
-        </div>
-      </td>
-    </tr>
-  ) : (
-    <tr>
-      <td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>
-        <div className="spinner-box">
-          <div className="spinner-grow text-danger" role="status">
-            <span className="sr-only">Loading...</span>
-          </div>
-        </div>
-      </td>
-    </tr>
-  ) : ''}
-</tbody>
+                  <td>
+                    <span className={item.status=='active'?'bg-success text-light p-2 rounded fw-semibold':'bg-danger text-light p-2 rounded fw-semibold'}>{item.status}</span>
+                  </td>
+                  <td className="action">
+                    {/* Edit user */}
+                    <button 
+                      className="btn edit-btn border-0" 
+                      onClick={() => {
+                        setEditUser(true);
+                        getToEdit(item.userId, setAccount, setOriginalAccount, uname)
+                      }} 
+                      title='Edit user'
+                      disabled={disableButtons}
+                    >
+                      <FontAwesomeIcon icon={faPen} />
+                    </button>
+                    {/* Deactivate / Activate */}
+                    {item.status === 'active' ? (
+                      <button 
+                        className="btn deac-acc-btn border-0" 
+                        onClick={() => deactivateUser(item.username, item.userId, setLoading, uname)} 
+                        title='Deactivate user'
+                        disabled={disableButtons}
+                      >
+                        <FontAwesomeIcon icon={faUserSlash} />
+                      </button>
+                    ) : (
+                      <button 
+                        className="btn deac-acc-btn" 
+                        onClick={() => activateUser(item.username, item.userId, setLoading, uname)} 
+                        title='Activate user'
+                        disabled={disableButtons}
+                      >
+                        <FontAwesomeIcon icon={faUser} />
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })
+          ) : !loading && currentAccounts.length === 0 ? (
+            <tr>
+              <td colSpan="6" className='no-data-box text-center'>
+                <div className='d-flex flex-column align-items-center my-5'>
+                  <FontAwesomeIcon icon={faExclamationCircle} className="fs-2 no-data mb-2" />
+                  <span className='m-0 fw-semibold'>No accounts available.</span>
+                  <span className='m-0'>Please try a different filter.</span>
+                  <button 
+                    className='btn btn-outline-secondary mt-2' 
+                    onClick={() => clearFilter(setSortStates, setKeyword, setFilteredAccounts, accounts)}
+                  >
+                    Clear Filter
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ) : (
+            <tr>
+              <td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>
+                <div className="spinner-box">
+                  <div className="spinner-grow text-danger" role="status">
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          ) : ''}
+        </tbody>
       </table>
 
 

@@ -54,7 +54,10 @@ export const deactivateUser = async (username, id, setLoading, uname) => {
 
     setLoading(true);
     try {
-      console.log('account: ', uname)
+      console.log('account: ', uname);
+      const loggedin = JSON.parse(localStorage.getItem('token'));
+      console.log('loggedin: ', loggedin);
+
       const response = await axios.put(`https://api.tuplrc-cla.com/api/account/deactivate/${id}`, {uname});
       const result2 = await Swal.fire({
         title: "Deactivated!",
