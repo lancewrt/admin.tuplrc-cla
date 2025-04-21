@@ -1,52 +1,48 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useRef, useEffect } from 'react';
 import { io } from 'socket.io-client';
 
-export const SocketContext = createContext();
+export const SocketContext = createContext(null);
 
 export const SocketProvider = ({ children }) => {
-  const [socket, setSocket] = useState(null);
-  
-  useEffect(() => {
-    // Clean up previous socket if exists
-    /* if (socket) {
-      socket.disconnect();
-    } */
+  const socketRef = useRef(null);
 
-    const newSocket = io('https://api.tuplrc-cla.com', {
-      /* transports: ['polling'],
-      upgrade: false, */
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000
-    });
-    
-    newSocket.on('connect', () => {
-      console.log('Connected to socket server', newSocket.id);
-    });
-    
-    newSocket.on('disconnect', (reason) => {
-      console.log('Disconnected from socket server:', reason);
-    });
-    
-    newSocket.on('connect_error', (error) => {
-      console.error('Connection error:', error);
-    });
-    
-    newSocket.on('error', (error) => {
-      console.error('Socket error:', error);
-    });
-    
-    setSocket(newSocket);
-    
-    // Clean up when unmounting or when isOnline changes
+  useEffect(() => {
+    if (!socketRef.current) {
+      socketRef.current = io('https://api.tuplrc-cla.com', {
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000
+      });
+
+      socketRef.current.on('connect', () => {
+        console.log('Connected to socket server', socketRef.current.id);
+      });
+
+      socketRef.current.on('disconnect', (reason) => {
+        console.log('Disconnected from socket server:', reason);
+      });
+
+      socketRef.current.on('connect_error', (error) => {
+        console.error('Connection error:', error);
+      });
+
+      socketRef.current.on('error', (error) => {
+        console.error('Socket error:', error);
+      });
+    }
+
+    // Clean up when component unmounts
     return () => {
-      console.log('Cleaning up socket connection');
-      newSocket.disconnect();
+      if (socketRef.current) {
+        console.log('Cleaning up socket connection');
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
     };
   }, []);
 
   return (
-    <SocketContext.Provider value={socket}>
+    <SocketContext.Provider value={socketRef.current}>
       {children}
     </SocketContext.Provider>
   );
