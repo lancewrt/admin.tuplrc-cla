@@ -67,7 +67,7 @@ const Profile = () => {
         setIsEmailValid(false);
         setIsEmailVerified(true);
 
-        if(account.email==originalAccount.email) return
+        if(userData.email==originalUserData.email) return
     
         const delayDebounce = setTimeout(() => {
             if (validateEmail(userData.email)) {
