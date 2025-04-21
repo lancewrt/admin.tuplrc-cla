@@ -19,7 +19,7 @@ const Logbook = () => {
     useEffect(() => {
         const socket = io("https://api.tuplrc-cla.com", {
             withCredentials: true,
-            transports: ["websocket", "polling"],
+            transports: ["polling"],
         });
     
         socket.on("attendanceUpdated", () => {
