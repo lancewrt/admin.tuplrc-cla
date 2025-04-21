@@ -29,7 +29,7 @@ const Logbook = () => {
             // Clean up event listener
             return () => {
                 socket.off('attendanceUpdated');
-                socket.disconnect();
+               
                 
             };
         }
