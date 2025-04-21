@@ -21,7 +21,7 @@ const Logbook = () => {
     const [totalEntries, setTotalEntries] = useState(0); // Total number of entries
     const [loading, setLoading] = useState(false);
     const location = useLocation();
-    const socket = useContext(SocketContext);
+    // const socket = useContext(SocketContext);
 
     useEffect(() => {
         if (socket) {
