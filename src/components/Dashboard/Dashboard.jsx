@@ -103,6 +103,7 @@ const Dashboard = () => {
       socket.off('checkinUpdated', handleCheckin);
       socket.off('checkoutUpdated', handleCheckout);
       socket.off('overdueUpdated', handleOverdue);
+      
     };
   }, [socket?.connected]);
   

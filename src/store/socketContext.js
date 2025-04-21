@@ -8,13 +8,13 @@ export const SocketProvider = ({ children }) => {
   
   useEffect(() => {
     // Clean up previous socket if exists
-    if (socket) {
+    /* if (socket) {
       socket.disconnect();
-    }
+    } */
 
     const newSocket = io('https://api.tuplrc-cla.com', {
-      transports: ['polling'],
-      upgrade: false,
+      /* transports: ['polling'],
+      upgrade: false, */
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000
