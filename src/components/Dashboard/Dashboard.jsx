@@ -66,45 +66,48 @@ const Dashboard = () => {
     getVisitorStats();
   }, []);
 
-  // useEffect(() => {
-  //   if (!socket || !socket.connected) return;
+  useEffect(() => {
+    const socket = io("https://api.tuplrc-cla.com", {
+      withCredentials: true,
+      transports: ["polling"],
+    });
   
-  //   const handleAttendance = () => {
-  //     console.log('Attendance updated, refreshing data...');
-  //     getTotalVisitors();
-  //     getVisitorStats();
-  //   };
+    const handleAttendance = () => {
+      console.log('Attendance updated, refreshing data...');
+      getTotalVisitors();
+      getVisitorStats();
+    };
   
-  //   const handleCheckin = () => {
-  //     console.log('checkin updated, refreshing data...');
-  //     getTotalReturned();
-  //     getBookTrends();
-  //   };
+    const handleCheckin = () => {
+      console.log('checkin updated, refreshing data...');
+      getTotalReturned();
+      getBookTrends();
+    };
   
-  //   const handleCheckout = () => {
-  //     console.log('checkout updated, refreshing data...');
-  //     getTotalBorrowed();
-  //     getBookTrends();
-  //   };
+    const handleCheckout = () => {
+      console.log('checkout updated, refreshing data...');
+      getTotalBorrowed();
+      getBookTrends();
+    };
   
-  //   const handleOverdue = () => {
-  //     console.log('overdue updated, refreshing data...');
-  //     getTotalOverdue();
-  //   };
+    const handleOverdue = () => {
+      console.log('overdue updated, refreshing data...');
+      getTotalOverdue();
+    };
   
-  //   socket.on('attendanceUpdated', handleAttendance);
-  //   socket.on('checkinUpdated', handleCheckin);
-  //   socket.on('checkoutUpdated', handleCheckout);
-  //   socket.on('overdueUpdated', handleOverdue);
+    socket.on('attendanceUpdated', handleAttendance);
+    socket.on('checkinUpdated', handleCheckin);
+    socket.on('checkoutUpdated', handleCheckout);
+    socket.on('overdueUpdated', handleOverdue);
   
-  //   return () => {
-  //     socket.off('attendanceUpdated', handleAttendance);
-  //     socket.off('checkinUpdated', handleCheckin);
-  //     socket.off('checkoutUpdated', handleCheckout);
-  //     socket.off('overdueUpdated', handleOverdue);
+    return () => {
+      socket.off('attendanceUpdated', handleAttendance);
+      socket.off('checkinUpdated', handleCheckin);
+      socket.off('checkoutUpdated', handleCheckout);
+      socket.off('overdueUpdated', handleOverdue);
       
-  //   };
-  // }, [socket?.connected]);
+    };
+  }, []);
   
 
   //total visitors
