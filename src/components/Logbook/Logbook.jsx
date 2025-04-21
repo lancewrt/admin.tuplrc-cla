@@ -7,11 +7,6 @@ import { faSearch, faArrowLeft, faArrowRight, faExclamationCircle, faSmile, faXm
 import * as XLSX from 'xlsx'; // Import xlsx for Excel export
 import { io } from 'socket.io-client';
 
-const socket = io(`https://api.tuplrc-cla.com`, {
-    withCredentials: true,
-    transports: ["websocket", "polling"],
-});
-
 const Logbook = () => {
     const [patron, setPatron] = useState([]);
     const [searchInput, setSearchInput] = useState('');
@@ -22,22 +17,21 @@ const Logbook = () => {
     const location = useLocation();
 
     useEffect(() => {
-        if (socket) {
-            // Listen for attendance updates
-            socket.on('attendanceUpdated', () => {
-                console.log('Attendance updated, refreshing data...');
-                fetchTodayEntries();
-            });
-
-            // Clean up event listener
-            return () => {
-                socket.off('attendanceUpdated');
-               
-                
-            };
-        }
-    }, [socket, currentPage, entriesPerPage, searchInput]);
-
+        const socket = io("https://api.tuplrc-cla.com", {
+            withCredentials: true,
+            transports: ["websocket", "polling"],
+        });
+    
+        socket.on("attendanceUpdated", () => {
+            console.log("Attendance updated, refreshing data...");
+            fetchTodayEntries();
+        });
+    
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
+    
     useEffect(() => {
         fetchTodayEntries();
     }, [location.search, currentPage, entriesPerPage]);
