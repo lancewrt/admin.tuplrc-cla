@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import '../../assets/styles/globals.css';
+import { Link } from 'react-router-dom';
 
 const FindYourAccount = ({setEmail, search, error}) => {
   return (
@@ -25,7 +26,9 @@ const FindYourAccount = ({setEmail, search, error}) => {
         </div>
         {/* buttons */}
         <div className="buttons p-3 d-flex justify-content-end gap-1 border-top border-light-subtle">
-            <button className="btn btn-secondary">Cancel</button>
+            <Link to='/'>
+                <button className="btn btn-secondary">Back to Login</button>
+            </Link>
             <button 
                 className="btn lrc-btn"
                 onClick={search}
