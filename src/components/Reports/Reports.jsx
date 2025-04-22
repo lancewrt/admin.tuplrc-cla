@@ -207,7 +207,7 @@ const Reports = () => {
             <input 
               type="text" 
               className='form-control' 
-              placeholder={role=='admin'?'Search by report name or report description':'Search by report name, report description, or created by' }
+              placeholder={role!='admin'?'Search by report name or report description':'Search by report name, report description, or created by' }
               value={searchTerm}
               onChange={(e)=>setSearchTerm(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
