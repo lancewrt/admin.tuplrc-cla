@@ -6,7 +6,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { checkIfOnline } from '../../features/isOnlineSlice';
-import { setUserId, setUsername } from '../../features/userSlice';
+import { setRole, setUserId, setUsername } from '../../features/userSlice';
 import { fetchStatusOffline, fetchStatusOnline } from '../../features/statusSlice';
 import { fetchPublisherOffline, fetchPublisherOnline } from '../../features/publisherSlice';
 import { fetchAuthorOffline, fetchAuthorOnline } from '../../features/authorSlice';
@@ -68,6 +68,7 @@ const AdminTopNavbar = () => {
                     setUname(storedCreds.user.username);
                     dispatch(setUsername(storedCreds.user.username))
                     dispatch(setUserId(storedCreds.user.id))
+                    dispatch(setRole(storedCreds.user.role))
                 } else {
                     setUname(null);
                 }

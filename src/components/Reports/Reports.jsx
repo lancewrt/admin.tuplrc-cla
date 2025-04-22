@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import Swal from 'sweetalert2'
 
 const Reports = () => {
-  const {username, userId} = useSelector(state=>state.username)
+  const {username, userId, role} = useSelector(state=>state.username)
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [reports, setReports] = useState([]);
@@ -43,7 +43,9 @@ const Reports = () => {
   const getReports = async() => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`https://api.tuplrc-cla.com/api/reports/${userId}`);
+      const response = await axios.get(`https://api.tuplrc-cla.com/api/reports/${userId}`,{
+        params: {role:role}
+      });
       setReports(response.data);
       setFilteredReports(response.data);
     } catch (error) {
@@ -80,7 +82,8 @@ const Reports = () => {
     const filtered = reports.filter(report => {
       const matchesSearch = 
         report.report_name.toLowerCase().includes(search) ||
-        report.report_description.toLowerCase().includes(search);
+        report.report_description.toLowerCase().includes(search) ||
+        report.staff_uname.toLowerCase().includes(search);
   
       const matchesCategory = 
         selectedFilter.category == 'any' || report.cat_id == selectedFilter.category;
@@ -204,7 +207,7 @@ const Reports = () => {
             <input 
               type="text" 
               className='form-control' 
-              placeholder='Search' 
+              placeholder={role=='admin'?'Search by report name or report description':'Search by report name, report description, or created by' }
               value={searchTerm}
               onChange={(e)=>setSearchTerm(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -261,28 +264,36 @@ const Reports = () => {
         <div className='d-flex flex-column gap-3 data-box'>
           {/* header */}
           <div className='header m-0 p-3 row d-flex align-items-center text-center justify-content-center rounded text-light shadow-sm'>
-            <div className='col-3 cursor-pointer' onClick={() => handleSort('report_name')}>
+            <div className='col cursor-pointer' onClick={() => handleSort('report_name')}>
               Report Name
               <FontAwesomeIcon 
                 icon={getSortIcon('report_name')} 
                 className='ms-2'
               />
             </div>
-            <div className='col-3 cursor-pointer' onClick={() => handleSort('report_description')}>
+            <div className='col cursor-pointer' onClick={() => handleSort('report_description')}>
               Report Description
               <FontAwesomeIcon 
                 icon={getSortIcon('report_description')} 
                 className='ms-2'
               />
             </div>
-            <div className='col-3 cursor-pointer' onClick={() => handleSort('created_at')}>
+            <div className='col cursor-pointer' onClick={() => handleSort('created_at')}>
               Created at
               <FontAwesomeIcon 
                 icon={getSortIcon('created_at')} 
                 className='ms-2'
               />
             </div>
-            <div className='col-3'>Actions</div>
+            {role == 'admin' && (
+              <div className='col cursor-pointer'>
+                Created by
+                <FontAwesomeIcon 
+                  className='ms-2'
+                />
+              </div>
+            )}
+            <div className='col'>Actions</div>
           </div>
 
           {isLoading ? (
@@ -307,10 +318,13 @@ const Reports = () => {
           : (
             currentReports.map(report => (
               <div key={report.report_id} className='m-0 p-3 d-flex align-items-center text-center row rounded data shadow-sm'>
-                <div className='col-3'>{report.report_name}</div>
-                <div className='col-3'>{report.report_description}</div>
-                <div className='col-3'>{dayjs(report.created_at).format("YYYY-MM-DD HH:mm:ss")}</div>
-                <div className='col-3'>
+                <div className='col'>{report.report_name}</div>
+                <div className='col'>{report.report_description}</div>
+                <div className='col'>{dayjs(report.created_at).format("YYYY-MM-DD HH:mm:ss")}</div>
+                {role == 'admin' && (
+                  <div className='col'>{report.staff_uname}</div>
+                )}
+                <div className='col'>
                   <button className="btn eye-btn" onClick={() => {
                     setViewId(report.report_id);
                     setIsViewModalOpen(true);
