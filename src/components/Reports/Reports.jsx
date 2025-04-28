@@ -24,7 +24,7 @@ const Reports = () => {
   const [sortConfig, setSortConfig] = useState({ key: 'created_at', direction: 'desc' });
   const [selectedFilter, setSelectedFilter] = useState({
     category: 'any',
-    status: 'any'
+    status: '0'
   })
   
   // Pagination states
@@ -254,9 +254,10 @@ const Reports = () => {
               className='form-select form-select-sm'
               style={{ width: 'auto', display: 'inline-block', marginLeft: '5px',height:'35px' }}
             >
-              <option value="any">Any</option>
-              <option value="1">Archived</option>
+
               <option value="0">Unarchived</option>
+              <option value="1">Archived</option>
+              <option value="any">Any</option>
             </select>
           </div>
         </div>
