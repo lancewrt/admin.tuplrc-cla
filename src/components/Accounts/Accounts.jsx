@@ -194,7 +194,7 @@ const Accounts = () => {
                   <td>{item.firstName}</td>
                   <td>{item.lastName}</td>
                   <td>{item.username}</td>
-                  <td>{item.role} {item.role_id}</td>
+                  <td>{item.role}</td>
 
                   <td>
                     <span className={item.status=='active'?'bg-success text-light p-2 rounded fw-semibold':'bg-danger text-light p-2 rounded fw-semibold'}>{item.status}</span>
