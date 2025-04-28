@@ -19,7 +19,10 @@ const CirculationSelectPatron = () => {
   useEffect(() => {
     // searchInputRef.current?.focus();
 
-    const socket = io('https://api.tuplrc-cla.com');
+    const socket = io("https://api.tuplrc-cla.com", {
+      withCredentials: true,
+      transports: ["polling"],
+    });
   
     socket.on('connect', () => {
       console.log('Connected to socket.io server');
