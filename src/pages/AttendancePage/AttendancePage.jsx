@@ -28,7 +28,7 @@ const AttendancePage = () => {
   const [currentDateTime, setCurrentDateTime] = useState(getCurrentDateTime());
 
   useEffect(() => {
-      const socket = io("http://localhost:3001", {
+      const socket = io("https://api.tuplrc-cla.com", {
         withCredentials: true,
         transports: ["polling"],
       });
@@ -107,7 +107,7 @@ const AttendancePage = () => {
       const { date, time } = getCurrentDateTime();
       
       const response = await axios.post(
-        "http://localhost:3001/api/attendance", 
+        "https://api.tuplrc-cla.com/api/attendance", 
         { studentId, date, time }, 
         { headers: { "Content-Type": "application/json" }}
       );
