@@ -43,13 +43,13 @@ const AttendancePage = () => {
           setStudentId("");
         } else {
           setStudentName(null);
-          setMessage(response.data.message || "Unable to log attendance.");
+          setMessage(response.message || "Unable to log attendance.");
           setStatus("error");
         }
       });
   
       return () => {
-        socket.disconnect();
+        socket.off('attendanceUpdated');
       };
     }, []);
 
