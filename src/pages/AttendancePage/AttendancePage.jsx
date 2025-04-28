@@ -33,10 +33,6 @@ const AttendancePage = () => {
       transports: ["polling"],
     });
 
-    socket.on('connect', () => {
-      console.log('Connected to socket.io server');
-    });
-  
     socket.on('attendance-data', (incomingStudentId) => {
       console.log('Received serial data:', incomingStudentId);
     
@@ -59,14 +55,10 @@ const AttendancePage = () => {
       handleSubmit(cleanedId);
     });
   
-    socket.on('disconnect', () => {
-      console.log('Disconnected from socket.io server');
-    });
-  
     return () => {
-      socket.disconnect();
+      socket.off('attendance-data');
     };
-  }, [lastScannedId, lastScanTime]);
+  }, []);
  
 
   // Update the time every second
