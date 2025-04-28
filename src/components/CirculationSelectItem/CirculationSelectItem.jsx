@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBarcode, faTrashCan, faX, faArrowRight, faExclamationCircle, faQrcode } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+import { io } from 'socket.io-client';
 
 const CirculationSelectItem = () => {
   const navigate = useNavigate();
@@ -30,7 +31,30 @@ const CirculationSelectItem = () => {
   }, [selectedItems]);
 
   useEffect(() => {
-    searchInputRef.current?.focus();
+    // searchInputRef.current?.focus();
+
+    const socket = io('http://localhost:3001');
+  
+    socket.on('connect', () => {
+      console.log('Connected to socket.io server');
+    });
+  
+    socket.on('circulation-data', (isbn) => {
+      console.log('Received serial data:', isbn);
+
+      const cleanedIsbn = isbn.trim();
+
+      setSearchQuery(cleanedIsbn);
+      fetchSuggestions(cleanedIsbn);
+    });
+  
+    socket.on('disconnect', () => {
+      console.log('Disconnected from socket.io server');
+    });
+  
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   // Debounce search to prevent excessive API calls
@@ -151,7 +175,7 @@ const CirculationSelectItem = () => {
             <label htmlFor="item-search">ISBN / Title</label>
             <input
               id="item-search"
-              ref={searchInputRef}
+              // ref={searchInputRef}
               type="text"
               placeholder={`Enter ISBN or Title for ${actionLabel}`}
               value={searchQuery}

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import "./AttendancePage.css";
+import { io } from 'socket.io-client';
 
 const AttendancePage = () => {
   // State management
@@ -25,6 +26,45 @@ const AttendancePage = () => {
 
   // Current date and time display
   const [currentDateTime, setCurrentDateTime] = useState(getCurrentDateTime());
+
+  useEffect(() => {
+    const socket = io('https://api.tuplrc-cla.com');
+  
+    socket.on('connect', () => {
+      console.log('Connected to socket.io server');
+    });
+  
+    socket.on('attendance-data', (incomingStudentId) => {
+      console.log('Received serial data:', incomingStudentId);
+    
+      const cleanedId = incomingStudentId.trim();
+      const currentTime = Date.now();
+      const DEBOUNCE_TIME = 5000; // 5 seconds
+  
+      // Debounce HERE before submitting
+      if (lastScannedId === cleanedId && lastScanTime && currentTime - lastScanTime < DEBOUNCE_TIME) {
+        setMessage("This student ID was scanned recently. Please wait a few seconds.");
+        setStatus("error");
+        setStudentId("");
+        return;  // Don't even call handleSubmit if recently scanned
+      }
+  
+      setStudentId(cleanedId);
+      setLastScannedId(cleanedId);
+      setLastScanTime(currentTime);
+  
+      handleSubmit(cleanedId);
+    });
+  
+    socket.on('disconnect', () => {
+      console.log('Disconnected from socket.io server');
+    });
+  
+    return () => {
+      socket.disconnect();
+    };
+  }, [lastScannedId, lastScanTime]);
+ 
 
   // Update the time every second
   useEffect(() => {
@@ -52,39 +92,15 @@ const AttendancePage = () => {
   }, [message, status]);
 
   // Handle form submission
-  const handleSubmit = async () => {
-    if (!studentId.trim()) {
-      setMessage("Please enter a student ID.");
-      setStatus("error");
-      return;
-    }
-    
-    const currentTime = Date.now();
-    const DEBOUNCE_TIME = 5000; // 5 seconds
-
-    // Prevent rapid scanning of the same ID
-    if (lastScannedId === studentId && lastScanTime && currentTime - lastScanTime < DEBOUNCE_TIME) {
-      setMessage("This student ID was scanned recently. Please wait a few seconds.");
-      setStatus("error");
-      setStudentId("");
-      return;
-    }
-
-    // Update the last scanned ID and time
-    setLastScannedId(studentId);
-    setLastScanTime(currentTime);
-    
-    setStatus("loading");
-
+  const handleSubmit = async (id) => {
     try {
       const { date, time } = getCurrentDateTime();
-      
       const response = await axios.post(
-        "https://api.tuplrc-cla.com/api/attendance", 
-        { studentId, date, time }, 
-        { headers: { "Content-Type": "application/json" }}
+        "https://api.tuplrc-cla.com/api/attendance",
+        { studentId: id, date, time },
+        { headers: { "Content-Type": "application/json" } }
       );
-      
+  
       if (response.data.success) {
         setStudentName(response.data.studentName);
         setMessage("Attendance logged successfully.");
@@ -101,13 +117,9 @@ const AttendancePage = () => {
       setStatus("error");
     }
   };
-
-  // useEffect(()=>{
-  //   const regex = /^TUPM-\d{2}-\d{4}$/i;
-  //   if(regex.test(studentId)){
-  //     handleSubmit()
-  //   }
-  // }, [studentId])
+  
+  console.log('last scanned: ', lastScannedId)
+  console.log('current id: ', studentId)
 
   return (
     <div className="attendance-container">
@@ -155,11 +167,11 @@ const AttendancePage = () => {
               onChange={(e) => setStudentId(e.target.value)}
               ref={searchInputRef}
               placeholder="Student ID"
-              onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+              onKeyDown={(e) => e.key === 'Enter' && handleSubmit(studentId)}
               disabled={status === "loading"}
             />
             <button 
-              onClick={handleSubmit} 
+              onClick={() => handleSubmit(studentId)}
               className={`search-button ${status === "loading" ? "loading" : ""}`}
               aria-label="Search for student"
               disabled={status === "loading"}
