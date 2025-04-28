@@ -32,10 +32,10 @@ const AttendancePage = () => {
       withCredentials: true,
       transports: ["polling"],
     });
-
+  
     socket.on('attendance-data', (incomingStudentId) => {
       console.log('Received serial data:', incomingStudentId);
-    
+  
       const cleanedId = incomingStudentId.trim();
       const currentTime = Date.now();
       const DEBOUNCE_TIME = 5000; // 5 seconds
@@ -48,17 +48,21 @@ const AttendancePage = () => {
         return;  // Don't even call handleSubmit if recently scanned
       }
   
-      setStudentId(cleanedId);
-      setLastScannedId(cleanedId);
-      setLastScanTime(currentTime);
-  
-      handleSubmit(cleanedId);
+      // Only proceed if not in loading or success state
+      if (status !== "loading" && status !== "success") {
+        setStudentId(cleanedId);
+        setLastScannedId(cleanedId);
+        setLastScanTime(currentTime);
+    
+        handleSubmit(cleanedId);
+      }
     });
   
     return () => {
       socket.off('attendance-data');
     };
-  }, []);
+  }, [lastScannedId, lastScanTime, status]);  // Add dependencies to ensure fresh checks
+  
  
 
   // Update the time every second
