@@ -28,42 +28,30 @@ const AttendancePage = () => {
   const [currentDateTime, setCurrentDateTime] = useState(getCurrentDateTime());
 
   useEffect(() => {
-    const socket = io("https://api.tuplrc-cla.com", {
-      withCredentials: true,
-      transports: ["polling"],
-    });
-  
-    socket.on('attendance-data', (incomingStudentId) => {
-      console.log('Received serial data:', incomingStudentId);
-  
-      const cleanedId = incomingStudentId.trim();
-      const currentTime = Date.now();
-      const DEBOUNCE_TIME = 5000; // 5 seconds
-  
-      // Debounce HERE before submitting
-      if (lastScannedId === cleanedId && lastScanTime && currentTime - lastScanTime < DEBOUNCE_TIME) {
-        setMessage("This student ID was scanned recently. Please wait a few seconds.");
-        setStatus("error");
-        setStudentId("");
-        return;  // Don't even call handleSubmit if recently scanned
-      }
-  
-      // Only proceed if not in loading or success state
-      if (status !== "loading" && status !== "success") {
-        setStudentId(cleanedId);
-        setLastScannedId(cleanedId);
-        setLastScanTime(currentTime);
+      const socket = io("http://localhost:3001", {
+        withCredentials: true,
+        transports: ["polling"],
+      });
     
-        handleSubmit(cleanedId);
-      }
-    });
+      socket.on('attendanceUpdated', (response) => {
+        console.log('Received serial data:', response);
+
+        if (response.success) {
+          setStudentName(response.studentName);
+          setMessage("Attendance logged successfully.");
+          setStatus("success");
+          setStudentId("");
+        } else {
+          setStudentName(null);
+          setMessage(response.data.message || "Unable to log attendance.");
+          setStatus("error");
+        }
+      });
   
-    return () => {
-      socket.off('attendance-data');
-    };
-  }, [lastScannedId, lastScanTime, status]);  // Add dependencies to ensure fresh checks
-  
- 
+      return () => {
+        socket.disconnect();
+      };
+    }, []);
 
   // Update the time every second
   useEffect(() => {
@@ -91,15 +79,39 @@ const AttendancePage = () => {
   }, [message, status]);
 
   // Handle form submission
-  const handleSubmit = async (id) => {
+  const handleSubmit = async () => {
+    if (!studentId.trim()) {
+      setMessage("Please enter a student ID.");
+      setStatus("error");
+      return;
+    }
+    
+    const currentTime = Date.now();
+    const DEBOUNCE_TIME = 5000; // 5 seconds
+
+    // Prevent rapid scanning of the same ID
+    if (lastScannedId === studentId && lastScanTime && currentTime - lastScanTime < DEBOUNCE_TIME) {
+      setMessage("This student ID was scanned recently. Please wait a few seconds.");
+      setStatus("error");
+      setStudentId("");
+      return;
+    }
+
+    // Update the last scanned ID and time
+    setLastScannedId(studentId);
+    setLastScanTime(currentTime);
+    
+    setStatus("loading");
+
     try {
       const { date, time } = getCurrentDateTime();
+      
       const response = await axios.post(
-        "https://api.tuplrc-cla.com/api/attendance",
-        { studentId: id, date, time },
-        { headers: { "Content-Type": "application/json" } }
+        "http://localhost:3001/api/attendance", 
+        { studentId, date, time }, 
+        { headers: { "Content-Type": "application/json" }}
       );
-  
+      
       if (response.data.success) {
         setStudentName(response.data.studentName);
         setMessage("Attendance logged successfully.");
@@ -116,9 +128,13 @@ const AttendancePage = () => {
       setStatus("error");
     }
   };
-  
-  console.log('last scanned: ', lastScannedId)
-  console.log('current id: ', studentId)
+
+  // useEffect(()=>{
+  //   const regex = /^TUPM-\d{2}-\d{4}$/i;
+  //   if(regex.test(studentId)){
+  //     handleSubmit()
+  //   }
+  // }, [studentId])
 
   return (
     <div className="attendance-container">
@@ -166,11 +182,11 @@ const AttendancePage = () => {
               onChange={(e) => setStudentId(e.target.value)}
               ref={searchInputRef}
               placeholder="Student ID"
-              onKeyDown={(e) => e.key === 'Enter' && handleSubmit(studentId)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
               disabled={status === "loading"}
             />
             <button 
-              onClick={() => handleSubmit(studentId)}
+              onClick={handleSubmit} 
               className={`search-button ${status === "loading" ? "loading" : ""}`}
               aria-label="Search for student"
               disabled={status === "loading"}
