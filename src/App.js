@@ -139,14 +139,14 @@ const App = () => {
           {/* Restricted routes for staff */}
 
           <Route path='/patron/edit/:id' element={
-            <ProtectedRoute allowedRoles={['admin']}>
+            <ProtectedRoute allowedRoles={['admin', 'staff']}>
               <EditPatronPage/>
             </ProtectedRoute>
           }
           />
 
           <Route path='/patron/add' element={
-            <ProtectedRoute allowedRoles={['admin']}>
+            <ProtectedRoute allowedRoles={['admin', 'staff']}>
               <EditPatronPage/>
             </ProtectedRoute>
           }
