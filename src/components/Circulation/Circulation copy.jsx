@@ -23,6 +23,7 @@ const Circulation = () => {
   useEffect(() => {
     const params = new URLSearchParams(location.search).get('filter');
     setQuery(params || 'any');
+    getBorrowers();
     localStorage.removeItem('clickedAction');
     localStorage.removeItem('selectedItems');
   }, [location.search]);
@@ -32,10 +33,14 @@ const Circulation = () => {
   }, [currentPage, query]);
 
   useEffect(() => {
-    if (borrowers.length > 0) {
+    search();
+  }, [startDate, endDate]);
+
+  useEffect(()=>{
+    if(searchTerm==''){
       search();
     }
-  }, [searchTerm, startDate, endDate, borrowers]);
+  },[searchTerm])
 
   const getBorrowers = async () => {
     setLoading(true);
@@ -45,7 +50,8 @@ const Circulation = () => {
       });
 
       setBorrowers(response.data.data);
-      setFilteredBorrowers(response.data.data); // Set initially to unfiltered data
+      console.log(response.data.data)
+      setFilteredBorrowers(response.data.data);
       setTotalPages(Math.ceil(response.data.totalCount / itemsPerPage));
     } catch (err) {
       console.error(err.message);
@@ -59,7 +65,7 @@ const Circulation = () => {
 
     const filtered = borrowers.filter((borrower) => {
       // Only search non-date columns
-      const matchesSearch = searchTerm === '' || (
+      const matchesSearch = 
         // TUP ID column
         (borrower.tup_id?.toLowerCase() ?? '').includes(searchTerm.toLowerCase()) ||
         // Name column
@@ -69,10 +75,9 @@ const Circulation = () => {
         // Course column
         (borrower.course?.toLowerCase() ?? '').includes(searchTerm.toLowerCase()) ||
         // Status column
-        (borrower.status?.toLowerCase() ?? '').includes(searchTerm.toLowerCase())
-      );
+        (borrower.status?.toLowerCase() ?? '').includes(searchTerm.toLowerCase());
 
-      // Date range filtering
+      // Date range filtering using the approach from the first code
       const isDateInRange = (date) => {
         if (!date) return false;
         const parsedDate = new Date(date);
@@ -88,12 +93,23 @@ const Circulation = () => {
       };
 
       // Check if any of the date fields match the date range
-      const dateMatches = !startDate && !endDate || 
+      const dateMatches = 
         isDateInRange(borrower.checkout_date) || 
         isDateInRange(borrower.checkout_due) || 
         isDateInRange(borrower.checkin_date);
 
-      return matchesSearch && dateMatches;
+      // If both search term and dates are provided, both should match
+      // If only search term is provided, only search term should match
+      // If only dates are provided, only dates should match
+      // If nothing is provided, return all results
+      if (searchTerm && (startDate || endDate)) {
+        return matchesSearch && dateMatches;
+      } else if (searchTerm) {
+        return matchesSearch;
+      } else if (startDate || endDate) {
+        return dateMatches;
+      }
+      return true;
     });
 
     setFilteredBorrowers(filtered);
@@ -111,11 +127,6 @@ const Circulation = () => {
   const handlePageChange = (newPage) => {
     if (newPage < 1 || newPage > totalPages) return; // Prevent going out of bounds
     setCurrentPage(newPage);
-  };
-
-  const handleQueryChange = (e) => {
-    setQuery(e.target.value);
-    setCurrentPage(1); // Reset to first page when changing filters
   };
 
   const clearFilter = () => {
@@ -158,16 +169,13 @@ const Circulation = () => {
               placeholder="Search by ID, name, book, or course"
               value={searchTerm}
               onChange={handleSearch}
+              onKeyDown={(e) => e.key === 'Enter' && search()}
             />
             <button className="btn search-btn" onClick={search}>
               <FontAwesomeIcon icon={faSearch} />
             </button>
           </div>
-          <select 
-            className="form-select dropdown" 
-            value={query}
-            onChange={handleQueryChange}
-          >
+          <select className="form-select dropdown" onChange={(e) => setQuery(e.target.value)}>
             <option value="any">Any</option>
             <option value="borrowed">Borrowed</option>
             <option value="returned">Returned</option>
@@ -210,6 +218,8 @@ const Circulation = () => {
           </button>
         </div>
       </div>
+
+      
 
       <div className="table-box">
         <h2>Recent transactions</h2>
