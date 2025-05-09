@@ -33,10 +33,7 @@ const CirculationSelectItem = () => {
   useEffect(() => {
     // searchInputRef.current?.focus();
 
-    const socket = io("https://api.tuplrc-cla.com", {
-      withCredentials: true,
-      transports: ["polling"],
-    });
+    const socket = io('https://api.tuplrc-cla.com');
   
     socket.on('connect', () => {
       console.log('Connected to socket.io server');
@@ -59,6 +56,7 @@ const CirculationSelectItem = () => {
       socket.disconnect();
     };
   }, []);
+
 
   // Debounce search to prevent excessive API calls
   useEffect(() => {
@@ -104,7 +102,7 @@ const CirculationSelectItem = () => {
   };
 
   const handleAddItem = (item) => {
-    const exists = selectedItems.find((i) => i.resource_id === item.resource_id);
+    const exists = selectedItems.find((i) => i.rc_id === item.rc_id);
     if (!exists) {
       setSelectedItems([...selectedItems, item]);
     }
@@ -122,6 +120,7 @@ const CirculationSelectItem = () => {
   };
 
   const handleProceed = () => {
+    // patron id
     localStorage.setItem('id', id);
     
     // Navigate based on the action

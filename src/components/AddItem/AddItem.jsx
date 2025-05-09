@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import './AddItem.css';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import CatalogInfo from '../CatalogInfo/CatalogInfo';
 import Cataloging from '../Cataloging/Cataloging';
 import axios from 'axios';
 import Loading from '../Loading/Loading';
+import { initDB } from '../../indexedDb/initializeIndexedDb';
+import { getAllFromStore } from '../../indexedDb/getDataOffline';
 import { saveResourceOffline } from '../../indexedDb/saveResourcesOffline';
 import { viewResourcesOffline } from '../../indexedDb/viewResourcesOffline';
 import { editResourceOffline } from '../../indexedDb/editResourcesOffline';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons';
+import { useRef } from 'react';
 import { fetchTypeOffline, fetchTypeOnline } from '../../features/typeSlice';
 import { fetchStatusOffline, fetchStatusOnline } from '../../features/statusSlice';
 import { fetchPublisherOffline, fetchPublisherOnline } from '../../features/publisherSlice';
@@ -32,7 +35,7 @@ const AddItem = () => {
         isCirculation: 1,
         publisher_id: 0,
         publisher: '',
-        status:''
+        // status:''
     });
     const [error, setError] = useState({});
     // for loading modal
@@ -52,14 +55,14 @@ const AddItem = () => {
                     isCirculation: 1,
                     publisher_id: 0,
                     publisher: '',
-                    status:''
+                    // status:''
                 });
             } else {
                 setBookData({
                     mediaType: bookData.mediaType, // keep the changed mediaType
                     authors: [],
                     isCirculation: 0,
-                    status:''
+                    // status:''
                 });
             }
         }
@@ -81,6 +84,7 @@ const AddItem = () => {
         // Handle resource view logic (inside useEffect)
         if (id) {
             setDisabled(true);
+            setEditMode(true)
             // Check if online or offline after setting the state
             if(isOnline) {
                 getDataOnline();
@@ -131,7 +135,7 @@ const AddItem = () => {
                         quantity:data.original_resource_quantity.toString(),
                         title:data.resource_title.toString(),
                         isbn:data.book_isbn?data.book_isbn.toString():'',
-                        status:data.avail_id.toString(),
+                        // status:data.avail_id.toString(),
                         publisher_id:data.pub_id,
                         publisher: data.pub_name?data.pub_name.toString():'',
                         file:data.filepath,
@@ -151,7 +155,7 @@ const AddItem = () => {
                         description:data.resource_description,
                         quantity:data.original_resource_quantity.toString(),
                         title:data.resource_title.toString(),
-                        status:data.avail_id.toString(),
+                        // status:data.avail_id.toString(),
                         file:data.filepath,
                         publishedDate:data.resource_published_date.toString(),
                         department: data.dept_id.toString(),
@@ -171,7 +175,7 @@ const AddItem = () => {
                         description:data.resource_description,
                         quantity:data.original_resource_quantity.toString(),
                         title:data.resource_title.toString(),
-                        status:data.avail_id.toString(),
+                        // status:data.avail_id.toString(),
                         publishedDate:data.resource_published_date.toString(),
                         department: data.dept_id.toString(),
                         isCirculation:data.resource_is_circulation,
@@ -284,9 +288,9 @@ const AddItem = () => {
         if (!bookData.quantity || bookData.quantity === 0) {
             err.quantity = 'Please enter quantity';
         }
-        if (!bookData.status) {
-            err.status = 'Please select status';
-        }
+        // if (!bookData.status) {
+        //     err.status = 'Please select status';
+        // }
         if (!bookData.title || bookData.title.length === 0) {
             err.title = 'Please enter title';
         }
@@ -338,6 +342,7 @@ const AddItem = () => {
     
           if (!result.isConfirmed) return; // Exit if user cancels
           setLoading(true)
+            setLoading(true)
             try{
                 const formData = new FormData();
                 formData.append('username', username);
@@ -390,8 +395,8 @@ const AddItem = () => {
           });
     
           if (!result.isConfirmed) return; // Exit if user cancels
-
-          setLoading(true)
+          
+            setLoading(true)
             
             try{
                 const updatedBookData = {
@@ -424,7 +429,6 @@ const AddItem = () => {
       });
 
       if (!result.isConfirmed) return; // Exit if user cancels
-
         console.log('edit resource online')
             try{
                 setLoading(true)
@@ -455,9 +459,9 @@ const AddItem = () => {
             cancelButtonColor: "#94152b",
             confirmButtonText: "Yes, edit!"
       });
-      
-      if (!result.isConfirmed) return; // Exit if user cancels
 
+      if (!result.isConfirmed) return; // Exit if user cancels
+        console.log('edit resource offline')
             try{
                 setLoading(true)
                 const response = await editResourceOffline(bookData,parseInt(id))
@@ -485,7 +489,7 @@ const AddItem = () => {
 
         if(editMode){
             setDisabled(true);
-            setEditMode(false);
+            setEditMode(true);
             viewResourceOnline()
         }else{
             setBookData({
@@ -495,12 +499,12 @@ const AddItem = () => {
                 isCirculation: 1,
                 publisher_id: 0,
                 publisher: '',
-                status:''
+                // status:''
             })
         }
     }
 
-    console.log(bookData)
+    console.log('editmode: ',editMode)
     return (
         <div className='add-item-container bg-light'>
             <h1 className='m-0'>Cataloging</h1>
@@ -555,37 +559,31 @@ const AddItem = () => {
                         setIsOfflineView(false);
                     }}>
                     Edit
-                    </button>
-                </div>:
-                <div className="cancel-save">
-                    <button 
-                        onClick={handleCancelButton}
-                        className="btn add-item-cancel"
-                    >
-                        Cancel
-                    </button>
-                    <button className="btn add-item-save" onClick={()=>{
-                        //if not in edit mode, save resource
-                        if(!editMode){
-                            if(isOnline){
-                                handleSaveResourceOnline()
-                            }else{
-                                handleSaveResourceOffline()
-                            }           
+                </button></div>:<div className="cancel-save">
+                <button className="btn add-item-cancel" onClick={handleCancelButton}>
+                    Cancel
+                </button>
+                <button className="btn add-item-save" onClick={()=>{
+                    //if not in edit mode, save resource
+                    if(!editMode){
+                        if(isOnline){
+                            handleSaveResourceOnline()
                         }else{
-                            if(isOnline){
-                                handleEditResourceOnline()
-                            }else{
-                                handleEditResourceOffline()
-                            }
-                            
+                            handleSaveResourceOffline()
+                        }           
+                    }else{
+                        if(isOnline){
+                            handleEditResourceOnline()
+                        }else{
+                            handleEditResourceOffline()
                         }
-                    }} disabled={Object.values(error).length>=1&&!editMode}>
-                        <FontAwesomeIcon icon={faFloppyDisk}/>
-                        <span>Save</span>
-                    </button>
-                </div>
-            }
+                        
+                    }
+                }} disabled={Object.values(error).length>=1&&!editMode}>
+                    <FontAwesomeIcon icon={faFloppyDisk}/>
+                    <span>Save</span>
+                </button>
+            </div>}
             
             <Loading loading={loading}/>
         </div>

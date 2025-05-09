@@ -3,7 +3,7 @@ import './AdminNavbar.css';
 import tuplogo from '../../assets/tuplogo.png';
 import clalogo from '../../assets/clalogo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFile, faChartSimple, faFileLines, faCartShopping, faUser, faList, faFileExcel, faUsersGear, faUserPlus, faBookOpenReader, faLayerGroup, faBook, faArrowDown, faChevronDown, faBarcode, faPenToSquare, faQrcode, faBars } from '@fortawesome/free-solid-svg-icons';
+import { faFile, faChartSimple, faFileLines, faCartShopping, faUser, faList, faFileExcel, faUsersGear, faUserPlus, faBookOpenReader, faLayerGroup, faBook, faArrowDown, faChevronDown, faBarcode, faPenToSquare, faQrcode, faBars, faBookAtlas, faBookOpen } from '@fortawesome/free-solid-svg-icons';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Loading from '../Loading/Loading';
 import axios from 'axios';
@@ -26,23 +26,19 @@ const AdminNavbar = () => {
         
         const fetchUserRole = async () => {
             try {
-                const storedCreds = JSON.parse(localStorage.getItem('token'));
-                if (storedCreds && storedCreds.message === "Login successful") {
-                    setRole(storedCreds.user.role);
+                const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
+                if (response.data.loggedIn) {
+                    setRole(response.data.userRole);
                 } else {
                     setRole(null);
-                    // Redirect to login if not logged in
-                    navigate('/login');
                 }
             } catch (error) {
                 console.error('Error verifying session:', error);
                 setRole(null);
-                navigate('/login');
             } finally {
                 setLoading(false);
             }
         };
-
         fetchUserRole();
     }, [navigate, currentPathname]);
 
@@ -60,7 +56,7 @@ const AdminNavbar = () => {
     }
 
     return (
-        <div className='navbar'>
+        <div className='navbar p-0'>
             {!isCollapsed&&<div className='overlay'></div>}
             <nav className={`admin-navbar-container shadow ${isCollapsed ? 'collapsed' : ''}`}>
             {/* Toggle Button */}
@@ -159,6 +155,18 @@ const AdminNavbar = () => {
                             {/* Cataloging Submenu - Only show when not collapsed or when hovering in collapsed mode */}
                             {isCatalogingOpen && (
                                 <ul className={`submenu ${isCollapsed ? '' : ''}`}>
+                                    <li className="submenu-list-item">
+                                        <Link to='/catalog/availability' className="submenu-item">
+                                            <div className="menu-icon-container">
+                                                <FontAwesomeIcon icon={faBookOpen} className='menu-icon'/>
+                                            </div>
+                                            {!isCollapsed && (
+                                                <div className="menu-text">
+                                                    <p>Resource Status</p>
+                                                </div>
+                                            )}
+                                        </Link>
+                                    </li>
                                     <li className="submenu-list-item">
                                         <Link to='/catalog/generate-barcode' className="submenu-item">
                                             <div className="menu-icon-container">

@@ -28,6 +28,7 @@ import Profile from './pages/Profile/Profile';
 import ActivateAccount from './pages/ActivateAccount/ActivateAccount';
 import VerifyEmail from './pages/VerifyEmail/VerifyEmail';
 import ResetPassword from './pages/ResetPassword/ResetPassword';
+import ResourceStatus from './pages/ResourceStatus/ResourceStatus';
 
 const App = () => {
   return (
@@ -102,6 +103,11 @@ const App = () => {
           <Route path='/catalog/generate-barcode' element={
             <ProtectedRoute allowedRoles={['admin','staff']}>
               <GenerateBarcodePage/>
+            </ProtectedRoute>
+          } />
+          <Route path='/catalog/availability' element={
+            <ProtectedRoute allowedRoles={['admin','staff']}>
+              <ResourceStatus/>
             </ProtectedRoute>
           } />
           <Route path='/attendance' element={

@@ -20,7 +20,7 @@ const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,addAdviser,setBoo
 
         let objectUrl;
 
-        if(!id || editMode){
+        if(!id || !editMode){
             try{
                 objectUrl = URL.createObjectURL(bookData.file);
                 setPreview(objectUrl);
@@ -68,6 +68,7 @@ const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,addAdviser,setBoo
           };
       },[bookData.url])
 
+      console.log(bookData.file)
       console.log(preview)
    
   return (
@@ -81,9 +82,16 @@ const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,addAdviser,setBoo
                 <div className={bookData.mediaType!=='4'?'col-9':'col-12'}>
                     <div className="row">
                         {/* media type */}
-                        <div className="col-4 info-input-box">
+                        <div className="col info-input-box">
                             <label htmlFor="">Media Type *</label>
-                            <select name="mediaType" id="" className='form-select' disabled={disabled} onChange={handleChange} value={bookData.mediaType}>
+                            <select 
+                                name="mediaType" 
+                                id="" 
+                                className='form-select' 
+                                disabled={disabled||editMode} 
+                                onChange={handleChange} 
+                                value={bookData.mediaType}
+                            >
                                  {type.length>0?type.map(item=>(
                                     <option value={item.type_id} selected={disabled||editMode?item.type_id==bookData.mediaType:''}>{item.type_name}</option>
                                 )):''}                                 
@@ -91,7 +99,8 @@ const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,addAdviser,setBoo
                            
                         </div>
                         {/* quantity */}
-                        <div className="col-4 info-input-box">
+                        {!editMode&&(
+                          <div className="col info-input-box">
                             <label htmlFor="">Quantity *</label>
                             <input 
                                 type="number" 
@@ -102,9 +111,11 @@ const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,addAdviser,setBoo
                                 // onBlur={formValidation}
                             />
                             <p className='resource-error'>{error.quantity}</p>
-                        </div>
+                        </div>  
+                        )}
+                        
                         {/* status */}
-                        <div className="col-4 info-input-box">
+                        {/* <div className="col-4 info-input-box">
                             <label htmlFor="">Status *</label>
                             <select 
                                 name="status" id="" className='form-select' 
@@ -119,7 +130,7 @@ const CatalogInfo = ({disabled,handleChange,bookData,addAuthor,addAdviser,setBoo
                                 )):''}
                             </select>
                             <p className='resource-error'>{error.status}</p>
-                        </div>
+                        </div> */}
                         {/* title */}
                         <div className="col-12 info-input-box my-3">
                             <label htmlFor="">Title *</label>
