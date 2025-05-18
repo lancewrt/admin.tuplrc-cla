@@ -56,11 +56,11 @@ const ResourceStatus = () => {
 
     const handleSearch = () => {
         const filtered = resources.filter(resource =>
-            resource.resource_title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            resource.author_names.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            resource.dept_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            resource.topic_name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+            (resource.resource_title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (resource.author_names || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (resource.dept_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (resource.topic_name || '').toLowerCase().includes(searchTerm.toLowerCase())
+        )        
         setFilteredResources(filtered)
         setCurrentPage(1)
     }
@@ -157,7 +157,7 @@ const ResourceStatus = () => {
                                                 <option 
                                                     key={item.avail_id} 
                                                     value={item.avail_id}
-                                                    disabled={item.avail_id==4}
+                                                    disabled={item.avail_id==4||item.avail_id==5}
                                                 >
                                                     {item.avail_name}
                                                 </option>

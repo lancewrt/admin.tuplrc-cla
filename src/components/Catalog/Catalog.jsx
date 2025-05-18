@@ -498,6 +498,24 @@ const Catalog = () => {
               <option value="50">50</option>
             </select>
           </div>
+          
+          {/*archived/unarchived  */}
+          {isOnline&&(
+            <div className="">
+              <label htmlFor="">Category: </label>
+              <select
+                id=""
+                name='isArchived'
+                onChange={(e) => handleSelectedFilter('isArchived', e.target.value)}
+                className="form-select form-select-sm"
+                value={selectedFilters.isArchived}
+                style={{ width: 'auto', display: 'inline-block', marginLeft: '5px' }}
+              >
+                <option value="0" selected>Unarchived</option>
+                <option value="1" >Archived</option>
+              </select>
+            </div>
+          )}
         </div>
 
         {isOnline&&(
@@ -585,7 +603,7 @@ const Catalog = () => {
                 </select>
             </td>
             <td>Copies</td>
-            {/* <td>Status</td> */}
+            <td>Status</td>
             <td>Actions</td>
           </tr>
         </thead>
@@ -613,20 +631,20 @@ const Catalog = () => {
                 <td>
                   {`${item.resource_quantity}/${item.original_resource_quantity}`}
                 </td>
-                {/* <td>
-                  <span className={`text-light p-2 rounded fw-semibold ${item.resource_is_archived==0?'bg-success':'bg-danger'}`}>
-                    {item.resource_is_archived==0?'unarchived':'archived'}
+                <td>
+                  <span className={`text-light p-2 rounded fw-semibold ${item.avail_id!=5?'bg-success':'bg-danger'}`}>
+                    {item.avail_id!=5?'unarchived':'archived'}
                   </span>
-                </td> */}
+                </td>
                 <td className=''>
                   <button type="button" class="btn btn-transparent border-0" data-toggle="tooltip" data-placement="top" title="View Resource" onClick={() => navigate(`/catalog/view/${item.resource_id}`)}>
                     <FontAwesomeIcon icon={faEye} className='archive-btn'/>
                   </button>
-                  {/* {isOnline&&(
-                    <button type="button" class="btn btn-transparent border-0" data-toggle="tooltip" data-placement="top" title={`${item.resource_is_archived==0?'Archive':'Unarchive'} Resource`} onClick={()=>handleArchive(item.resource_id,item.resource_is_archived)}>
+                   {isOnline&&(
+                    <button type="button" class="btn btn-transparent border-0" data-toggle="tooltip" data-placement="top" title={`${item.avail_id!=5?'Archive':'Unarchive'} Resource`} onClick={()=>handleArchive(item.resource_id,item.resource_is_archived)}>
                       <FontAwesomeIcon icon={faArchive} className='archive-btn'/>
                     </button>
-                  )} */}
+                  )}
                 </td>
               </tr>
             ))

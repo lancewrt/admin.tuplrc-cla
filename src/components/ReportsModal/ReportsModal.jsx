@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './ReportsModal.css';
 import ReactDom from 'react-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,6 +7,13 @@ import axios from 'axios';
 import * as XLSX from 'xlsx';
 import dayjs from 'dayjs';
 import Swal from 'sweetalert2'
+import { AttendanceBarChart } from '../../charts/attendance/AttendanceBarChart';
+import {AttendanceBarChart2} from '../../charts/attendance/AttendanceBarChart2';
+import MostLeastChart from '../../charts/circulation/MostLeastBorrowedBooks';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import AttendancePDF from '../../pdf/AttendancePDF';
+import { captureChartAsImage } from '../../utils/ChartUtility';
+import html2pdf from "html2pdf.js";
 
 // Use environment variables for API endpoints
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://api.tuplrc-cla.com';
@@ -36,6 +43,22 @@ const ReportsModal = ({ open, close}) => {
   const [courses, setCourses] = useState([]);
   const [showReportTable, setShowReportTable] = useState(false);
   const [filteredCourses, setFilteredCourses] = useState([]);  
+  const exportRef = useRef();
+  const generatedDate = new Date().toLocaleString();
+
+  const handleExportPDF = () => {
+    const opt = {
+      margin:      0.5,               // inches
+      filename:    'report.pdf',
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: {
+        unit:        'in',
+        format:      'a3',         // 11×8.5in
+        orientation: 'landscape'       // switch to landscape!
+      }
+    };
+    html2pdf().set(opt).from(exportRef.current).save();
+  };
 
   useEffect(() => {
     if (open) {
@@ -91,30 +114,12 @@ const ReportsModal = ({ open, close}) => {
 
   },[reportData.category, reportData.detail])
 
-  /* const getUsername = async () => {
+  const getUsername = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/api/user/check-session`, { withCredentials: true });
       if (response.data.loggedIn) {
         setStaffId(response.data.userID);
         setStaffUname(response.data.username);
-      } else {
-        setStaffId('');
-        setStaffUname('');
-      }
-    } catch (error) {
-      console.error('Error verifying session:', error);
-      setStaffId('');
-      setStaffUname('');
-    }
-  }; */
-
-  const getUsername = async () => {
-    try {
-      const storedCreds = JSON.parse(localStorage.getItem('token'));
-
-      if (storedCreds.message === "Login successful") {
-        setStaffId(storedCreds.user.id);
-        setStaffUname(storedCreds.user.username);
       } else {
         setStaffId('');
         setStaffUname('');
@@ -317,6 +322,23 @@ const ReportsModal = ({ open, close}) => {
         formData.append('staff_id', staffId);
         formData.append('staff_uname', staffUname);
 
+        // generate pdf file
+        const pdfOptions = {
+          margin:      0.5,               // inches
+          filename:    'report.pdf',
+          html2canvas: { scale: 2, useCORS: true },
+          jsPDF: {
+            unit:        'in',
+            format:      'a3',         // 11×8.5in
+            orientation: 'landscape'       // switch to landscape!
+          }
+        };
+        const pdfBlob = await html2pdf().from(exportRef.current).set(pdfOptions).outputPdf('blob');
+        const pdfFilename = `${reportData.name || 'Report'}_${timestamp}.pdf`;
+
+        // Append both files to form data
+        formData.append('pdf_file', pdfBlob, pdfFilename);
+
         // Send request
         await axios.post(`${API_BASE_URL}/api/reports`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
@@ -443,8 +465,48 @@ const ReportsModal = ({ open, close}) => {
     XLSX.writeFile(wb, filename);
   };
 
-  console.log(reportData)
+  const handleChart = () => {
+    switch (reportData.category) {
+      case '1':
+      case '4':
+        return (
+          <>
+            <h5 className="mt-5">Results by Course</h5>
+            <AttendanceBarChart chartData={generatedReport} />
+            <h5 className="mt-5">Results by College</h5>
+            <AttendanceBarChart2 chartData={generatedReport} />
+          </>
+        );
+      case '2':
+        // Compare 'detail' as a string, since it's a string in your data
+        if (reportData.detail !== '6' && reportData.detail !== '7') {
+          return (
+            <>
+              <h5 className="mt-5">Results by Course</h5>
+              <AttendanceBarChart chartData={generatedReport} />
+              <h5 className="mt-5">Results by College</h5>
+              <AttendanceBarChart2 chartData={generatedReport} />
+            </>
+          );
+        } else if(reportData.detail == '7'){
+          return null
+        } else {
+          return <>
+            <h5 className='mt-5'>Results by Books</h5>
+            <MostLeastChart chartData={generatedReport} />
+          </>
+        }
+  
+      default:
+        return null; // Add a default case if no match
+    }
+  };
+    
 
+  console.log('generated report: ',generatedReport)
+  console.log('selected report: ', reportData.category)
+  console.log('selected detail: ', reportData.detail)
+  
   if (!open) {
     return null;
   }
@@ -667,45 +729,76 @@ const ReportsModal = ({ open, close}) => {
           </div>
           
           <span className="file-format-info mt-2 text-muted small">
-            * Generate a report to preview data, then save it or export to Excel
+            * Generate a report to preview data, then save it or export to Excel or PDF
           </span>
+
 
           {/* Generated report table */}
           {showReportTable && generatedReport.length > 0 ? (
             <div className="report-result mt-4">
               <div className="d-flex justify-content-between align-items-center mb-2">
                 <h5 className="m-0">Report Results</h5>
-                <button 
-                  className="btn btn-sm btn-success"
-                  onClick={exportToExcel}
-                >
-                  <FontAwesomeIcon icon={faDownload} className="me-1" />
-                  Export to Excel
-                </button>
+                <div className='d-flex justify-content-center align-items-center gap-2'>
+                  <button 
+                    className="btn btn-sm btn-success"
+                    onClick={exportToExcel}
+                  >
+                    <FontAwesomeIcon icon={faDownload} className="me-1" />
+                    Export to Excel
+                  </button>
+                  
+                      <button 
+                        className="btn btn-sm btn-warning"
+                        disabled={loading}
+                        onClick={handleExportPDF}
+                      >
+                        <FontAwesomeIcon icon={faDownload} className="me-1" />
+                        {loading ? 'Preparing PDF...' : 'Export to PDF'}
+                      </button>
+                    
+                </div>
+                
               </div>
-              <div className="table-responsive" style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                <table>
-                  <thead>
-                    <tr>
-                      {generatedReport.length > 0 && 
-                        Object.keys(generatedReport[0]).map((key) => (
-                          <th key={key}>{key.replace(/_/g, ' ')}</th>
-                        ))
-                      }
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {generatedReport.map((row, rowIndex) => (
-                      <tr key={rowIndex}>
-                        {Object.values(row).map((value, colIndex) => (
-                          <td key={colIndex}>
-                            {value !== null ? value :''}
-                          </td>
-                        ))}
+              <div 
+                ref={exportRef} 
+              >
+                {/* info */}
+                <div className="d-flex flex-column">
+                  <h1>Learning Resources Center CLA</h1>
+                  <span>Report Name: <strong>{reportData.name}</strong></span>
+                  <span>Report Description: <strong>{reportData.description}</strong></span>
+                  <span>Prepared by: <strong>{staffUname}</strong></span>
+                  <span>Generated date: <strong>{generatedDate}</strong></span>
+                </div>
+                {handleChart()}
+                <div className="table-responsive mt-3" >
+                  <h5>Results in Table</h5>
+                  <table className='report-table'>
+                    <thead>
+                      <tr>
+                        {generatedReport.length > 0 && 
+                          Object.keys(generatedReport[0]).map((key) => (
+                            <th key={key}>{key.replace(/_/g, ' ')}</th>
+                          ))
+                        }
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {generatedReport.map((row, rowIndex) => (
+                        <tr key={rowIndex}>
+                          {Object.values(row).map((value, colIndex) => (
+                            <td key={colIndex}>
+                              {value !== null ? value :''}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div> 
+                <div className='text-center mt-3'>
+                © {new Date().getFullYear()} Learning Resources Center - Confidential
+                </div>
               </div>
             </div>
           ):isGenerating&&generatedReport.length<=0?
