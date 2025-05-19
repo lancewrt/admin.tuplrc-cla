@@ -222,11 +222,16 @@ const ReportView = ({open, close, id}) => {
                   </div>
                 ) : (
                   <iframe
-                    src={`https://docs.google.com/gview?url=https://api.tuplrc-cla.com/api/reports/fetch-pdf?filePath=${encodeURIComponent(report[0].filepath)}&embedded=true`}
+                    src={`https://api.tuplrc-cla.com/api/reports/fetch-pdf?filePath=${encodeURIComponent(report[0].filepath)}`}
                     width="100%"
                     height="600px"
                     title="PDF Preview"
-                    frameBorder="0"
+                    style={{ border: '1px solid #ccc', borderRadius: '8px' }}
+                    onLoad={(e) => console.log("PDF loaded successfully")}
+                    onError={(e) => {
+                      console.error("PDF loading error");
+                      setPdfError(true);
+                    }}
                   />
                 )}
               </div>
