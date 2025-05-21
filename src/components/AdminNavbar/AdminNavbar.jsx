@@ -26,7 +26,7 @@ const AdminNavbar = () => {
         
         const fetchUserRole = async () => {
             try {
-                const response = await axios.get('https://api.tuplrc-cla.com/api/user/check-session', { withCredentials: true });
+                const response = await axios.get('http://localhost:3001/api/user/check-session', { withCredentials: true });
                 if (response.data.loggedIn) {
                     setRole(response.data.userRole);
                 } else {
@@ -60,200 +60,209 @@ const AdminNavbar = () => {
             {!isCollapsed&&<div className='overlay'></div>}
             <nav className={`admin-navbar-container shadow ${isCollapsed ? 'collapsed' : ''}`}>
             {/* Toggle Button */}
-                <div className="navbar-toggle">
-                    <button onClick={toggleNavbar} className="toggle-button">
-                        <FontAwesomeIcon icon={faBars} />
-                    </button>
-                </div>
-                
-                {/* Logo and Heading */}
-                <div className="navbar-logo-heading">
-                    <div className="navbar-logos">
-                        <img src={tuplogo} alt="tup-logo" className="logo-image" />
-                        {!isCollapsed && <img src={clalogo} alt="cla-logo" className="logo-image" />}
+                <div>
+                    <div className="navbar-toggle">
+                        <button onClick={toggleNavbar} className="toggle-button">
+                            <FontAwesomeIcon icon={faBars} />
+                        </button>
                     </div>
-                    {!isCollapsed && (
-                        <div className="navbar-heading">
-                            <p className='navbar-heading-text navbar-heading-cla'>College of Liberal Arts</p>
-                            <p className='navbar-heading-text navbar-heading-lrc'>Learning Resource Center</p>
+                    
+                    {/* Logo and Heading */}
+                    <div className="navbar-logo-heading">
+                        <div className="navbar-logos">
+                            <img src={tuplogo} alt="tup-logo" className="logo-image" />
+                            {!isCollapsed && <img src={clalogo} alt="cla-logo" className="logo-image" />}
                         </div>
-                    )}
-                </div>
-
-                {/* Menu */}
-                <div className="navbar-menu">
-                    <ul className="menu-list">
-                        {/* Dashboard */}
-                        <li className={`menu-item ${basePath === '/dashboard' ? 'selected' : ''}`}>
-                            <Link to='/dashboard' className='menu'>
-                                <div className="menu-icon-container">
-                                    <FontAwesomeIcon icon={faChartSimple} className='menu-icon'/>
-                                </div>
-                                {!isCollapsed && (
-                                    <div className="menu-text">
-                                        <p>Dashboard</p>
-                                    </div>
-                                )}
-                            </Link>
-                        </li>
-
-                        {/* Logbook */}
-                        <li className={`menu-item ${basePath === '/logbook' ? 'selected' : ''}`}>
-                            <Link to='/logbook' className="menu">
-                                <div className="menu-icon-container">
-                                    <FontAwesomeIcon icon={faFileLines} className='menu-icon'/>
-                                </div>
-                                {!isCollapsed && (
-                                    <div className="menu-text">
-                                        <p>Logbook</p>
-                                    </div>
-                                )}
-                            </Link>
-                        </li>
-
-                        {/* Circulation */}
-                        <li className={`menu-item ${basePath === '/circulation' ? 'selected' : ''}`}>
-                            <Link to='/circulation' className="menu">
-                                <div className="menu-icon-container">
-                                    <FontAwesomeIcon icon={faCartShopping} className='menu-icon'/>
-                                </div>
-                                {!isCollapsed && (
-                                    <div className="menu-text">
-                                        <p>Book Circulation</p>
-                                    </div>
-                                )}
-                            </Link>
-                        </li>
-
-                        {/* Patrons */}
-                        <li className={`menu-item ${basePath === '/patron' ? 'selected' : ''}`}>
-                            <Link to='/patron' className="menu">
-                                <div className="menu-icon-container">
-                                    <FontAwesomeIcon icon={faUser} className='menu-icon' />
-                                </div>
-                                {!isCollapsed && (
-                                    <div className="menu-text">
-                                        <p>Patrons</p>
-                                    </div>
-                                )}
-                            </Link>
-                        </li>
-
-                        {/* Cataloging - Parent Menu */}
-                        <li className={`menu-item ${basePath === '/catalog' ? 'selected catalog-parent' : ''}`}>
-                            <div className='menu' onClick={toggleCataloging} style={{ cursor: 'pointer' }}>
-                                <div className="menu-icon-container">
-                                    <FontAwesomeIcon icon={faBook} className='menu-icon'/>
-                                </div>
-                                {!isCollapsed && (
-                                    <div className="menu-text">
-                                        <p>Cataloging</p>
-                                    </div>
-                                )}
+                        {!isCollapsed && (
+                            <div className="navbar-heading">
+                                <p className='navbar-heading-text navbar-heading-cla'>College of Liberal Arts</p>
+                                <p className='navbar-heading-text navbar-heading-lrc'>Learning Resource Center</p>
                             </div>
-                            
-                            {/* Cataloging Submenu - Only show when not collapsed or when hovering in collapsed mode */}
-                            {isCatalogingOpen && (
-                                <ul className={`submenu ${isCollapsed ? '' : ''}`}>
-                                    <li className="submenu-list-item">
-                                        <Link to='/catalog/availability' className="submenu-item">
-                                            <div className="menu-icon-container">
-                                                <FontAwesomeIcon icon={faBookOpen} className='menu-icon'/>
-                                            </div>
-                                            {!isCollapsed && (
-                                                <div className="menu-text">
-                                                    <p>Resource Status</p>
-                                                </div>
-                                            )}
-                                        </Link>
-                                    </li>
-                                    <li className="submenu-list-item">
-                                        <Link to='/catalog/generate-barcode' className="submenu-item">
-                                            <div className="menu-icon-container">
-                                                <FontAwesomeIcon icon={faBarcode} className='menu-icon'/>
-                                            </div>
-                                            {!isCollapsed && (
-                                                <div className="menu-text">
-                                                    <p>Generate Barcode</p>
-                                                </div>
-                                            )}
-                                        </Link>
-                                    </li>
-                                    <li className="submenu-list-item">
-                                        <Link to='/catalog/manage-catalog' className="submenu-item">
-                                            <div className="menu-icon-container">
-                                                <FontAwesomeIcon icon={faPenToSquare} className='menu-icon'/>
-                                            </div>
-                                            {!isCollapsed && (
-                                                <div className="menu-text">
-                                                    <p>Manage Catalog</p>
-                                                </div>
-                                            )}
-                                        </Link>
-                                    </li>
-                                </ul>
-                            )}
-                        </li>
+                        )}
+                    </div>
 
-                        <li className={`menu-item ${basePath === '/reports' ? 'selected' : ''}`}>
-                            <Link to='/reports' className="menu">
-                                <div className="menu-icon-container">
-                                    <FontAwesomeIcon icon={faFileExcel} className='menu-icon'/>
-                                </div>
-                                {!isCollapsed && (
-                                    <div className="menu-text">
-                                        <p>Reports</p>
+                    {/* Menu */}
+                    <div className="navbar-menu">
+                        <ul className="menu-list">
+                            {/* Dashboard */}
+                            <li className={`menu-item ${basePath === '/dashboard' ? 'selected' : ''}`}>
+                                <Link to='/dashboard' className='menu'>
+                                    <div className="menu-icon-container">
+                                        <FontAwesomeIcon icon={faChartSimple} className='menu-icon'/>
                                     </div>
-                                )}
-                            </Link>
-                        </li>
+                                    {!isCollapsed && (
+                                        <div className="menu-text">
+                                            <p>Dashboard</p>
+                                        </div>
+                                    )}
+                                </Link>
+                            </li>
 
-                        {/* Conditionally Render Menu Items Based on Role */}
-                        {role !== 'staff' && (
-                            <>
-                                <li className={`menu-item ${basePath === '/audit' ? 'selected' : ''}`}>
-                                    <Link to='/audit' className="menu">
+                            {/* Logbook */}
+                            <li className={`menu-item ${basePath === '/logbook' ? 'selected' : ''}`}>
+                                <Link to='/logbook' className="menu">
+                                    <div className="menu-icon-container">
+                                        <FontAwesomeIcon icon={faFileLines} className='menu-icon'/>
+                                    </div>
+                                    {!isCollapsed && (
+                                        <div className="menu-text">
+                                            <p>Logbook</p>
+                                        </div>
+                                    )}
+                                </Link>
+                            </li>
+
+                            {/* Circulation */}
+                            <li className={`menu-item ${basePath === '/circulation' ? 'selected' : ''}`}>
+                                <Link to='/circulation' className="menu">
+                                    <div className="menu-icon-container">
+                                        <FontAwesomeIcon icon={faCartShopping} className='menu-icon'/>
+                                    </div>
+                                    {!isCollapsed && (
+                                        <div className="menu-text">
+                                            <p>Book Circulation</p>
+                                        </div>
+                                    )}
+                                </Link>
+                            </li>
+
+                            {/* Patrons */}
+                            <li className={`menu-item ${basePath === '/patron' ? 'selected' : ''}`}>
+                                <Link to='/patron' className="menu">
+                                    <div className="menu-icon-container">
+                                        <FontAwesomeIcon icon={faUser} className='menu-icon' />
+                                    </div>
+                                    {!isCollapsed && (
+                                        <div className="menu-text">
+                                            <p>Patrons</p>
+                                        </div>
+                                    )}
+                                </Link>
+                            </li>
+
+                            {/* Cataloging - Parent Menu */}
+                            <li className={`menu-item ${basePath === '/catalog' ? 'selected catalog-parent' : ''}`}>
+                                <div className='menu' onClick={toggleCataloging} style={{ cursor: 'pointer' }}>
+                                    <div className="menu-icon-container">
+                                        <FontAwesomeIcon icon={faBook} className='menu-icon'/>
+                                    </div>
+                                    {!isCollapsed && (
+                                        <div className="menu-text">
+                                            <p>Cataloging</p>
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                {/* Cataloging Submenu - Only show when not collapsed or when hovering in collapsed mode */}
+                                {isCatalogingOpen && (
+                                    <ul className={`submenu ${isCollapsed ? '' : ''}`}>
+                                        <li className="submenu-list-item">
+                                            <Link to='/catalog/availability' className="submenu-item">
+                                                <div className="menu-icon-container">
+                                                    <FontAwesomeIcon icon={faBookOpen} className='menu-icon'/>
+                                                </div>
+                                                {!isCollapsed && (
+                                                    <div className="menu-text">
+                                                        <p>Resource Status</p>
+                                                    </div>
+                                                )}
+                                            </Link>
+                                        </li>
+                                        <li className="submenu-list-item">
+                                            <Link to='/catalog/generate-barcode' className="submenu-item">
+                                                <div className="menu-icon-container">
+                                                    <FontAwesomeIcon icon={faBarcode} className='menu-icon'/>
+                                                </div>
+                                                {!isCollapsed && (
+                                                    <div className="menu-text">
+                                                        <p>Generate Barcode</p>
+                                                    </div>
+                                                )}
+                                            </Link>
+                                        </li>
+                                        <li className="submenu-list-item">
+                                            <Link to='/catalog/manage-catalog' className="submenu-item">
+                                                <div className="menu-icon-container">
+                                                    <FontAwesomeIcon icon={faPenToSquare} className='menu-icon'/>
+                                                </div>
+                                                {!isCollapsed && (
+                                                    <div className="menu-text">
+                                                        <p>Manage Catalog</p>
+                                                    </div>
+                                                )}
+                                            </Link>
+                                        </li>
+                                    </ul>
+                                )}
+                            </li>
+
+                            <li className={`menu-item ${basePath === '/reports' ? 'selected' : ''}`}>
+                                <Link to='/reports' className="menu">
+                                    <div className="menu-icon-container">
+                                        <FontAwesomeIcon icon={faFileExcel} className='menu-icon'/>
+                                    </div>
+                                    {!isCollapsed && (
+                                        <div className="menu-text">
+                                            <p>Reports</p>
+                                        </div>
+                                    )}
+                                </Link>
+                            </li>
+
+                            {/* Conditionally Render Menu Items Based on Role */}
+                            {role !== 'staff' && (
+                                <>
+                                    <li className={`menu-item ${basePath === '/audit' ? 'selected' : ''}`}>
+                                        <Link to='/audit' className="menu">
+                                            <div className="menu-icon-container">
+                                                <FontAwesomeIcon icon={faFile} className='menu-icon'/>
+                                            </div>
+                                            {!isCollapsed && (
+                                                <div className="menu-text">
+                                                    <p>Audit Logs</p>
+                                                </div>
+                                            )}
+                                        </Link>
+                                    </li>
+                                    <li className={`menu-item ${basePath === '/accounts' ? 'selected' : ''}`}>
+                                    <Link to='/accounts' className="menu">
                                         <div className="menu-icon-container">
-                                            <FontAwesomeIcon icon={faFile} className='menu-icon'/>
+                                            <FontAwesomeIcon icon={faUsersGear} className='menu-icon'/>
                                         </div>
                                         {!isCollapsed && (
                                             <div className="menu-text">
-                                                <p>Audit Logs</p>
+                                                <p>Accounts</p>
                                             </div>
                                         )}
                                     </Link>
                                 </li>
-                                <li className={`menu-item ${basePath === '/accounts' ? 'selected' : ''}`}>
-                                <Link to='/accounts' className="menu">
-                                    <div className="menu-icon-container">
-                                        <FontAwesomeIcon icon={faUsersGear} className='menu-icon'/>
-                                    </div>
-                                    {!isCollapsed && (
-                                        <div className="menu-text">
-                                            <p>Accounts</p>
-                                        </div>
-                                    )}
-                                </Link>
-                            </li>
-                            </>
-                        )}
+                                </>
+                            )}
 
-                        {/* {role == 'superadmin' && (
-                            <li className={`menu-item ${basePath === '/accounts' ? 'selected' : ''}`}>
-                                <Link to='/accounts' className="menu">
-                                    <div className="menu-icon-container">
-                                        <FontAwesomeIcon icon={faUsersGear} className='menu-icon'/>
-                                    </div>
-                                    {!isCollapsed && (
-                                        <div className="menu-text">
-                                            <p>Accounts</p>
+                            {/* {role == 'superadmin' && (
+                                <li className={`menu-item ${basePath === '/accounts' ? 'selected' : ''}`}>
+                                    <Link to='/accounts' className="menu">
+                                        <div className="menu-icon-container">
+                                            <FontAwesomeIcon icon={faUsersGear} className='menu-icon'/>
                                         </div>
-                                    )}
-                                </Link>
-                            </li>
-                        )} */}
-                    </ul>
+                                        {!isCollapsed && (
+                                            <div className="menu-text">
+                                                <p>Accounts</p>
+                                            </div>
+                                        )}
+                                    </Link>
+                                </li>
+                            )} */}
+                        </ul>
+                    </div>  
                 </div>
+                
+                {!isCollapsed && (
+                   <small className='text-white m-0 dev-team rounded'>
+                        For updates or changes, contact the <br/><a href="https://mail.google.com/mail/?view=cm&fs=1&to=tontonwinstonnn@gmail.com" className='text-light fw-bold'>development team.</a>
+                    </small> 
+                )}
+                
             </nav>
         </div>
     );
