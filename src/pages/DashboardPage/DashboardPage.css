@@ -1,5 +1,13 @@
-.dashpage{
-    display: grid;
-    grid-template-columns: 80px auto;
-    overflow-x: hidden;
-}
+.dashpage {
+    display: grid; /* Defines a grid container */
+    grid-template-columns: 80px auto; /* Two columns: 80px wide for the first column, second column takes remaining space */
+    overflow-x: hidden; /* Hides any overflow on the x-axis (horizontal) */
+    width: 100vw !important; /* Forces the width to 100% of the viewport width, overriding other styles */
+  }
+  
+
+/* @media screen and (max-width:1000px) {
+    .dashpage{
+        grid-template-columns: 100%;
+    }
+} */

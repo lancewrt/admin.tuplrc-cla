@@ -9,10 +9,10 @@ const DashboardPage = () => {
   
   return (
     <div className='dashpage'>
-      <div>
+      <div className=''>
        <AdminNavbar/>
       </div> 
-      <div>
+      <div className='p-0 m-0 h-100'>
         <AdminTopNavbar/>
         <Dashboard/>
       </div>
